@@ -13,11 +13,18 @@ export type Household = {
 /** Tags for directory (e.g. רב, רופא, מתנדב). */
 export type DirectoryTag = "rabbi" | "doctor" | "volunteer" | "other";
 
+/** Global account status: PENDING until Admin approves, then MEMBER or ADMIN. */
+export type UserStatus = "PENDING" | "MEMBER" | "ADMIN";
+
 export type User = {
   id: UserId;
   fullName: string;
   phone?: string;
   email?: string;
+  // Hashed password (only set for users who registered via sign-up)
+  passwordHash?: string;
+  // Account status for gatekeeper: PENDING -> MEMBER (or ADMIN)
+  status?: UserStatus;
   // Foreign key to Household.id (optional until user is approved/assigned)
   householdId?: HouseholdId | null;
   // Example: "adult", "child", "rabbi", etc.
@@ -146,5 +153,22 @@ export function updateUserDirectory(
   if (update.showEmailInDirectory !== undefined)
     user.showEmailInDirectory = update.showEmailInDirectory;
   return true;
+}
+
+export function findUserByEmail(email: string): User | undefined {
+  const normalized = email.trim().toLowerCase();
+  return users.find((u) => u.email?.toLowerCase() === normalized);
+}
+
+export function setUserStatus(userId: UserId, status: UserStatus): boolean {
+  const user = users.find((u) => u.id === userId);
+  if (!user) return false;
+  user.status = status;
+  return true;
+}
+
+/** Users who signed up and are waiting for admin to promote to MEMBER. */
+export function getPendingUsers(): User[] {
+  return users.filter((u) => u.status === "PENDING");
 }
 

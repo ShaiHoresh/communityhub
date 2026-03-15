@@ -9,14 +9,14 @@ export function ApproveRejectButtons({ requestId }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function handleApprove() {
-    startTransition(async () => {
-      await approveAccessRequestAction(requestId);
+    startTransition(() => {
+      void approveAccessRequestAction(requestId);
     });
   }
 
   function handleReject() {
-    startTransition(async () => {
-      await rejectAccessRequestAction(requestId);
+    startTransition(() => {
+      void rejectAccessRequestAction(requestId);
     });
   }
 

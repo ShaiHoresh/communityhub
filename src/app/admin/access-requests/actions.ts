@@ -12,6 +12,7 @@ import {
   createHousehold,
   createUser,
   getHouseholdById,
+  setUserStatus,
 } from "@/lib/households";
 
 const REVIEWED_BY = "admin";
@@ -83,4 +84,12 @@ export async function rejectAccessRequestAction(requestId: string) {
   if (!result.success) return result;
   revalidatePath("/admin/access-requests");
   return result;
+}
+
+/** Promote a PENDING user (signed up) to MEMBER. */
+export async function approvePendingUserAction(userId: string) {
+  const ok = setUserStatus(userId, "MEMBER");
+  if (!ok) return { success: false, error: "משתמש לא נמצא." };
+  revalidatePath("/admin/access-requests");
+  return { success: true };
 }

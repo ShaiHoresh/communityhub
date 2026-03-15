@@ -12,7 +12,9 @@ export function GmachPinButton({ itemId, isPinned }: Props) {
     <button
       type="button"
       onClick={() =>
-        startTransition(() => toggleGmachPinAction(itemId))
+        startTransition(() => {
+          void toggleGmachPinAction(itemId);
+        })
       }
       disabled={isPending}
       title={isPinned ? "הסר מסימון עדיפות ועדה" : "סמן כעדיפות ועדה"}

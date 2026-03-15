@@ -8,13 +8,13 @@ Phase 1: Foundation & RTL Setup
 
 [x] Build "Request Access" flow with Admin approval dashboard.
 
-[ ] Authentication: Email/Password registration and sign-in (with password hashing and secure session management).
+[x] Authentication: Email/Password registration and sign-in (with password hashing and secure session management).
 
-[ ] Pending State UI: Dedicated "Waiting for Admin Approval" screen for signed-in users in PENDING state (no access to member areas until promoted).
+[x] Pending State UI: Dedicated "Waiting for Admin Approval" screen for signed-in users in PENDING state (no access to member areas until promoted).
 
-[ ] Sign-out: Implement sign-out flow and clear session.
+[x] Sign-out: Implement sign-out flow and clear session.
 
-[ ] Password Reset: Implement forgot-password / password-reset flow (e.g. email link or provider flow).
+[x] Password Reset: Implement forgot-password / password-reset flow (e.g. email link or provider flow).
 
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).

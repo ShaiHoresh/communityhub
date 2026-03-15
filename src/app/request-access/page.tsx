@@ -7,7 +7,12 @@ export const metadata = {
   description: "בקשת הצטרפות למשק בית או פתיחת משק בית חדש",
 };
 
-export default function RequestAccessPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function RequestAccessPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const errorMsg = params.error ? decodeURIComponent(params.error) : null;
+
   return (
     <div className="min-h-screen bg-background font-sans">
       <BrandHeader
@@ -24,6 +29,11 @@ export default function RequestAccessPage() {
           </Link>
         </div>
 
+        {errorMsg && (
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {errorMsg}
+          </div>
+        )}
         <form action={requestAccessAction} className="space-y-6">
           <div>
             <label htmlFor="type" className="mb-2 block text-sm font-medium text-foreground">

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { BrandHeader } from "@/components/BrandHeader";
 import { getPendingAccessRequests } from "@/lib/access-requests";
+import { getPendingUsers } from "@/lib/households";
 import { ApproveRejectButtons } from "./approve-reject-buttons";
+import { PendingUserRow } from "./PendingUserRow";
 
 export const metadata = {
   title: "אישורי גישה | CommunityHub",
@@ -10,12 +12,13 @@ export const metadata = {
 
 export default async function AdminAccessRequestsPage() {
   const pending = getPendingAccessRequests();
+  const pendingUsers = getPendingUsers();
 
   return (
     <div className="min-h-screen bg-background font-sans">
       <BrandHeader
         title="מסך אישורי מנהל – בקשות גישה"
-        subtitle="אישור או דחיית בקשות להצטרפות למשק בית או לפתיחת משק בית חדש."
+        subtitle="אישור משתמשים שנרשמו (תור ממתינים) ובקשות הצטרפות למשק בית."
       />
       <main className="mx-auto max-w-3xl px-6 py-10 text-right">
         <div className="mb-6">
@@ -27,6 +30,28 @@ export default async function AdminAccessRequestsPage() {
           </Link>
         </div>
 
+        {pendingUsers.length > 0 && (
+          <section className="mb-10">
+            <h2 className="mb-4 text-lg font-semibold text-foreground">
+              משתמשים ממתינים (נרשמו ומועברים לאישור)
+            </h2>
+            <ul className="space-y-3">
+              {pendingUsers.map((u) => (
+                <PendingUserRow
+                  key={u.id}
+                  userId={u.id}
+                  fullName={u.fullName}
+                  email={u.email}
+                />
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">
+            בקשות גישה למשק בית (טופס בקשת גישה)
+          </h2>
         {pending.length === 0 ? (
           <div className="surface-card p-8 text-center">
             <p className="text-foreground">אין בקשות ממתינות לאישור.</p>
@@ -68,6 +93,7 @@ export default async function AdminAccessRequestsPage() {
             ))}
           </ul>
         )}
+        </section>
       </main>
     </div>
   );

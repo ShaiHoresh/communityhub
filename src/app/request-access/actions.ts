@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createAccessRequest } from "@/lib/access-requests";
 
-export async function requestAccessAction(formData: FormData) {
+export async function requestAccessAction(formData: FormData): Promise<void> {
   const type = formData.get("type") as "new_household" | "join_household" | null;
   const householdNameOrId = formData.get("householdNameOrId") as string | null;
   const requesterName = formData.get("requesterName") as string | null;
@@ -15,11 +15,11 @@ export async function requestAccessAction(formData: FormData) {
   const notes = (formData.get("notes") as string | null) || undefined;
 
   if (!type || !householdNameOrId?.trim() || !requesterName?.trim() || !requesterEmail?.trim()) {
-    return { success: false, error: "נא למלא שם, אימייל וסוג הבקשה." };
+    redirect("/request-access?error=" + encodeURIComponent("נא למלא שם, אימייל וסוג הבקשה."));
   }
 
   if (type !== "new_household" && type !== "join_household") {
-    return { success: false, error: "סוג בקשה לא תקין." };
+    redirect("/request-access?error=" + encodeURIComponent("סוג בקשה לא תקין."));
   }
 
   createAccessRequest({
