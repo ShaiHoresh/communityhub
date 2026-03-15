@@ -10,6 +10,9 @@ export const metadata = {
   description: "מסך אישור בקשות גישה למערכת",
 };
 
+/** Always use fresh in-memory data; avoid static snapshot with empty list. */
+export const dynamic = "force-dynamic";
+
 export default async function AdminAccessRequestsPage() {
   const pending = getPendingAccessRequests();
   const pendingUsers = getPendingUsers();
@@ -21,20 +24,26 @@ export default async function AdminAccessRequestsPage() {
         subtitle="אישור משתמשים שנרשמו (תור ממתינים) ובקשות הצטרפות למשק בית."
       />
       <main className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <div className="mb-6">
+        <div className="mb-6 flex flex-wrap items-center gap-4">
           <Link
             href="/"
             className="text-sm font-medium text-primary hover:underline"
           >
             ← חזרה לדף הבית
           </Link>
+          <Link
+            href="/admin/finance"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            כספים
+          </Link>
         </div>
 
-        {pendingUsers.length > 0 && (
-          <section className="mb-10">
-            <h2 className="mb-4 text-lg font-semibold text-foreground">
-              משתמשים ממתינים (נרשמו ומועברים לאישור)
-            </h2>
+        <section className="mb-10">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">
+            משתמשים ממתינים (נרשמו ומועברים לאישור)
+          </h2>
+          {pendingUsers.length > 0 ? (
             <ul className="space-y-3">
               {pendingUsers.map((u) => (
                 <PendingUserRow
@@ -45,8 +54,16 @@ export default async function AdminAccessRequestsPage() {
                 />
               ))}
             </ul>
-          </section>
-        )}
+          ) : (
+            <div className="surface-card p-6 text-center">
+              <p className="text-foreground mb-2">אין משתמשים ממתינים.</p>
+              <p className="text-sm text-primary/80">
+                נתוני המערכת נשמרים בזיכרון ו&#39;מתאפסים בהפעלה מחדש. להצגת משתמש בדיקה (pending@test.com) הרץ בדפדפן:{" "}
+                <a href="/api/seed" className="font-mono text-primary underline" target="_blank" rel="noopener noreferrer">/api/seed</a>
+              </p>
+            </div>
+          )}
+        </section>
 
         <section>
           <h2 className="mb-4 text-lg font-semibold text-foreground">

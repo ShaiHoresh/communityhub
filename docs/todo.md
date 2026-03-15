@@ -1,4 +1,5 @@
 Implementation Roadmap (TODO List)
+
 Phase 1: Foundation & RTL Setup
 [x] Initialize Next.js project with Tailwind CSS RTL support.
 
@@ -15,6 +16,15 @@ Phase 1: Foundation & RTL Setup
 [x] Sign-out: Implement sign-out flow and clear session.
 
 [x] Password Reset: Implement forgot-password / password-reset flow (e.g. email link or provider flow).
+
+Phase 1b: Database Setup (prioritized for early User Role testing: Admin, Member, Pending)
+[x] Database Schema Design: Define and implement tables for `households`, `users` (with roles and pending status), `locations`, `prayers/lessons`, `projects`, and `gmach_posts`. Ensure foreign key relationships (e.g. `users.household_id`).
+
+[x] Security & Roles (RLS): If using Supabase, implement Row Level Security (RLS) policies by role (`ADMIN`, `MEMBER`, `PENDING`, `GUEST`). Define who can see what (e.g. only Members see Directory; only Admins see Finance Hub).
+
+[x] Development Seed Script: Create `seed.sql` or `seed.ts` that populates: one Admin user; one Member household with two users (Managers); one Pending user; sample prayer times; one sample project. Script must allow switching between users for immediate permission testing.
+
+[x] Database Documentation: Add `docs/DATABASE.md` (or `DATABASE.md` in project root) describing table structures and relationships.
 
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).
@@ -33,11 +43,11 @@ Phase 3: Directory, Gmach & Life Events
 [x] Implement Life Events Registry: Form for Births/Yahrzeits; logic for calculating upcoming dates.
 
 Phase 4: Financial & Project Architecture
-[ ] Build the projects table for financial tracking.
+[x] Build the projects table for financial tracking.
 
-[ ] Create an Admin interface to log Expenses and Income per project.
+[x] Create an Admin interface to log Expenses and Income per project.
 
-[ ] Prepare the "Payment Gateway" placeholder (ready for external API integration).
+[x] Prepare the "Payment Gateway" placeholder (ready for external API integration).
 
 Phase 4b: Admin Dashboard UI/UX (Control Tower)
 [ ] Admin layout: Sidebar-based navigation with main content area (all Admin routes).
