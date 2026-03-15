@@ -20,17 +20,16 @@ export default async function RequestAccessPage({ searchParams }: Props) {
         subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
       />
       <main className="mx-auto max-w-xl px-6 py-10 text-right">
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            ← חזרה לדף הבית
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
+        >
+          ← חזרה לדף הבית
+        </Link>
 
+        <div className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         {errorMsg && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
             {errorMsg}
           </div>
         )}
@@ -164,6 +163,7 @@ export default async function RequestAccessPage({ searchParams }: Props) {
             </Link>
           </div>
         </form>
+        </div>
       </main>
     </div>
   );

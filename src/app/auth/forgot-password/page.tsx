@@ -14,15 +14,15 @@ export default function ForgotPasswordPage() {
         subtitle="לאפס את הסיסמה יש לפנות להנהלת הקהילה או להשתמש בשירות איפוס (יופעל בהמשך)."
       />
       <main className="mx-auto max-w-xl px-6 py-12 text-right">
-        <div className="surface-card space-y-6 p-8">
-          <p className="text-foreground">
+        <div className="surface-card card-interactive space-y-6 rounded-2xl p-8 sm:p-10">
+          <p className="leading-relaxed text-foreground">
             כרגע איפוס סיסמה מתבצע דרך הנהלת הקהילה. פנה למנהל המערכת עם פרטי
             החשבון (אימייל) כדי לאפס את הסיסמה.
           </p>
-          <p className="text-sm text-primary/80">
+          <p className="text-sm leading-relaxed text-primary/85">
             בעתיד יתווסף שליחת קישור איפוס לאימייל (Password Reset flow).
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4 pt-2">
             <Link href="/auth/signin" className="btn-primary">
               חזרה להתחברות
             </Link>

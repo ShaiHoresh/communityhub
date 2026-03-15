@@ -27,11 +27,11 @@ export default async function PendingPage() {
         subtitle="חשבונך נוצר בהצלחה ומועבר לאישור הנהלת הקהילה. לאחר האישור תוכל לגשת למדריך הקהילה, לוח הגמ״ח ואירועי החיים."
       />
       <main className="mx-auto max-w-xl px-6 py-12 text-right">
-        <div className="surface-card space-y-6 p-8 text-center">
-          <p className="text-lg font-medium text-foreground">
-            חשבונך ממתין לאישור מנהל.
+        <div className="surface-card card-interactive space-y-6 p-10 text-center sm:p-12">
+          <p className="font-heading text-xl font-bold text-foreground">
+            חשבונך ממתין לאישור מנהל
           </p>
-          <p className="text-sm text-primary/80">
+          <p className="text-sm leading-relaxed text-primary/85">
             הנהלת הקהילה תבדוק את הבקשה בהקדם. עם האישור תקבל גישה מלאה לאזור
             האישי. במקרה של שאלות ניתן לפנות להנהלה.
           </p>

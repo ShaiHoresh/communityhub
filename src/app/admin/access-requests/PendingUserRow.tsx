@@ -15,10 +15,10 @@ export function PendingUserRow({ userId, fullName, email }: Props) {
   }
 
   return (
-    <li className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
+    <li className="surface-card card-interactive flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5">
       <div>
-        <p className="font-medium text-foreground">{fullName}</p>
-        {email && <p className="text-sm text-primary/80">{email}</p>}
+        <p className="font-heading font-semibold text-foreground">{fullName}</p>
+        {email && <p className="mt-0.5 text-sm text-primary/85">{email}</p>}
       </div>
       <button
         type="button"

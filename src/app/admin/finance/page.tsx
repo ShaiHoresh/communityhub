@@ -30,24 +30,24 @@ export default async function AdminFinancePage() {
   const allTransactions = getAllTransactions();
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-foreground">
+    <div className="space-y-10">
+      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
         מרכז כספים – פרויקטים והכנסות/הוצאות
       </h1>
 
-      <section className="surface-card p-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+      <section className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             פרויקט חדש
           </h2>
           <CreateProjectForm />
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+        <section>
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             פרויקטים ומאזן
           </h2>
           {projects.length === 0 ? (
-            <div className="surface-card p-8 text-center text-primary/80">
+            <div className="surface-card card-interactive p-10 text-center text-primary/85">
               אין פרויקטים. הוסף פרויקט למעלה.
             </div>
           ) : (
@@ -56,10 +56,10 @@ export default async function AdminFinancePage() {
                 const balance = getBalanceForProject(project.id);
                 const txs = getTransactionsByProject(project.id);
                 return (
-                  <li key={project.id} className="surface-card overflow-hidden p-5">
+                  <li key={project.id} className="surface-card card-interactive overflow-hidden rounded-2xl p-6">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-semibold text-foreground">
+                        <h3 className="font-heading font-semibold text-foreground">
                           {project.name}
                         </h3>
                         <p className="mt-1 text-sm text-primary/80">
@@ -104,8 +104,8 @@ export default async function AdminFinancePage() {
           )}
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+        <section>
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             גלופה כללית
           </h2>
           <GeneralLedger

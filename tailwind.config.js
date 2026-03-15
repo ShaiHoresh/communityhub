@@ -11,6 +11,11 @@ module.exports = {
         secondary: "#2563EB", // blue from logo
         accent: "#111827",    // dark accent (dots)
       },
+      fontFamily: {
+        sans: ["var(--font-heebo)", "system-ui", "sans-serif"],
+        heading: ["var(--font-heebo)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
+      },
     },
   },
   plugins: [],

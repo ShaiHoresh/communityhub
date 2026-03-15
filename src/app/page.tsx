@@ -41,9 +41,9 @@ export default async function Home({ searchParams }: HomeProps) {
             : "ברוכים הבאים. צפו בתפילה הבאה והצטרפו לקהילה."
         }
       />
-      <main className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl flex-col gap-10 px-6 py-12 text-right sm:px-12">
+      <main className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-5xl flex-col gap-12 px-6 py-12 text-right sm:px-12">
         {showRequestSubmitted && (
-          <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+          <div className="rounded-2xl border border-primary/25 bg-primary/10 px-5 py-4 text-sm font-medium text-primary shadow-sm">
             הבקשה נשלחה בהצלחה. הנהלת הקהילה תטפל בה בהקדם.
           </div>
         )}

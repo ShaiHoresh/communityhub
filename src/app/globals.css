@@ -20,10 +20,9 @@
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
 
-  /* Fonts: connect to next/font variables when you add them */
-  --font-sans: var(--font-body, var(--font-geist-sans));
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-heading, var(--font-geist-sans));
+  --font-sans: var(--font-heebo), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --font-heading: var(--font-heebo), system-ui, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,15 +50,34 @@ body {
 
 /* Primary action: accent (per branding) */
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:opacity-90 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50;
 }
 
 /* Secondary action: outlined with secondary color */
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-full border-2 border-secondary bg-transparent px-5 py-2.5 text-sm font-medium text-primary transition hover:bg-secondary/10 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-full border-2 border-secondary bg-transparent px-5 py-2.5 text-sm font-medium text-primary transition-all duration-200 hover:bg-secondary/10 hover:border-secondary/80 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50;
 }
 
-/* Card/surface: clean, family-friendly */
+/* Navbar auth buttons: polished, subtle */
+.btn-nav-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
+}
+
+.btn-nav-secondary {
+  @apply inline-flex items-center justify-center rounded-full border border-secondary/40 bg-white/80 px-4 py-2 text-sm font-semibold text-primary backdrop-blur-sm transition-all duration-200 hover:bg-primary/5 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2;
+}
+
+/* Card/surface: modern, soft shadow, generous feel */
 .surface-card {
-  @apply rounded-2xl border border-secondary/30 bg-white shadow-sm;
+  @apply rounded-2xl border border-secondary/20 bg-white shadow-sm;
+}
+
+/* Interactive card: hover lift and glow */
+.card-interactive {
+  @apply transition-all duration-200 hover:shadow hover:border-primary/20;
+}
+
+/* Page section spacing */
+.section-spacing {
+  @apply space-y-10 py-10;
 }

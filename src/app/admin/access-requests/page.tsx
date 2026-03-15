@@ -17,17 +17,17 @@ export default async function AdminAccessRequestsPage() {
   const pendingUsers = getPendingUsers();
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-foreground">
+    <div className="space-y-10">
+      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
         אישורי גישה – תור משתמשים ובקשות למשק בית
       </h1>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-foreground">
+        <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
           משתמשים ממתינים (נרשמו ומועברים לאישור)
         </h2>
           {pendingUsers.length > 0 ? (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {pendingUsers.map((u) => (
                 <PendingUserRow
                   key={u.id}
@@ -38,9 +38,9 @@ export default async function AdminAccessRequestsPage() {
               ))}
             </ul>
           ) : (
-            <div className="surface-card p-6 text-center">
-              <p className="text-foreground mb-2">אין משתמשים ממתינים.</p>
-              <p className="text-sm text-primary/80">
+            <div className="surface-card card-interactive p-8 text-center">
+              <p className="font-medium text-foreground">אין משתמשים ממתינים.</p>
+              <p className="mt-2 text-sm leading-relaxed text-primary/80">
                 נתוני המערכת נשמרים בזיכרון ו&#39;מתאפסים בהפעלה מחדש. להצגת משתמש בדיקה (pending@test.com) הרץ בדפדפן:{" "}
                 <a href="/api/seed" className="font-mono text-primary underline" target="_blank" rel="noopener noreferrer">/api/seed</a>
               </p>
@@ -49,15 +49,15 @@ export default async function AdminAccessRequestsPage() {
         </section>
 
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             בקשות גישה למשק בית (טופס בקשת גישה)
           </h2>
         {pending.length === 0 ? (
-          <div className="surface-card p-8 text-center">
-            <p className="text-foreground">אין בקשות ממתינות לאישור.</p>
+          <div className="surface-card card-interactive p-10 text-center">
+            <p className="font-medium text-foreground">אין בקשות ממתינות לאישור.</p>
             <Link
               href="/request-access"
-              className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+              className="mt-4 inline-block text-sm font-semibold text-primary underline transition hover:text-primary/80"
             >
               מעבר לטופס בקשת גישה
             </Link>
@@ -65,7 +65,7 @@ export default async function AdminAccessRequestsPage() {
         ) : (
           <ul className="space-y-4">
             {pending.map((req) => (
-              <li key={req.id} className="surface-card p-5">
+              <li key={req.id} className="surface-card card-interactive p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1 space-y-1">
                     <p className="font-medium text-foreground">

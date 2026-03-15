@@ -26,45 +26,42 @@ export default async function LifeEventsPage() {
         subtitle="רישום ימי הולדת ואזכרות (יארצייט). התצוגה מציגה אירועים קרובים ל־60 הימים הבאים."
       />
       <main className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            ← חזרה לדף הבית
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
+        >
+          ← חזרה לדף הבית
+        </Link>
 
-        <section className="surface-card mb-8 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+        <section className="surface-card card-interactive mb-10 p-6 sm:p-8">
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             רישום אירוע חדש
           </h2>
           <LifeEventForm />
         </section>
 
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
+          <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
             אירועים קרובים (60 הימים הבאים)
           </h2>
           {upcoming.length === 0 ? (
-            <div className="surface-card p-8 text-center">
-              <p className="text-foreground">
+            <div className="surface-card card-interactive p-10 text-center">
+              <p className="font-medium text-foreground">
                 אין אירועים קרובים או שעדיין לא נרשמו אירועים.
               </p>
             </div>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {upcoming.map((ev) => (
-                <li key={ev.id} className="surface-card p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                <li key={ev.id} className="surface-card card-interactive p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <p className="font-medium text-foreground">{ev.label}</p>
-                      <p className="text-sm text-primary/80">
-                        {ev.type === "birth" ? "יום הולדת" : "אזכרה"} ·{" "}
-                        {formatDate(ev.nextDate)}
+                      <p className="font-heading font-semibold text-foreground">{ev.label}</p>
+                      <p className="mt-0.5 text-sm text-primary/85">
+                        {ev.type === "birth" ? "יום הולדת" : "אזכרה"} · {formatDate(ev.nextDate)}
                       </p>
                     </div>
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                    <span className="rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
                       {formatDate(ev.nextDate)}
                     </span>
                   </div>

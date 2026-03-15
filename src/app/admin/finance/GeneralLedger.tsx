@@ -18,14 +18,14 @@ export function GeneralLedger({
 
   if (transactions.length === 0) {
     return (
-      <div className="surface-card p-8 text-center text-primary/80">
+      <div className="surface-card card-interactive rounded-2xl p-10 text-center text-primary/85">
         אין עדיין רשומות בגלופה.
       </div>
     );
   }
 
   return (
-    <div className="surface-card overflow-x-auto">
+    <div className="surface-card card-interactive overflow-x-auto rounded-2xl">
       <table className="w-full min-w-[400px] text-right text-sm">
         <thead>
           <tr className="border-b border-secondary/20 bg-secondary/10">
