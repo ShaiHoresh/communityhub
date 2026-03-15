@@ -50,17 +50,17 @@ Phase 4: Financial & Project Architecture
 [x] Prepare the "Payment Gateway" placeholder (ready for external API integration).
 
 Phase 4b: Admin Dashboard UI/UX (Control Tower)
-[ ] Admin layout: Sidebar-based navigation with main content area (all Admin routes).
+[x] Admin layout: Sidebar-based navigation with main content area (all Admin routes).
 
-[ ] Admin Overview: KPI stats (Total Members, Pending Requests, Active Projects balance, Seasonal Modules state).
+[x] Admin Overview: KPI stats (Total Members, Pending Requests, Active Projects balance, Seasonal Modules state).
 
-[ ] User Queue tab: List of PENDING users with Approve and Reject buttons.
+[x] User Queue tab: List of PENDING users with Approve and Reject buttons.
 
-[ ] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support).
+[ ] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support). (Placeholder route exists.)
 
-[ ] Finance Hub tab: Project creation, income/expense logging, and General Ledger view.
+[x] Finance Hub tab: Project creation, income/expense logging, and General Ledger view.
 
-[ ] System Toggles: Settings page with switches to enable/disable Rosh Hashanah and Purim modules.
+[x] System Toggles: Settings page with switches to enable/disable Rosh Hashanah and Purim modules.
 
 Phase 5: Seasonal Modules
 [ ] High Holidays: Build seat registration with real-time capacity checks.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { BrandHeader } from "@/components/BrandHeader";
 import { SignInForm } from "./SignInForm";
 
@@ -15,7 +16,9 @@ export default function SignInPage() {
         subtitle="הזן אימייל וסיסמה כדי להיכנס לחשבון."
       />
       <main className="mx-auto max-w-sm px-6 py-10 text-right">
-        <SignInForm />
+        <Suspense fallback={<div className="text-center text-primary/80">טוען...</div>}>
+          <SignInForm />
+        </Suspense>
         <p className="mt-6 text-center text-sm text-primary/80">
           אין לך חשבון?{" "}
           <Link href="/auth/signup" className="font-medium text-primary underline">

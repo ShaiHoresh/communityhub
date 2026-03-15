@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BrandHeader } from "@/components/BrandHeader";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { getPendingUsers } from "@/lib/households";
 import { ApproveRejectButtons } from "./approve-reject-buttons";
@@ -18,31 +17,15 @@ export default async function AdminAccessRequestsPage() {
   const pendingUsers = getPendingUsers();
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <BrandHeader
-        title="מסך אישורי מנהל – בקשות גישה"
-        subtitle="אישור משתמשים שנרשמו (תור ממתינים) ובקשות הצטרפות למשק בית."
-      />
-      <main className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <div className="mb-6 flex flex-wrap items-center gap-4">
-          <Link
-            href="/"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            ← חזרה לדף הבית
-          </Link>
-          <Link
-            href="/admin/finance"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            כספים
-          </Link>
-        </div>
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold text-foreground">
+        אישורי גישה – תור משתמשים ובקשות למשק בית
+      </h1>
 
-        <section className="mb-10">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">
-            משתמשים ממתינים (נרשמו ומועברים לאישור)
-          </h2>
+      <section>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
+          משתמשים ממתינים (נרשמו ומועברים לאישור)
+        </h2>
           {pendingUsers.length > 0 ? (
             <ul className="space-y-3">
               {pendingUsers.map((u) => (
@@ -110,8 +93,7 @@ export default async function AdminAccessRequestsPage() {
             ))}
           </ul>
         )}
-        </section>
-      </main>
+      </section>
     </div>
   );
 }

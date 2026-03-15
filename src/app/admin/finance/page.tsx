@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { BrandHeader } from "@/components/BrandHeader";
 import { getProjects } from "@/lib/projects";
 import {
   getTransactionsByProject,
@@ -32,28 +30,12 @@ export default async function AdminFinancePage() {
   const allTransactions = getAllTransactions();
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <BrandHeader
-        title="מרכז כספים – פרויקטים והכנסות/הוצאות"
-        subtitle="יצירת פרויקטים, רישום הכנסות והוצאות, ותצוגת גלופה."
-      />
-      <main className="mx-auto max-w-4xl px-6 py-10 text-right">
-        <div className="mb-6 flex flex-wrap items-center gap-4">
-          <Link
-            href="/"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            ← חזרה לדף הבית
-          </Link>
-          <Link
-            href="/admin/access-requests"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            אישורי גישה
-          </Link>
-        </div>
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold text-foreground">
+        מרכז כספים – פרויקטים והכנסות/הוצאות
+      </h1>
 
-        <section className="surface-card mb-8 p-6">
+      <section className="surface-card p-6">
           <h2 className="mb-4 text-lg font-semibold text-foreground">
             פרויקט חדש
           </h2>
@@ -134,10 +116,9 @@ export default async function AdminFinancePage() {
           />
         </section>
 
-        <section>
-          <PaymentGatewayPlaceholder projects={projects} />
-        </section>
-      </main>
+      <section>
+        <PaymentGatewayPlaceholder projects={projects} />
+      </section>
     </div>
   );
 }

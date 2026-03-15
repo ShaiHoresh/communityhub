@@ -1,0 +1,45 @@
+"use client";
+
+import { useActionState } from "react";
+import { toggleModuleAction } from "./actions";
+import type { SeasonalModule } from "@/lib/system-toggles";
+
+type Props = {
+  initialToggles: Record<SeasonalModule, boolean>;
+  labels: Record<SeasonalModule, string>;
+};
+
+export function ToggleForm({ initialToggles, labels }: Props) {
+  const [state, formAction] = useActionState(toggleModuleAction, null);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      {(Object.entries(initialToggles) as [SeasonalModule, boolean][]).map(
+        ([key, enabled]) => (
+          <label
+            key={key}
+            className="flex cursor-pointer items-center gap-3 rounded-lg border border-secondary/20 bg-white/50 p-4 transition hover:border-primary/30"
+          >
+            <input
+              type="checkbox"
+              name="module"
+              value={key}
+              defaultChecked={enabled}
+              className="h-4 w-4 rounded border-secondary/50 text-primary focus:ring-primary"
+            />
+            <span className="font-medium text-foreground">{labels[key]}</span>
+          </label>
+        )
+      )}
+      <button type="submit" className="btn-primary mt-4">
+        שמירה
+      </button>
+      {state?.success && (
+        <p className="text-sm text-green-600 dark:text-green-400">נשמר בהצלחה.</p>
+      )}
+      {state?.error && (
+        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+      )}
+    </form>
+  );
+}

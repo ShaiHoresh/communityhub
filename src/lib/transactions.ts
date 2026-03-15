@@ -37,6 +37,11 @@ export function getBalanceForProject(projectId: ProjectId): number {
   return list.reduce((sum, t) => sum + (t.type === "income" ? t.amountCents : -t.amountCents), 0);
 }
 
+/** Sum of all project balances (for admin overview). */
+export function getTotalBalanceCents(projectIds: ProjectId[]): number {
+  return projectIds.reduce((sum, id) => sum + getBalanceForProject(id), 0);
+}
+
 export function addTransaction(
   data: Omit<Transaction, "id" | "createdAt">
 ): Transaction {
