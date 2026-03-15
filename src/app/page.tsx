@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { BrandHeader } from "@/components/BrandHeader";
 import { getLocations } from "@/lib/locations";
 import { buildDailyScheduleForDate } from "@/lib/schedule";
+import { getGmachItems } from "@/lib/gmach";
 import { authOptions } from "@/lib/auth-config";
 import { HomeGuest } from "./HomeGuest";
 import { HomeMember } from "./HomeMember";
@@ -31,6 +32,8 @@ export default async function Home({ searchParams }: HomeProps) {
     .filter((e) => e.start.getTime() >= Date.now())
     .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
 
+  const gmachPreview = isMember ? getGmachItems().slice(0, 5) : [];
+
   return (
     <div className="min-h-screen bg-background font-sans">
       <BrandHeader
@@ -53,6 +56,7 @@ export default async function Home({ searchParams }: HomeProps) {
             schedule={schedule}
             upcoming={upcoming}
             formatTime={formatTime}
+            gmachPreview={gmachPreview}
           />
         ) : (
           <HomeGuest

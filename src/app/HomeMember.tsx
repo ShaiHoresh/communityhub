@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { DailySchedule, PrayerEvent } from "@/lib/schedule";
+import type { GmachItem } from "@/lib/gmach";
+import { getGmachCategoryById } from "@/lib/gmach";
 import { SignOutButton } from "./SignOutButton";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
@@ -8,9 +10,11 @@ type Props = {
   schedule: DailySchedule;
   upcoming: PrayerEvent | undefined;
   formatTime: (d: Date) => string;
+  /** Gmach items to show on homepage (members only, max 5). */
+  gmachPreview: GmachItem[];
 };
 
-export function HomeMember({ schedule, upcoming, formatTime }: Props) {
+export function HomeMember({ schedule, upcoming, formatTime, gmachPreview }: Props) {
   return (
     <>
       <section className="surface-card overflow-hidden p-0">
@@ -55,7 +59,7 @@ export function HomeMember({ schedule, upcoming, formatTime }: Props) {
         </div>
       </section>
 
-      <section className="grid gap-5 sm:grid-cols-3">
+      <section className="grid gap-5 sm:grid-cols-2">
         <Link
           href="/directory"
           className="card-interactive surface-card block p-6 transition-all"
@@ -78,18 +82,61 @@ export function HomeMember({ schedule, upcoming, formatTime }: Props) {
             קטגוריות צבעוניות ועדיפות ועדה
           </p>
         </Link>
-        <Link
-          href="/life-events"
-          className="card-interactive surface-card block p-6 transition-all"
-        >
-          <h3 className="font-heading text-lg font-bold text-foreground">
-            אירועי חיים
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed text-primary/80">
-            ימי הולדת ואזכרות, אירועים קרובים
-          </p>
-        </Link>
       </section>
+
+      {gmachPreview.length > 0 && (
+        <section className="surface-card overflow-hidden p-0">
+          <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-heading text-lg font-bold text-foreground">
+                לוח גמ״ח – עדכונים
+              </h2>
+              <Link
+                href="/gmach"
+                className="text-sm font-semibold text-primary underline transition hover:text-primary/80"
+              >
+                לכל הלוח →
+              </Link>
+            </div>
+          </div>
+          <div className="p-5 sm:p-6">
+            <ul className="space-y-4">
+              {gmachPreview.map((item) => {
+                const category = getGmachCategoryById(item.categoryId);
+                return (
+                  <li
+                    key={item.id}
+                    className="card-interactive surface-card flex flex-col gap-2 rounded-xl border border-secondary/20 p-4"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.isPinnedByCommittee && (
+                        <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-bold text-accent">
+                          עדיפות ועדה
+                        </span>
+                      )}
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${
+                          category?.color ?? "bg-secondary/20 text-primary border-secondary/40"
+                        }`}
+                      >
+                        {category?.label ?? item.categoryId}
+                      </span>
+                    </div>
+                    <p className="font-heading font-semibold text-foreground">
+                      {item.title}
+                    </p>
+                    {item.description && (
+                      <p className="text-sm text-primary/85 line-clamp-2">
+                        {item.description}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <section className="mt-auto flex flex-wrap items-center justify-between gap-6 border-t border-secondary/15 pt-10">
         <div className="space-y-1">
