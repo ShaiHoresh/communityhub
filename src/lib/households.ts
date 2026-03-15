@@ -1,0 +1,124 @@
+export type HouseholdId = string;
+export type UserId = string;
+
+export type Household = {
+  id: HouseholdId;
+  name: string;
+  // Users who belong to this household (foreign key: User.householdId)
+  memberIds: UserId[];
+  // Managers are a subset of members, typically spouses.
+  managerIds: UserId[];
+};
+
+export type User = {
+  id: UserId;
+  fullName: string;
+  phone?: string;
+  email?: string;
+  // Foreign key to Household.id (optional until user is approved/assigned)
+  householdId?: HouseholdId | null;
+  // Example: "adult", "child", "rabbi", etc.
+  role?: string;
+};
+
+// In this starter version we use in-memory collections to represent the
+// "tables". Later these can be replaced with a real database without
+// changing the rest of the app too much.
+const households: Household[] = [];
+const users: User[] = [];
+
+export function getHouseholds(): Household[] {
+  return households;
+}
+
+export function getUsers(): User[] {
+  return users;
+}
+
+export function createHousehold(name: string): Household {
+  const household: Household = {
+    id: `hh_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+    name,
+    memberIds: [],
+    managerIds: [],
+  };
+
+  households.push(household);
+  return household;
+}
+
+export function createUser(data: Omit<User, "id">): User {
+  const user: User = {
+    ...data,
+    id: `u_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+  };
+
+  users.push(user);
+
+  if (user.householdId) {
+    const household = households.find((h) => h.id === user.householdId);
+    if (household && !household.memberIds.includes(user.id)) {
+      household.memberIds.push(user.id);
+    }
+  }
+
+  return user;
+}
+
+export function assignUserToHousehold(userId: UserId, householdId: HouseholdId) {
+  const user = users.find((u) => u.id === userId);
+  const household = households.find((h) => h.id === householdId);
+
+  if (!user || !household) return;
+
+  user.householdId = householdId;
+  if (!household.memberIds.includes(userId)) {
+    household.memberIds.push(userId);
+  }
+}
+
+/** Multi-Manager: multiple users (e.g. spouses) can manage the same household. */
+export function setHouseholdManagers(
+  householdId: HouseholdId,
+  managerIds: UserId[],
+) {
+  const household = households.find((h) => h.id === householdId);
+  if (!household) return;
+
+  // Ensure managers are members of the same household.
+  const validManagers = managerIds.filter((id) =>
+    household.memberIds.includes(id),
+  );
+
+  household.managerIds = validManagers;
+}
+
+/** Add one manager (e.g. second spouse) without removing existing managers. */
+export function addHouseholdManager(
+  householdId: HouseholdId,
+  userId: UserId,
+): boolean {
+  const household = households.find((h) => h.id === householdId);
+  if (!household) return false;
+  if (!household.memberIds.includes(userId)) return false;
+  if (household.managerIds.includes(userId)) return true;
+  household.managerIds.push(userId);
+  return true;
+}
+
+export function isHouseholdManager(
+  userId: UserId,
+  householdId: HouseholdId,
+): boolean {
+  const household = households.find((h) => h.id === householdId);
+  return household?.managerIds.includes(userId) ?? false;
+}
+
+export function getHouseholdById(id: HouseholdId): Household | undefined {
+  return households.find((h) => h.id === id);
+}
+
+export function getUserById(id: UserId): User | undefined {
+  return users.find((u) => u.id === id);
+}
+
