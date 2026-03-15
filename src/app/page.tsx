@@ -79,6 +79,36 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </section>
 
+        <section className="grid gap-4 sm:grid-cols-3">
+          <a
+            href="/directory"
+            className="surface-card block p-5 transition hover:border-primary/40"
+          >
+            <h3 className="font-semibold text-foreground">משפחות הקהילה</h3>
+            <p className="mt-1 text-sm text-primary/80">
+              מדריך קהילה עם סינון תגיות ופרטיות
+            </p>
+          </a>
+          <a
+            href="/gmach"
+            className="surface-card block p-5 transition hover:border-primary/40"
+          >
+            <h3 className="font-semibold text-foreground">לוח גמ״ח</h3>
+            <p className="mt-1 text-sm text-primary/80">
+              קטגוריות צבעוניות ועדיפות ועדה
+            </p>
+          </a>
+          <a
+            href="/life-events"
+            className="surface-card block p-5 transition hover:border-primary/40"
+          >
+            <h3 className="font-semibold text-foreground">אירועי חיים</h3>
+            <p className="mt-1 text-sm text-primary/80">
+              ימי הולדת ואזכרות, אירועים קרובים
+            </p>
+          </a>
+        </section>
+
         <section className="mt-auto flex flex-wrap items-center justify-between gap-6 border-t border-secondary/20 pt-8">
           <div className="space-y-1">
             <p className="font-medium text-foreground">כניסה למערכת</p>

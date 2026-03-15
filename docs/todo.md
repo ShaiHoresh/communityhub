@@ -8,6 +8,14 @@ Phase 1: Foundation & RTL Setup
 
 [x] Build "Request Access" flow with Admin approval dashboard.
 
+[ ] Authentication: Email/Password registration and sign-in (with password hashing and secure session management).
+
+[ ] Pending State UI: Dedicated "Waiting for Admin Approval" screen for signed-in users in PENDING state (no access to member areas until promoted).
+
+[ ] Sign-out: Implement sign-out flow and clear session.
+
+[ ] Password Reset: Implement forgot-password / password-reset flow (e.g. email link or provider flow).
+
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).
 
@@ -18,11 +26,11 @@ Phase 2: The Prayer & Schedule Engine
 [x] Create the "24-Hour Dashboard" for the landing page.
 
 Phase 3: Directory, Gmach & Life Events
-[ ] Build the Directory with Tag filtering and privacy toggles.
+[x] Build the Directory with Tag filtering and privacy toggles.
 
-[ ] Build the Gmach Board: Implement category-based color coding and Committee priority pinning.
+[x] Build the Gmach Board: Implement category-based color coding and Committee priority pinning.
 
-[ ] Implement Life Events Registry: Form for Births/Yahrzeits; logic for calculating upcoming dates.
+[x] Implement Life Events Registry: Form for Births/Yahrzeits; logic for calculating upcoming dates.
 
 Phase 4: Financial & Project Architecture
 [ ] Build the projects table for financial tracking.
@@ -30,6 +38,19 @@ Phase 4: Financial & Project Architecture
 [ ] Create an Admin interface to log Expenses and Income per project.
 
 [ ] Prepare the "Payment Gateway" placeholder (ready for external API integration).
+
+Phase 4b: Admin Dashboard UI/UX (Control Tower)
+[ ] Admin layout: Sidebar-based navigation with main content area (all Admin routes).
+
+[ ] Admin Overview: KPI stats (Total Members, Pending Requests, Active Projects balance, Seasonal Modules state).
+
+[ ] User Queue tab: List of PENDING users with Approve and Reject buttons.
+
+[ ] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support).
+
+[ ] Finance Hub tab: Project creation, income/expense logging, and General Ledger view.
+
+[ ] System Toggles: Settings page with switches to enable/disable Rosh Hashanah and Purim modules.
 
 Phase 5: Seasonal Modules
 [ ] High Holidays: Build seat registration with real-time capacity checks.

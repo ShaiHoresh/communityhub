@@ -22,11 +22,19 @@ Household Member: View-only access to household details.
 
 Global Roles:
 
-Guest: Landing page only; requires Admin approval to become a Member.
+Guest: Unauthenticated visitors are allowed on the site. They see only: (1) the next prayers (upcoming schedule), (2) a brief welcome note, and (3) Sign-in / Sign-up buttons. No Directory, Gmach, or member content. After signing up they enter the PENDING state until Admin approval to become a Member.
 
 Member: Access to Directory, Gmach, and Registration.
 
 Admin: Full system control, financial management, and user approval.
+
+2.2 Authentication & Sign-in Flow (The "Gatekeeper")
+
+Unified Auth: Registration includes creating credentials (Email + Password). There is no separate "request access" without an account; users register with email/password and are then placed in a pending state until approved.
+
+The "Pending" State: A newly registered user is in a `PENDING` state. They can sign in with their credentials but will only see a dedicated "Waiting for Admin Approval" screen. No access to Directory, Gmach, Schedule, or other member areas until an Admin promotes them to `MEMBER` (e.g. by approving their access request or changing their status).
+
+Security (Technical Stack): Authentication must use password hashing (e.g. bcrypt or the provider’s built-in secure hashing) and secure session management (HTTP-only cookies, CSRF protection, and short-lived or refreshable sessions as per the chosen auth provider).
 
 3. Core Functional Modules
 3.1 Hybrid Prayer & Lesson Engine
@@ -77,18 +85,42 @@ Interface: Checkbox list of all community households.
 Reporting: Admin generates a "Recipient List" showing every family who chose to give to them.
 
 5. Screen Specifications
-Landing Page: Community welcome, 24-hour "Next Up" schedule, "Highlights" board, and Login/Register.
+Guest Landing (unauthenticated): Next prayers only, a brief welcome note, and Sign-in / Sign-up buttons. No Directory, Gmach, or member-only content.
+
+Member Landing (authenticated Members): Full dashboard (e.g. 24-hour "Next Up" schedule, highlights, links to Directory, Gmach, Life Events, etc.).
+
+Landing Page (summary): For guests: next prayers + welcome + Sign-in/Sign-up. For members: full community dashboard. For PENDING: dedicated "Waiting for Admin Approval" screen.
 
 Detailed Schedule: Weekly/Monthly view with date navigation and location/teacher details.
 
 Gmach Board: Filterable grid of community requests/offers.
 
-Admin Command Center: User approval queue, Finance/Project dashboard, and Module toggles.
+Pending State Screen: Shown only to signed-in users in `PENDING` status; displays a clear "Waiting for Admin Approval" message with optional sign-out.
 
-6. Technical Specifications
+Admin Command Center: User approval queue, Finance/Project dashboard, and Module toggles (see Section 6).
+
+6. Admin Interface (The "Control Tower")
+
+Layout: A sidebar-based navigation with a main content area. The sidebar is visible on all Admin routes and provides quick access to overview and management sections.
+
+Overview Stats (KPIs): A dashboard or top summary showing key metrics: Total Members, Pending Requests count, Active Projects balance (or total balance), and the current state of Seasonal Modules (e.g. Rosh Hashanah On/Off, Purim On/Off).
+
+Management Tabs:
+
+User Queue: A list of users in `PENDING` state with 'Approve' and 'Reject' actions. Approving promotes the user to `MEMBER` (and optionally associates them with a household). Rejecting keeps or marks them as rejected and they remain on the "Waiting for Admin Approval" experience when signed in.
+
+Schedule Manager: A calendar and/or list view to Create, Read, Update, and Delete prayers and lessons. Must support the Shabbat Mincha seasonal logic (e.g. 15-minute increments, winter/summer rules) and assignment to locations.
+
+Finance Hub: Project creation, income and expense logging per project, and a "General Ledger" view that aggregates transactions by project and over time.
+
+System Toggles: A simple Settings page with switches to enable/disable the Rosh Hashanah (High Holidays) module and the Purim module. When disabled, the corresponding registration or selection UIs are hidden or disabled for members.
+
+7. Technical Specifications
 Frontend: Next.js (RTL support is priority #1).
 
 Backend: Supabase/Firebase for Real-time Auth and Database.
+
+Auth & Security: Password hashing (e.g. bcrypt or provider default) and secure session management (HTTP-only cookies, CSRF protection, refresh/session strategy as per provider).
 
 PWA: Service workers for "Offline First" access to the prayer schedule.
 

@@ -10,6 +10,9 @@ export type Household = {
   managerIds: UserId[];
 };
 
+/** Tags for directory (e.g. רב, רופא, מתנדב). */
+export type DirectoryTag = "rabbi" | "doctor" | "volunteer" | "other";
+
 export type User = {
   id: UserId;
   fullName: string;
@@ -19,6 +22,11 @@ export type User = {
   householdId?: HouseholdId | null;
   // Example: "adult", "child", "rabbi", etc.
   role?: string;
+  // Directory: tags for filtering (e.g. rabbi, doctor, volunteer)
+  directoryTags?: DirectoryTag[];
+  // Privacy: whether to show in directory listing
+  showPhoneInDirectory?: boolean;
+  showEmailInDirectory?: boolean;
 };
 
 // In this starter version we use in-memory collections to represent the
@@ -120,5 +128,23 @@ export function getHouseholdById(id: HouseholdId): Household | undefined {
 
 export function getUserById(id: UserId): User | undefined {
   return users.find((u) => u.id === id);
+}
+
+export function updateUserDirectory(
+  userId: UserId,
+  update: {
+    directoryTags?: DirectoryTag[];
+    showPhoneInDirectory?: boolean;
+    showEmailInDirectory?: boolean;
+  }
+): boolean {
+  const user = users.find((u) => u.id === userId);
+  if (!user) return false;
+  if (update.directoryTags !== undefined) user.directoryTags = update.directoryTags;
+  if (update.showPhoneInDirectory !== undefined)
+    user.showPhoneInDirectory = update.showPhoneInDirectory;
+  if (update.showEmailInDirectory !== undefined)
+    user.showEmailInDirectory = update.showEmailInDirectory;
+  return true;
 }
 
