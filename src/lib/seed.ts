@@ -18,6 +18,7 @@ import {
   addHouseholdManager,
 } from "./households";
 import { createProject, getProjects } from "./projects";
+import { getGmachItems, addGmachItem } from "./gmach";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
@@ -78,6 +79,27 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
 
   if (getProjects().length === 0) {
     createProject("קרן בניין (לדוגמה)");
+  }
+
+  if (getGmachItems().length === 0) {
+    addGmachItem({
+      categoryId: "books",
+      title: "ספרי קודש להשאלה",
+      description: "מגשרת עם ספרי קודש. לפנות בשעות הערב.",
+      contactInfo: "דרך הלוח",
+      isPinnedByCommittee: true,
+    });
+    addGmachItem({
+      categoryId: "baby",
+      title: "עגלת תינוק",
+      description: "עגלה במצב טוב, למי שצריך.",
+      contactInfo: "פנה בדואר",
+    });
+    addGmachItem({
+      categoryId: "tools",
+      title: "מקדחה וכלי עבודה",
+      description: "השאלה לשבוע.",
+    });
   }
 
   return {

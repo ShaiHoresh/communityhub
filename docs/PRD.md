@@ -84,6 +84,12 @@ Interface: Checkbox list of all community households.
 
 Reporting: Admin generates a "Recipient List" showing every family who chose to give to them.
 
+Accessibility Requirements:
+- The UI must be fully usable via keyboard only (Tab navigation, Enter/Space activation) across all key flows: authentication, High Holiday registration, Purim selection, and admin management screens.
+- Use semantic HTML and appropriate ARIA roles/labels so assistive technologies can understand layout (headers, navigation, main content) and form controls.
+- Maintain sufficient color contrast for text and interactive elements (at least WCAG AA), including focus/hover states.
+- Provide visible focus outlines and clear error/success feedback (e.g., inline validation messages and status banners) for all critical actions.
+
 5. Screen Specifications
 Guest Landing (unauthenticated): Next prayers only, a brief welcome note, and Sign-in / Sign-up buttons. No Directory, Gmach, or member-only content.
 

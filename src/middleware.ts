@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const MEMBER_ROUTES = ["/directory", "/gmach", "/life-events"];
+const MEMBER_ROUTES = ["/directory", "/gmach", "/life-events", "/high-holidays"];
 
 function isMemberRoute(path: string) {
   return MEMBER_ROUTES.some((r) => path === r || path.startsWith(r + "/"));
@@ -33,6 +33,11 @@ export async function middleware(request: NextRequest) {
   }
   if (isMemberRoute(path) && token && !isMember) {
     return NextResponse.redirect(new URL("/pending", request.url));
+  }
+
+  const isAdminRoute = path.startsWith("/admin");
+  if (isAdminRoute && (!token || status !== "ADMIN")) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

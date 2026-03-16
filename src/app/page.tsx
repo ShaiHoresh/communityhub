@@ -4,8 +4,8 @@ import { getLocations } from "@/lib/locations";
 import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getGmachItems } from "@/lib/gmach";
 import { authOptions } from "@/lib/auth-config";
-import { HomeGuest } from "./HomeGuest";
-import { HomeMember } from "./HomeMember";
+import { HomeGuest } from "@/app/HomeGuest";
+import { HomeMember } from "@/app/HomeMember";
 
 function formatTime(d: Date) {
   return d.toLocaleTimeString("he-IL", {
@@ -15,6 +15,8 @@ function formatTime(d: Date) {
 }
 
 type HomeProps = { searchParams: Promise<{ request?: string }> };
+
+export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: HomeProps) {
   const session = await getServerSession(authOptions);
@@ -57,6 +59,7 @@ export default async function Home({ searchParams }: HomeProps) {
             upcoming={upcoming}
             formatTime={formatTime}
             gmachPreview={gmachPreview}
+            isAdmin={status === "ADMIN"}
           />
         ) : (
           <HomeGuest

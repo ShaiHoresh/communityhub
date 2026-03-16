@@ -56,18 +56,24 @@ Phase 4b: Admin Dashboard UI/UX (Control Tower)
 
 [x] User Queue tab: List of PENDING users with Approve and Reject buttons.
 
-[ ] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support). (Placeholder route exists.)
+[x] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support).
 
 [x] Finance Hub tab: Project creation, income/expense logging, and General Ledger view.
 
 [x] System Toggles: Settings page with switches to enable/disable Rosh Hashanah and Purim modules.
 
 Phase 5: Seasonal Modules
-[ ] High Holidays: Build seat registration with real-time capacity checks.
+[x] High Holidays: Build seat registration with real-time capacity checks.
 
 [ ] Purim: Build tiered selection UI with specific validation (Max 5 or Max 20).
 
 [ ] Build the "Recipient Aggregator" report for Admin.
+
+Accessibility:
+[ ] Semantic structure: Audit pages for proper headings, landmarks (header/nav/main/footer), and descriptive labels.
+[ ] Keyboard navigation: Ensure all interactive elements (buttons, tabs, cards, forms) are reachable and operable via keyboard only.
+[ ] Color & contrast: Verify color contrast for text and controls meets WCAG AA; adjust palette or add outlines as needed.
+[ ] ARIA & feedback: Add ARIA attributes and live regions where appropriate so errors and status changes are announced clearly.
 
 Phase 6: PWA & Polish
 [ ] Configure next-pwa for manifest, icons, and offline caching.

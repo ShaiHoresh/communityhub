@@ -12,9 +12,11 @@ type Props = {
   formatTime: (d: Date) => string;
   /** Gmach items to show on homepage (members only, max 5). */
   gmachPreview: GmachItem[];
+  /** True if current user is ADMIN (sees admin links). */
+  isAdmin: boolean;
 };
 
-export function HomeMember({ schedule, upcoming, formatTime, gmachPreview }: Props) {
+export function HomeMember({ schedule, upcoming, formatTime, gmachPreview, isAdmin }: Props) {
   return (
     <>
       <section className="surface-card overflow-hidden p-0">
@@ -84,22 +86,30 @@ export function HomeMember({ schedule, upcoming, formatTime, gmachPreview }: Pro
         </Link>
       </section>
 
-      {gmachPreview.length > 0 && (
-        <section className="surface-card overflow-hidden p-0">
-          <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-heading text-lg font-bold text-foreground">
-                לוח גמ״ח – עדכונים
-              </h2>
-              <Link
-                href="/gmach"
-                className="text-sm font-semibold text-primary underline transition hover:text-primary/80"
-              >
-                לכל הלוח →
-              </Link>
-            </div>
+      <section className="surface-card overflow-hidden p-0">
+        <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-heading text-lg font-bold text-foreground">
+              לוח גמ״ח – עדכונים
+            </h2>
+            <Link
+              href="/gmach"
+              className="text-sm font-semibold text-primary underline transition hover:text-primary/80"
+            >
+              לכל הלוח →
+            </Link>
           </div>
-          <div className="p-5 sm:p-6">
+        </div>
+        <div className="p-5 sm:p-6">
+          {gmachPreview.length === 0 ? (
+            <p className="text-center text-primary/85">
+              אין עדכונים כרגע. עיין ב{" "}
+              <Link href="/gmach" className="font-semibold text-primary underline hover:text-primary/80">
+                לוח המלא
+              </Link>{" "}
+              להוספת פריטים.
+            </p>
+          ) : (
             <ul className="space-y-4">
               {gmachPreview.map((item) => {
                 const category = getGmachCategoryById(item.categoryId);
@@ -134,9 +144,9 @@ export function HomeMember({ schedule, upcoming, formatTime, gmachPreview }: Pro
                 );
               })}
             </ul>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       <section className="mt-auto flex flex-wrap items-center justify-between gap-6 border-t border-secondary/15 pt-10">
         <div className="space-y-1">
@@ -144,16 +154,20 @@ export function HomeMember({ schedule, upcoming, formatTime, gmachPreview }: Pro
             כניסה למערכת
           </p>
           <p className="text-sm leading-relaxed text-primary/80">
-            בקשת גישה למשק בית חדש, מסך מנהל, והתנתקות.
+            {isAdmin
+              ? "בקשת גישה למשק בית, מסך מנהל, והתנתקות."
+              : "בקשת גישה למשק בית והתנתקות."}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <a href="/request-access" className="btn-primary">
             בקשת גישה למשק בית
           </a>
-          <a href="/admin/access-requests" className="btn-secondary">
-            מסך אישורי מנהל
-          </a>
+          {isAdmin && (
+            <a href="/admin/access-requests" className="btn-secondary">
+              מסך אישורי מנהל
+            </a>
+          )}
           <SignOutButton />
         </div>
       </section>

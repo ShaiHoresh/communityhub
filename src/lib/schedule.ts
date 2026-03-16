@@ -1,7 +1,12 @@
-import { extractShabbatTimes, fetchHebcalShabbatForDate } from "@/lib/hebcal";
 import type { Location } from "@/lib/locations";
+import { getLocationById } from "@/lib/locations";
+import {
+  getScheduleEntries,
+  ensureDefaultScheduleEntries,
+  type ScheduleEntry,
+} from "@/lib/schedule-entries";
 
-export type PrayerType = "shacharit" | "mincha" | "arvit";
+export type PrayerType = "shacharit" | "mincha" | "arvit" | "lesson";
 
 export type PrayerEvent = {
   id: string;
@@ -44,49 +49,31 @@ export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
 ): Promise<DailySchedule> {
-  const hebcal = await fetchHebcalShabbatForDate(date);
-  const { candles, havdalah } = extractShabbatTimes(hebcal.items);
-
+  ensureDefaultScheduleEntries(mainLocation.id);
+  const entries = getScheduleEntries();
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
 
   const events: PrayerEvent[] = [];
 
-  // Example fixed Shacharit and Arvit. In a real system these would be configurable.
-  const shacharit = new Date(baseDate);
-  shacharit.setHours(8, 0, 0, 0);
+  for (const entry of entries) {
+    const location = getLocationById(entry.locationId) ?? mainLocation;
+    let start = new Date(baseDate);
+    start.setHours(entry.hour, entry.minute, 0, 0);
 
-  const arvit = new Date(baseDate);
-  arvit.setHours(20, 0, 0, 0);
+    if (entry.type === "mincha" && entry.useSeasonalMinchaOffset) {
+      const offset = getSeasonalShabbatMinchaOffsetMinutes(date);
+      start = new Date(start.getTime() + offset * 60 * 1000);
+    }
 
-  const minchaBase = new Date(baseDate);
-  minchaBase.setHours(18, 30, 0, 0);
-  const minchaOffset = getSeasonalShabbatMinchaOffsetMinutes(date);
-  const mincha = new Date(minchaBase.getTime() + minchaOffset * 60 * 1000);
-
-  events.push(
-    {
-      id: "shacharit",
-      title: "שחרית",
-      type: "shacharit",
-      start: shacharit,
-      location: mainLocation,
-    },
-    {
-      id: "mincha",
-      title: "מנחה",
-      type: "mincha",
-      start: mincha,
-      location: mainLocation,
-    },
-    {
-      id: "arvit",
-      title: "ערבית",
-      type: "arvit",
-      start: arvit,
-      location: mainLocation,
-    },
-  );
+    events.push({
+      id: entry.id,
+      title: entry.title,
+      type: entry.type as PrayerType,
+      start,
+      location,
+    });
+  }
 
   return {
     date: baseDate,
