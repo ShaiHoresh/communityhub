@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const MEMBER_ROUTES = ["/directory", "/gmach", "/life-events", "/high-holidays"];
+const MEMBER_ROUTES = ["/directory", "/gmach", "/life-events", "/high-holidays", "/purim"];
 
 function isMemberRoute(path: string) {
   return MEMBER_ROUTES.some((r) => path === r || path.startsWith(r + "/"));
