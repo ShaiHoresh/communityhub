@@ -19,7 +19,7 @@ export default async function DirectoryPage({ searchParams }: PageProps) {
     params.tag && ["rabbi", "doctor", "volunteer", "other"].includes(params.tag)
       ? (params.tag as "rabbi" | "doctor" | "volunteer" | "other")
       : undefined;
-  const entries = getDirectoryEntries(filterTag);
+  const entries = await getDirectoryEntries(filterTag);
   const tags = getAvailableTags();
 
   return (
