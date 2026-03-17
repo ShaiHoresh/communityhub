@@ -67,7 +67,7 @@ Phase 5: Seasonal Modules
 
 [x] Purim: Build tiered selection UI with specific validation (Max 5 or Max 20).
 
-[ ] Build the "Recipient Aggregator" report for Admin.
+[x] Build the "Recipient Aggregator" report for Admin.
 
 Accessibility:
 [ ] Semantic structure: Audit pages for proper headings, landmarks (header/nav/main/footer), and descriptive labels.
