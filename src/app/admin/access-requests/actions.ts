@@ -6,14 +6,13 @@ import {
   getAccessRequestById,
   rejectAccessRequest,
 } from "@/lib/access-requests";
-import {
-  addHouseholdManager,
-  assignUserToHousehold,
-  createHousehold,
-  createUser,
-  getHouseholdById,
-} from "@/lib/households";
 import { dbSetUserStatus } from "@/lib/db-users";
+import {
+  dbAddHouseholdManager,
+  dbCreateHousehold,
+  dbCreateHouseholdUser,
+  dbGetHouseholdById,
+} from "@/lib/db-households";
 
 const REVIEWED_BY = "admin";
 
@@ -24,52 +23,52 @@ export async function approveAccessRequestAction(requestId: string) {
   }
 
   if (request.type === "new_household") {
-    const household = createHousehold(request.householdNameOrId);
-    const user1 = createUser({
+    const household = await dbCreateHousehold(request.householdNameOrId);
+    const user1 = await dbCreateHouseholdUser({
       fullName: request.requesterName,
       email: request.requesterEmail,
       phone: request.requesterPhone,
       householdId: household.id,
       role: "adult",
+      status: "MEMBER",
     });
-    assignUserToHousehold(user1.id, household.id);
-    addHouseholdManager(household.id, user1.id);
+    await dbAddHouseholdManager(household.id, user1.id);
 
     if (request.secondAdultName && request.secondAdultEmail) {
-      const user2 = createUser({
+      const user2 = await dbCreateHouseholdUser({
         fullName: request.secondAdultName,
         email: request.secondAdultEmail,
         phone: request.secondAdultPhone,
         householdId: household.id,
         role: "adult",
+        status: "MEMBER",
       });
-      assignUserToHousehold(user2.id, household.id);
-      addHouseholdManager(household.id, user2.id);
+      await dbAddHouseholdManager(household.id, user2.id);
     }
   } else {
     // join_household: householdNameOrId can be household id
-    const household = getHouseholdById(request.householdNameOrId);
+    const household = await dbGetHouseholdById(request.householdNameOrId);
     if (household) {
-      const user1 = createUser({
+      const user1 = await dbCreateHouseholdUser({
         fullName: request.requesterName,
         email: request.requesterEmail,
         phone: request.requesterPhone,
         householdId: household.id,
         role: "adult",
+        status: "MEMBER",
       });
-      assignUserToHousehold(user1.id, household.id);
-      addHouseholdManager(household.id, user1.id);
+      await dbAddHouseholdManager(household.id, user1.id);
 
       if (request.secondAdultName && request.secondAdultEmail) {
-        const user2 = createUser({
+        const user2 = await dbCreateHouseholdUser({
           fullName: request.secondAdultName,
           email: request.secondAdultEmail,
           phone: request.secondAdultPhone,
           householdId: household.id,
           role: "adult",
+          status: "MEMBER",
         });
-        assignUserToHousehold(user2.id, household.id);
-        addHouseholdManager(household.id, user2.id);
+        await dbAddHouseholdManager(household.id, user2.id);
       }
     }
   }

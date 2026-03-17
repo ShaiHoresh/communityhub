@@ -16,6 +16,7 @@ CREATE TABLE users (
   id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   full_name            TEXT NOT NULL,
   email                TEXT UNIQUE,
+  phone                TEXT,
   password_hash        TEXT,
   status               user_status NOT NULL DEFAULT 'PENDING',
   household_id         UUID REFERENCES households(id) ON DELETE SET NULL,
