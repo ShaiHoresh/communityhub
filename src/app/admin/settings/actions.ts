@@ -9,6 +9,7 @@ export async function toggleModuleAction(
 ): Promise<{ success?: boolean; error?: string } | null> {
   const modules = formData.getAll("module") as string[];
   const valid: SeasonalModule[] = ["rosh_hashanah", "purim"];
+
   for (const key of valid) {
     setModuleEnabled(key, modules.includes(key));
   }

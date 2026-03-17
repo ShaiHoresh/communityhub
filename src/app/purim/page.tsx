@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function PurimPage() {
   const session = await getServerSession(authOptions);
   const enabled = isModuleEnabled("purim");
+  const userId = (session?.user as { userId?: string })?.userId;
 
   if (!session) {
     return (
@@ -53,7 +54,6 @@ export default async function PurimPage() {
     );
   }
 
-  const userId = (session.user as { userId?: string })?.userId;
   const previousSelection = userId ? getPurimSelectionForUser(userId) : undefined;
   const households = getHouseholds();
   const devSelectionsCount = getPurimSelections().length;

@@ -65,7 +65,7 @@ Phase 4b: Admin Dashboard UI/UX (Control Tower)
 Phase 5: Seasonal Modules
 [x] High Holidays: Build seat registration with real-time capacity checks.
 
-[ ] Purim: Build tiered selection UI with specific validation (Max 5 or Max 20).
+[x] Purim: Build tiered selection UI with specific validation (Max 5 or Max 20).
 
 [ ] Build the "Recipient Aggregator" report for Admin.
 
