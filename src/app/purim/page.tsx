@@ -2,9 +2,9 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
-import { getHouseholds } from "@/lib/households";
 import { getPurimSelectionForUser, getPurimSelections } from "@/lib/purim";
 import { submitPurimSelection } from "./actions";
+import { dbGetHouseholds } from "@/lib/db-households";
 
 export const metadata = {
   title: "פורים – משלוח מנות | CommunityHub",
@@ -54,9 +54,9 @@ export default async function PurimPage() {
     );
   }
 
-  const previousSelection = userId ? getPurimSelectionForUser(userId) : undefined;
-  const households = getHouseholds();
-  const devSelectionsCount = getPurimSelections().length;
+  const previousSelection = userId ? await getPurimSelectionForUser(userId) : undefined;
+  const households = await dbGetHouseholds();
+  const devSelectionsCount = (await getPurimSelections()).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
@@ -186,7 +186,7 @@ export default async function PurimPage() {
 
         {devSelectionsCount > 0 && (
           <section className="mt-4 text-[11px] text-primary/50">
-            <p>נתון פיתוח: נשמרו {devSelectionsCount} בחירות פורים בזיכרון.</p>
+            <p>נתון פיתוח: נשמרו {devSelectionsCount} בחירות פורים.</p>
           </section>
         )}
       </main>

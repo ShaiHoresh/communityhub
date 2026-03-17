@@ -48,6 +48,16 @@ export async function dbGetHouseholdById(id: HouseholdId): Promise<Household | u
   return data ? mapHouseholdRow(data) : undefined;
 }
 
+export async function dbGetHouseholds(): Promise<Array<{ id: string; name: string }>> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("households")
+    .select("id, name")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r: any) => ({ id: r.id, name: r.name }));
+}
+
 export async function dbCreateHouseholdUser(input: {
   fullName: string;
   email?: string;

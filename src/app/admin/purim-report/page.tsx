@@ -1,5 +1,5 @@
-import { getHouseholds } from "@/lib/households";
 import { getPurimRecipientReport, getPurimSelections } from "@/lib/purim";
+import { dbGetHouseholds } from "@/lib/db-households";
 
 export const metadata = {
   title: "דוח פורים | CommunityHub",
@@ -9,9 +9,9 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminPurimReportPage() {
-  const households = getHouseholds();
-  const report = getPurimRecipientReport();
-  const selections = getPurimSelections();
+  const households = await dbGetHouseholds();
+  const report = await getPurimRecipientReport();
+  const selections = await getPurimSelections();
   const fullCommunityGivers = selections.filter((s) => s.tier === "full");
 
   const byId = Object.fromEntries(households.map((h) => [h.id, h.name]));
@@ -36,7 +36,7 @@ export default async function AdminPurimReportPage() {
           חבילת &quot;כל הקהילה&quot; אינה מייצרת בחירות ספציפיות ולכן אינה נספרת כאן.
         </p>
         <p className="mt-2 text-xs text-primary/60">
-          נתון פיתוח: נשמרו {selections.length} בחירות פורים בזיכרון.
+          נתון פיתוח: נשמרו {selections.length} בחירות פורים.
         </p>
       </section>
 

@@ -3,8 +3,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { upsertPurimSelection, type PurimTier } from "@/lib/purim";
-import { getUsers, getHouseholds } from "@/lib/households";
 import { revalidatePath } from "next/cache";
+import { dbGetHouseholds } from "@/lib/db-households";
+import { dbGetUserHouseholdId } from "@/lib/db-users";
 
 export async function submitPurimSelection(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -19,17 +20,17 @@ export async function submitPurimSelection(formData: FormData) {
     return { ok: false, error: "נא לבחור חבילה (5, 20 או כל הקהילה)." };
   }
 
-  const households = getHouseholds();
+  const households = await dbGetHouseholds();
   const selectedRecipientIds = (formData.getAll("recipients") as string[]).filter(Boolean);
   const validRecipientIds = selectedRecipientIds.filter((id) =>
     households.some((h) => h.id === id)
   );
 
-  const user = getUsers().find((u) => u.id === userId);
+  const householdId = await dbGetUserHouseholdId(userId);
 
-  const result = upsertPurimSelection({
+  const result = await upsertPurimSelection({
     userId,
-    householdId: user?.householdId ?? undefined,
+    householdId: householdId ?? undefined,
     tier,
     recipientHouseholdIds: tier === "full" ? [] : validRecipientIds,
   });

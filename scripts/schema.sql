@@ -145,3 +145,20 @@ CREATE TABLE schedule_entries (
 );
 
 CREATE INDEX idx_schedule_entries_order ON schedule_entries(sort_order);
+
+-- Purim selections (seasonal module)
+CREATE TABLE purim_selections (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  tier       TEXT NOT NULL CHECK (tier IN ('full', 'twenty', 'five')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id)
+);
+
+CREATE TABLE purim_selection_recipients (
+  selection_id UUID NOT NULL REFERENCES purim_selections(id) ON DELETE CASCADE,
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  PRIMARY KEY (selection_id, household_id)
+);
+
+CREATE INDEX idx_purim_recipients_household ON purim_selection_recipients(household_id);

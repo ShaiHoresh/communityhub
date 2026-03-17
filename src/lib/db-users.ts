@@ -65,6 +65,13 @@ export async function dbSetUserStatus(userId: string, status: UserStatus) {
   return { success: true as const };
 }
 
+export async function dbGetUserHouseholdId(userId: string): Promise<string | null> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb.from("users").select("household_id").eq("id", userId).maybeSingle();
+  if (error) throw error;
+  return (data as any)?.household_id ?? null;
+}
+
 export async function dbGetActiveMembersCount(): Promise<number> {
   const sb = supabaseAdmin();
   const { count, error } = await sb

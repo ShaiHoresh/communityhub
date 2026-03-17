@@ -1,7 +1,13 @@
 import type { HouseholdId, UserId } from "./households";
-import { getHouseholds } from "./households";
+import {
+  dbGetPurimRecipientReport,
+  dbGetPurimSelectionForUser,
+  dbGetPurimSelections,
+  dbUpsertPurimSelection,
+  type PurimTier,
+} from "@/lib/db-purim";
 
-export type PurimTier = "full" | "twenty" | "five";
+export type { PurimTier };
 
 export type PurimSelection = {
   userId: UserId;
@@ -11,19 +17,18 @@ export type PurimSelection = {
   createdAt: Date;
 };
 
-const selections: PurimSelection[] = [];
-
-export function getPurimSelections(): PurimSelection[] {
-  return [...selections];
+export async function getPurimSelections(): Promise<PurimSelection[]> {
+  return dbGetPurimSelections();
 }
 
-export function getPurimSelectionForUser(userId: UserId): PurimSelection | undefined {
-  return selections.find((s) => s.userId === userId);
+export async function getPurimSelectionForUser(userId: UserId): Promise<PurimSelection | undefined> {
+  const sel = await dbGetPurimSelectionForUser(userId);
+  return sel ?? undefined;
 }
 
-export function upsertPurimSelection(
+export async function upsertPurimSelection(
   data: Omit<PurimSelection, "createdAt">
-): { ok: true } | { ok: false; error: string } {
+): Promise<{ ok: true } | { ok: false; error: string }> {
   if (data.tier === "five" && data.recipientHouseholdIds.length > 5) {
     return { ok: false, error: "מותר לבחור עד 5 משפחות בלבד." };
   }
@@ -31,34 +36,16 @@ export function upsertPurimSelection(
     return { ok: false, error: "מותר לבחור עד 20 משפחות בלבד." };
   }
 
-  const idx = selections.findIndex((s) => s.userId === data.userId);
-  const record: PurimSelection = {
-    ...data,
-    createdAt: new Date(),
-  };
-
-  if (idx === -1) {
-    selections.push(record);
-  } else {
-    selections[idx] = record;
-  }
+  await dbUpsertPurimSelection({
+    userId: data.userId,
+    tier: data.tier,
+    recipientHouseholdIds: data.recipientHouseholdIds,
+  });
 
   return { ok: true };
 }
 
-export function getPurimRecipientReport(): Record<HouseholdId, PurimSelection[]> {
-  const households = getHouseholds();
-  const result: Record<HouseholdId, PurimSelection[]> = {};
-  for (const sel of selections) {
-    for (const hid of sel.recipientHouseholdIds) {
-      if (!result[hid]) result[hid] = [];
-      result[hid].push(sel);
-    }
-  }
-  // Ensure all households appear even if empty (optional)
-  for (const h of households) {
-    if (!result[h.id]) result[h.id] = [];
-  }
-  return result;
+export async function getPurimRecipientReport(): Promise<Record<HouseholdId, PurimSelection[]>> {
+  return dbGetPurimRecipientReport() as Promise<Record<HouseholdId, PurimSelection[]>>;
 }
 
