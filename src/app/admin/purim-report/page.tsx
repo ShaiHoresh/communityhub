@@ -12,6 +12,7 @@ export default async function AdminPurimReportPage() {
   const households = getHouseholds();
   const report = getPurimRecipientReport();
   const selections = getPurimSelections();
+  const fullCommunityGivers = selections.filter((s) => s.tier === "full");
 
   const byId = Object.fromEntries(households.map((h) => [h.id, h.name]));
 
@@ -37,6 +38,34 @@ export default async function AdminPurimReportPage() {
         <p className="mt-2 text-xs text-primary/60">
           נתון פיתוח: נשמרו {selections.length} בחירות פורים בזיכרון.
         </p>
+      </section>
+
+      <section className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
+        <h2 className="mb-2 font-heading text-lg font-bold text-foreground">
+          בוחרים בחבילת &quot;כל הקהילה&quot;
+        </h2>
+        <p className="text-sm text-primary/80">
+          אלו שולחים שבחרו לשלוח לכל הקהילה (ללא בחירת נמענים ספציפיים).
+        </p>
+        <p className="mt-2 text-sm text-primary/80">
+          סה&quot;כ: <span className="font-semibold">{fullCommunityGivers.length}</span>
+        </p>
+        {fullCommunityGivers.length === 0 ? (
+          <p className="mt-3 text-sm text-primary/60">—</p>
+        ) : (
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {fullCommunityGivers.map((sel, idx) => (
+              <li
+                key={`${sel.userId}_${idx}`}
+                className="rounded-xl border border-secondary/20 bg-secondary/5 px-3 py-2 text-sm text-primary/90"
+              >
+                {sel.householdId
+                  ? (byId[sel.householdId] ?? sel.householdId)
+                  : sel.userId}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="surface-card card-interactive overflow-x-auto rounded-2xl">
