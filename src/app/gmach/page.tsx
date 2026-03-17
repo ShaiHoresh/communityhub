@@ -19,7 +19,7 @@ export default async function GmachPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const categoryId = params.category ?? undefined;
   const categories = getGmachCategories();
-  const items = getGmachItems(categoryId);
+  const items = await getGmachItems(categoryId);
 
   const categoryCardStyles: Record<string, string> = {
     baby: "border-r-4 border-r-pink-400 bg-gradient-to-l from-pink-50/60 to-white",

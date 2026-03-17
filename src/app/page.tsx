@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: HomeProps) {
     .filter((e) => e.start.getTime() >= Date.now())
     .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
 
-  const gmachPreview = isMember ? getGmachItems().slice(0, 5) : [];
+  const gmachPreview = isMember ? (await getGmachItems()).slice(0, 5) : [];
   const highHolidaysEnabled = isModuleEnabled("rosh_hashanah");
   const purimEnabled = isModuleEnabled("purim");
 

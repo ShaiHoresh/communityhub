@@ -25,8 +25,7 @@ const CATEGORIES: GmachCategory[] = [
   { id: "furniture", label: "ריהוט", color: "bg-stone-100 text-stone-800 border-stone-200" },
   { id: "other", label: "אחר", color: "bg-secondary/20 text-primary border-secondary/40" },
 ];
-
-const items: GmachItem[] = [];
+import { dbAddGmachPost, dbGetGmachPosts, dbToggleGmachPinned } from "@/lib/db-gmach";
 
 export function getGmachCategories(): GmachCategory[] {
   return [...CATEGORIES];
@@ -36,45 +35,23 @@ export function getGmachCategoryById(id: GmachCategoryId): GmachCategory | undef
   return CATEGORIES.find((c) => c.id === id);
 }
 
-export function getGmachItems(categoryId?: GmachCategoryId): GmachItem[] {
-  let list = [...items];
-  if (categoryId) list = list.filter((i) => i.categoryId === categoryId);
-  // Committee priority: pinned first, then by date
-  list.sort((a, b) => {
-    if (a.isPinnedByCommittee !== b.isPinnedByCommittee)
-      return a.isPinnedByCommittee ? -1 : 1;
-    return b.createdAt.getTime() - a.createdAt.getTime();
-  });
-  return list;
-}
-
-function nextItemId(): GmachItemId {
-  return `gm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+export async function getGmachItems(categoryId?: GmachCategoryId): Promise<GmachItem[]> {
+  return dbGetGmachPosts(categoryId);
 }
 
 export function addGmachItem(
   data: Omit<GmachItem, "id" | "createdAt" | "isPinnedByCommittee"> & { isPinnedByCommittee?: boolean }
-): GmachItem {
-  const item: GmachItem = {
-    ...data,
-    id: nextItemId(),
-    isPinnedByCommittee: data.isPinnedByCommittee ?? false,
-    createdAt: new Date(),
-  };
-  items.push(item);
-  return item;
+): Promise<GmachItem> {
+  // Pinned is an admin-only flag; default false on insert
+  return dbAddGmachPost({
+    categoryId: data.categoryId,
+    title: data.title,
+    description: data.description,
+    contactInfo: data.contactInfo,
+  });
 }
 
-export function setGmachItemPinned(id: GmachItemId, pinned: boolean): boolean {
-  const item = items.find((i) => i.id === id);
-  if (!item) return false;
-  item.isPinnedByCommittee = pinned;
-  return true;
-}
-
-export function removeGmachItem(id: GmachItemId): boolean {
-  const idx = items.findIndex((i) => i.id === id);
-  if (idx === -1) return false;
-  items.splice(idx, 1);
+export async function toggleGmachItemPinned(id: GmachItemId): Promise<boolean> {
+  await dbToggleGmachPinned(id);
   return true;
 }

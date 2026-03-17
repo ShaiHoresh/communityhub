@@ -10,6 +10,8 @@
 
 import bcrypt from "bcryptjs";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { dbEnsureGmachCategories } from "@/lib/db-gmach";
+import { getGmachCategories } from "@/lib/gmach";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
@@ -136,6 +138,36 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     passwordHash,
     status: "PENDING",
   });
+
+  // Ensure Gmach categories exist, and add a few default posts if empty
+  await dbEnsureGmachCategories(getGmachCategories());
+  const { count: postsCount, error: postsCountErr } = await sb
+    .from("gmach_posts")
+    .select("id", { count: "exact", head: true });
+  if (postsCountErr) throw postsCountErr;
+  if ((postsCount ?? 0) === 0) {
+    const { error: postsErr } = await sb.from("gmach_posts").insert([
+      {
+        category_id: "books",
+        title: "ספרי קודש להשאלה",
+        description: "מגשרת עם ספרי קודש. לפנות בשעות הערב.",
+        contact_info: "דרך הלוח",
+        is_pinned_by_committee: true,
+      },
+      {
+        category_id: "baby",
+        title: "עגלת תינוק",
+        description: "עגלה במצב טוב, למי שצריך.",
+        contact_info: "פנה בדואר",
+      },
+      {
+        category_id: "tools",
+        title: "מקדחה וכלי עבודה",
+        description: "השאלה לשבוע.",
+      },
+    ]);
+    if (postsErr) throw postsErr;
+  }
 
   return {
     ok: true,

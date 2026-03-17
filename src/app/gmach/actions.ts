@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { addGmachItem, getGmachItems, setGmachItemPinned } from "@/lib/gmach";
+import { addGmachItem, toggleGmachItemPinned } from "@/lib/gmach";
 
 export async function addGmachItemAction(formData: FormData) {
   const categoryId = (formData.get("categoryId") as string)?.trim();
@@ -13,20 +13,20 @@ export async function addGmachItemAction(formData: FormData) {
     return { success: false, error: "נא לבחור קטגוריה ולהזין כותרת." };
   }
 
-  addGmachItem({
+  await addGmachItem({
     categoryId,
     title,
     description: description || undefined,
     contactInfo: contactInfo || undefined,
   });
   revalidatePath("/gmach");
+  revalidatePath("/");
   return { success: true };
 }
 
 export async function toggleGmachPinAction(itemId: string) {
-  const item = getGmachItems().find((i) => i.id === itemId);
-  if (!item) return { success: false };
-  setGmachItemPinned(itemId, !item.isPinnedByCommittee);
+  await toggleGmachItemPinned(itemId);
   revalidatePath("/gmach");
+  revalidatePath("/");
   return { success: true };
 }
