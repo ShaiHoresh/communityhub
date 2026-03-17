@@ -17,7 +17,7 @@ export const metadata = {
 };
 
 export default async function LifeEventsPage() {
-  const upcoming = getUpcomingLifeEvents(60);
+  const upcoming = await getUpcomingLifeEvents(60);
 
   return (
     <div className="min-h-screen bg-background font-sans">

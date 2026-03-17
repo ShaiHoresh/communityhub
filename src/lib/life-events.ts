@@ -12,12 +12,7 @@ export type LifeEvent = {
   notes?: string;
   createdAt: Date;
 };
-
-const events: LifeEvent[] = [];
-
-function nextId(): LifeEventId {
-  return `le_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-}
+import { dbCreateLifeEvent, dbGetLifeEvents } from "@/lib/db-life-events";
 
 /** Next occurrence of this event (anniversary) on or after refDate. */
 function getNextOccurrence(event: LifeEvent, refDate: Date): Date {
@@ -35,12 +30,13 @@ export type UpcomingLifeEvent = LifeEvent & {
   label: string;
 };
 
-export function getUpcomingLifeEvents(daysAhead: number = 60): UpcomingLifeEvent[] {
+export async function getUpcomingLifeEvents(daysAhead: number = 60): Promise<UpcomingLifeEvent[]> {
   const from = new Date();
   from.setHours(0, 0, 0, 0);
   const to = new Date(from);
   to.setDate(to.getDate() + daysAhead);
 
+  const events = await dbGetLifeEvents();
   const result: UpcomingLifeEvent[] = [];
   for (const event of events) {
     const next = getNextOccurrence(event, from);
@@ -58,28 +54,20 @@ export function getUpcomingLifeEvents(daysAhead: number = 60): UpcomingLifeEvent
   return result;
 }
 
-export function getAllLifeEvents(): LifeEvent[] {
-  return [...events].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+export async function getAllLifeEvents(): Promise<LifeEvent[]> {
+  return dbGetLifeEvents();
 }
 
 export function createLifeEvent(
   data: Omit<LifeEvent, "id" | "createdAt">
-): LifeEvent {
-  const event: LifeEvent = {
-    ...data,
-    id: nextId(),
+): Promise<LifeEvent> {
+  return dbCreateLifeEvent({
+    type: data.type,
+    name: data.name,
     date: new Date(data.date),
-    createdAt: new Date(),
-  };
-  events.push(event);
-  return event;
+    householdId: data.householdId,
+    notes: data.notes,
+  });
 }
 
-export function deleteLifeEvent(id: LifeEventId): boolean {
-  const idx = events.findIndex((e) => e.id === id);
-  if (idx === -1) return false;
-  events.splice(idx, 1);
-  return true;
-}
+// Note: delete is currently unused; add DB delete when needed.

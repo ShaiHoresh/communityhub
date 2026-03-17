@@ -24,7 +24,7 @@ export async function submitLifeEventAction(formData: FormData) {
     return { success: false, error: "תאריך לא תקין." };
   }
 
-  createLifeEvent({
+  await createLifeEvent({
     type: type as "birth" | "yahrzeit",
     name,
     date,
