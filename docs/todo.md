@@ -30,8 +30,10 @@ Supabase rollout (replace in-memory stores):
 [x] Create Supabase project + run `scripts/schema.sql` and `scripts/rls.sql` in SQL Editor.
 [x] Add Supabase env vars to `.env` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
 [x] Implement server helpers (`src/lib/supabase-admin.ts`).
-[ ] Migrate in-memory stores (`access-requests`, `households`, `gmach`, `life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`) to Supabase tables.
-[ ] Replace `/api/seed` to seed Supabase (or provide SQL seed).
+[x] Migrate: `users` (auth + pending queue), `access_requests`, and approval-created `households/household_managers` to Supabase.
+[x] Replace `/api/seed` to seed Supabase (admin/member/pending).
+[ ] Migrate: `gmach` (gmach_posts + categories) to Supabase so homepage updates are live.
+[ ] Migrate remaining stores (`life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`) to Supabase tables.
 
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).
