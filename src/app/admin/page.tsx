@@ -23,8 +23,8 @@ export default async function AdminOverviewPage() {
   const pendingUsers = await dbGetPendingUsers();
   const pendingRequests = await getPendingAccessRequests();
   const membersCount = await dbGetActiveMembersCount();
-  const projects = getProjects();
-  const totalBalanceCents = getTotalBalanceCents(projects.map((p) => p.id));
+  const projects = await getProjects();
+  const totalBalanceCents = await getTotalBalanceCents(projects.map((p) => p.id));
   const toggles = getAllToggles();
 
   return (

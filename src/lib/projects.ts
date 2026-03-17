@@ -6,22 +6,14 @@ export type Project = {
   createdAt: Date;
 };
 
-const projects: Project[] = [];
+import { dbCreateProject, dbGetProjects } from "@/lib/db-finance";
 
-export function getProjects(): Project[] {
-  return [...projects];
+export async function getProjects(): Promise<Project[]> {
+  return dbGetProjects();
 }
 
-export function createProject(name: string): Project {
-  const project: Project = {
-    id: `proj_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
-    name,
-    createdAt: new Date(),
-  };
-  projects.push(project);
-  return project;
+export async function createProject(name: string): Promise<Project> {
+  return dbCreateProject(name);
 }
 
-export function getProjectById(id: ProjectId): Project | undefined {
-  return projects.find((p) => p.id === id);
-}
+// Note: `getProjectById` is currently unused; add DB lookup when needed.

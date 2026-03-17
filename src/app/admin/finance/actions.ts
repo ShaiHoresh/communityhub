@@ -7,7 +7,7 @@ import { addTransaction } from "@/lib/transactions";
 export async function createProjectAction(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { success: false, error: "נא להזין שם פרויקט." };
-  createProject(name);
+  await createProject(name);
   revalidatePath("/admin/finance");
   return { success: true };
 }
@@ -27,7 +27,7 @@ export async function addTransactionAction(formData: FormData) {
   const date = dateStr ? new Date(dateStr) : new Date();
   if (Number.isNaN(date.getTime())) return { success: false, error: "תאריך לא תקין." };
 
-  addTransaction({
+  await addTransaction({
     projectId,
     type,
     amountCents,

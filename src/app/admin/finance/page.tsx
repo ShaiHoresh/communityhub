@@ -26,8 +26,17 @@ export const metadata = {
 };
 
 export default async function AdminFinancePage() {
-  const projects = getProjects();
-  const allTransactions = getAllTransactions();
+  const projects = await getProjects();
+  const allTransactions = await getAllTransactions();
+  const perProject = await Promise.all(
+    projects.map(async (project) => {
+      const [balance, txs] = await Promise.all([
+        getBalanceForProject(project.id),
+        getTransactionsByProject(project.id),
+      ]);
+      return { project, balance, txs };
+    }),
+  );
 
   return (
     <div className="space-y-10">
@@ -52,9 +61,7 @@ export default async function AdminFinancePage() {
             </div>
           ) : (
             <ul className="space-y-6">
-              {projects.map((project) => {
-                const balance = getBalanceForProject(project.id);
-                const txs = getTransactionsByProject(project.id);
+              {perProject.map(({ project, balance, txs }) => {
                 return (
                   <li key={project.id} className="surface-card card-interactive overflow-hidden rounded-2xl p-6">
                     <div className="flex flex-wrap items-start justify-between gap-4">

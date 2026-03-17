@@ -1,4 +1,10 @@
 import type { ProjectId } from "./projects";
+import {
+  dbAddTransaction,
+  dbGetAllTransactions,
+  dbGetBalanceForProject,
+  dbGetTransactionsByProject,
+} from "@/lib/db-finance";
 
 export type TransactionId = string;
 
@@ -14,50 +20,34 @@ export type Transaction = {
   createdAt: Date;
 };
 
-const transactions: Transaction[] = [];
-
-function nextId(): TransactionId {
-  return `tx_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+export async function getTransactionsByProject(projectId: ProjectId): Promise<Transaction[]> {
+  return dbGetTransactionsByProject(projectId);
 }
 
-export function getTransactionsByProject(projectId: ProjectId): Transaction[] {
-  return [...transactions]
-    .filter((t) => t.projectId === projectId)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+export async function getAllTransactions(): Promise<Transaction[]> {
+  return dbGetAllTransactions();
 }
 
-export function getAllTransactions(): Transaction[] {
-  return [...transactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-}
-
-export function getBalanceForProject(projectId: ProjectId): number {
-  const list = transactions.filter((t) => t.projectId === projectId);
-  return list.reduce((sum, t) => sum + (t.type === "income" ? t.amountCents : -t.amountCents), 0);
+export async function getBalanceForProject(projectId: ProjectId): Promise<number> {
+  return dbGetBalanceForProject(projectId);
 }
 
 /** Sum of all project balances (for admin overview). */
-export function getTotalBalanceCents(projectIds: ProjectId[]): number {
-  return projectIds.reduce((sum, id) => sum + getBalanceForProject(id), 0);
+export async function getTotalBalanceCents(projectIds: ProjectId[]): Promise<number> {
+  const balances = await Promise.all(projectIds.map((id) => getBalanceForProject(id)));
+  return balances.reduce((sum, b) => sum + b, 0);
 }
 
 export function addTransaction(
   data: Omit<Transaction, "id" | "createdAt">
-): Transaction {
-  const tx: Transaction = {
-    ...data,
-    id: nextId(),
+): Promise<Transaction> {
+  return dbAddTransaction({
+    projectId: data.projectId,
+    type: data.type,
+    amountCents: data.amountCents,
+    description: data.description,
     date: new Date(data.date),
-    createdAt: new Date(),
-  };
-  transactions.push(tx);
-  return tx;
+  });
 }
 
-export function deleteTransaction(id: TransactionId): boolean {
-  const idx = transactions.findIndex((t) => t.id === id);
-  if (idx === -1) return false;
-  transactions.splice(idx, 1);
-  return true;
-}
+// Note: delete is currently unused; add DB delete when needed.
