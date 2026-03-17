@@ -65,3 +65,13 @@ export async function dbSetUserStatus(userId: string, status: UserStatus) {
   return { success: true as const };
 }
 
+export async function dbGetActiveMembersCount(): Promise<number> {
+  const sb = supabaseAdmin();
+  const { count, error } = await sb
+    .from("users")
+    .select("id", { count: "exact", head: true })
+    .in("status", ["MEMBER", "ADMIN"]);
+  if (error) throw error;
+  return count ?? 0;
+}
+

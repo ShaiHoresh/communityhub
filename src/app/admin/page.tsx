@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { getUsers } from "@/lib/households";
-import { getPendingUsers } from "@/lib/households";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { getProjects } from "@/lib/projects";
 import { getTotalBalanceCents } from "@/lib/transactions";
 import { getAllToggles, getModuleLabel } from "@/lib/system-toggles";
+import { dbGetActiveMembersCount, dbGetPendingUsers } from "@/lib/db-users";
 
 export const metadata = {
   title: "סקירת מנהל | CommunityHub",
@@ -21,12 +20,9 @@ function formatCents(cents: number): string {
 }
 
 export default async function AdminOverviewPage() {
-  const users = getUsers();
-  const membersCount = users.filter(
-    (u) => u.status === "MEMBER" || u.status === "ADMIN"
-  ).length;
-  const pendingUsers = getPendingUsers();
-  const pendingRequests = getPendingAccessRequests();
+  const pendingUsers = await dbGetPendingUsers();
+  const pendingRequests = await getPendingAccessRequests();
+  const membersCount = await dbGetActiveMembersCount();
   const projects = getProjects();
   const totalBalanceCents = getTotalBalanceCents(projects.map((p) => p.id));
   const toggles = getAllToggles();

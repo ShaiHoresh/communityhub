@@ -20,65 +20,47 @@ export type AccessRequest = {
   reviewedAt?: Date;
   reviewedBy?: string;
 };
+import {
+  dbApproveAccessRequest,
+  dbCreateAccessRequest,
+  dbGetAccessRequestById,
+  dbGetPendingAccessRequests,
+  dbRejectAccessRequest,
+} from "@/lib/db-access-requests";
 
-const accessRequests: AccessRequest[] = [];
-
-function nextId(): AccessRequestId {
-  return `ar_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+export async function getPendingAccessRequests(): Promise<AccessRequest[]> {
+  return dbGetPendingAccessRequests();
 }
 
-export function getAllAccessRequests(): AccessRequest[] {
-  return [...accessRequests];
+export async function getAccessRequestById(
+  id: AccessRequestId,
+): Promise<AccessRequest | undefined> {
+  const r = await dbGetAccessRequestById(id);
+  return r ?? undefined;
 }
 
-export function getPendingAccessRequests(): AccessRequest[] {
-  return accessRequests.filter((r) => r.status === "pending");
-}
-
-export function getAccessRequestById(id: AccessRequestId): AccessRequest | undefined {
-  return accessRequests.find((r) => r.id === id);
-}
-
-export function createAccessRequest(
+export async function createAccessRequest(
   data: Omit<AccessRequest, "id" | "status" | "createdAt">,
-): AccessRequest {
-  const request: AccessRequest = {
-    ...data,
-    id: nextId(),
-    status: "pending",
-    createdAt: new Date(),
-  };
-  accessRequests.push(request);
-  return request;
+): Promise<AccessRequest> {
+  return dbCreateAccessRequest(data);
 }
 
-export function approveAccessRequest(
+export async function approveAccessRequest(
   id: AccessRequestId,
   reviewedBy: string,
-): { success: boolean; error?: string } {
-  const request = accessRequests.find((r) => r.id === id);
-  if (!request) return { success: false, error: "בקשה לא נמצאה" };
-  if (request.status !== "pending")
-    return { success: false, error: "בקשה כבר טופלה" };
-
-  // Approval logic is handled by the server action (create household/user, etc.)
-  request.status = "approved";
-  request.reviewedAt = new Date();
-  request.reviewedBy = reviewedBy;
-  return { success: true };
+): Promise<{ success: boolean; error?: string }> {
+  const existing = await dbGetAccessRequestById(id);
+  if (!existing) return { success: false, error: "בקשה לא נמצאה" };
+  if (existing.status !== "pending") return { success: false, error: "בקשה כבר טופלה" };
+  return dbApproveAccessRequest(id, reviewedBy);
 }
 
-export function rejectAccessRequest(
+export async function rejectAccessRequest(
   id: AccessRequestId,
   reviewedBy: string,
-): { success: boolean; error?: string } {
-  const request = accessRequests.find((r) => r.id === id);
-  if (!request) return { success: false, error: "בקשה לא נמצאה" };
-  if (request.status !== "pending")
-    return { success: false, error: "בקשה כבר טופלה" };
-
-  request.status = "rejected";
-  request.reviewedAt = new Date();
-  request.reviewedBy = reviewedBy;
-  return { success: true };
+): Promise<{ success: boolean; error?: string }> {
+  const existing = await dbGetAccessRequestById(id);
+  if (!existing) return { success: false, error: "בקשה לא נמצאה" };
+  if (existing.status !== "pending") return { success: false, error: "בקשה כבר טופלה" };
+  return dbRejectAccessRequest(id, reviewedBy);
 }

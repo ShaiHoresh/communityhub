@@ -22,7 +22,7 @@ export async function requestAccessAction(formData: FormData): Promise<void> {
     redirect("/request-access?error=" + encodeURIComponent("סוג בקשה לא תקין."));
   }
 
-  createAccessRequest({
+  await createAccessRequest({
     type,
     householdNameOrId: householdNameOrId.trim(),
     requesterName: requesterName.trim(),

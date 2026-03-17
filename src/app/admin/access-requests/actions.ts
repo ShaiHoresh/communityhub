@@ -18,7 +18,7 @@ import { dbSetUserStatus } from "@/lib/db-users";
 const REVIEWED_BY = "admin";
 
 export async function approveAccessRequestAction(requestId: string) {
-  const request = getAccessRequestById(requestId);
+  const request = await getAccessRequestById(requestId);
   if (!request || request.status !== "pending") {
     return { success: false, error: "בקשה לא נמצאה או כבר טופלה." };
   }
@@ -74,13 +74,13 @@ export async function approveAccessRequestAction(requestId: string) {
     }
   }
 
-  approveAccessRequest(requestId, REVIEWED_BY);
+  await approveAccessRequest(requestId, REVIEWED_BY);
   revalidatePath("/admin/access-requests");
   return { success: true };
 }
 
 export async function rejectAccessRequestAction(requestId: string) {
-  const result = rejectAccessRequest(requestId, REVIEWED_BY);
+  const result = await rejectAccessRequest(requestId, REVIEWED_BY);
   if (!result.success) return result;
   revalidatePath("/admin/access-requests");
   return result;
