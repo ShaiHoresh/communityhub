@@ -49,8 +49,8 @@ export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
 ): Promise<DailySchedule> {
-  ensureDefaultScheduleEntries(mainLocation.id);
-  const entries = getScheduleEntries();
+  await ensureDefaultScheduleEntries(mainLocation.id);
+  const entries = await getScheduleEntries();
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
 

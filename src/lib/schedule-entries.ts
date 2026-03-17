@@ -19,78 +19,48 @@ export type ScheduleEntry = {
   sortOrder: number;
 };
 
-const entries: ScheduleEntry[] = [];
-let nextOrder = 0;
+import {
+  dbAddScheduleEntry,
+  dbDeleteScheduleEntry,
+  dbEnsureDefaultScheduleEntries,
+  dbGetScheduleEntries,
+  dbUpdateScheduleEntry,
+} from "@/lib/db-schedule-entries";
 
-function nextId(): ScheduleEntryId {
-  return `se_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+export async function getScheduleEntries(): Promise<ScheduleEntry[]> {
+  return dbGetScheduleEntries();
 }
 
-export function getScheduleEntries(): ScheduleEntry[] {
-  return [...entries].sort((a, b) => a.sortOrder - b.sortOrder);
+export async function addScheduleEntry(
+  data: Omit<ScheduleEntry, "id" | "sortOrder"> & { sortOrder?: number },
+): Promise<ScheduleEntry> {
+  const current = await dbGetScheduleEntries();
+  const nextOrder = data.sortOrder ?? (current.length ? Math.max(...current.map((e) => e.sortOrder)) + 1 : 0);
+  return dbAddScheduleEntry({
+    type: data.type,
+    title: data.title,
+    locationId: data.locationId,
+    hour: data.hour,
+    minute: data.minute,
+    useSeasonalMinchaOffset: data.useSeasonalMinchaOffset,
+    sortOrder: nextOrder,
+  });
 }
 
-export function getScheduleEntryById(id: ScheduleEntryId): ScheduleEntry | undefined {
-  return entries.find((e) => e.id === id);
-}
-
-export function addScheduleEntry(
-  data: Omit<ScheduleEntry, "id" | "sortOrder"> & { sortOrder?: number }
-): ScheduleEntry {
-  const entry: ScheduleEntry = {
-    ...data,
-    id: nextId(),
-    sortOrder: data.sortOrder ?? nextOrder++,
-  };
-  entries.push(entry);
-  return entry;
-}
-
-export function updateScheduleEntry(
+export async function updateScheduleEntry(
   id: ScheduleEntryId,
-  update: Partial<Omit<ScheduleEntry, "id">>
-): boolean {
-  const entry = entries.find((e) => e.id === id);
-  if (!entry) return false;
-  Object.assign(entry, update);
+  update: Partial<Omit<ScheduleEntry, "id">>,
+): Promise<boolean> {
+  await dbUpdateScheduleEntry(id, update);
   return true;
 }
 
-export function deleteScheduleEntry(id: ScheduleEntryId): boolean {
-  const idx = entries.findIndex((e) => e.id === id);
-  if (idx === -1) return false;
-  entries.splice(idx, 1);
+export async function deleteScheduleEntry(id: ScheduleEntryId): Promise<boolean> {
+  await dbDeleteScheduleEntry(id);
   return true;
 }
 
 /** Seed default entries when none exist (called from seed or first load). */
-export function ensureDefaultScheduleEntries(locationId: string): void {
-  if (entries.length > 0) return;
-  addScheduleEntry({
-    type: "shacharit",
-    title: "שחרית",
-    locationId,
-    hour: 8,
-    minute: 0,
-    useSeasonalMinchaOffset: false,
-    sortOrder: 0,
-  });
-  addScheduleEntry({
-    type: "mincha",
-    title: "מנחה",
-    locationId,
-    hour: 18,
-    minute: 30,
-    useSeasonalMinchaOffset: true,
-    sortOrder: 1,
-  });
-  addScheduleEntry({
-    type: "arvit",
-    title: "ערבית",
-    locationId,
-    hour: 20,
-    minute: 0,
-    useSeasonalMinchaOffset: false,
-    sortOrder: 2,
-  });
+export async function ensureDefaultScheduleEntries(locationId: string): Promise<void> {
+  await dbEnsureDefaultScheduleEntries(locationId);
 }

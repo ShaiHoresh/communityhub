@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminSchedulePage() {
   const locations = getLocations();
-  const entries = getScheduleEntries();
+  const entries = await getScheduleEntries();
 
   return (
     <div className="space-y-10">

@@ -130,3 +130,18 @@ CREATE TABLE life_events (
 );
 
 CREATE INDEX idx_life_events_date ON life_events(date);
+
+-- Schedule entry templates (admin-managed; used to build the daily schedule)
+CREATE TABLE schedule_entries (
+  id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type                      TEXT NOT NULL,
+  title                     TEXT NOT NULL,
+  location_id               TEXT NOT NULL REFERENCES locations(id),
+  hour                      INT NOT NULL CHECK (hour >= 0 AND hour <= 23),
+  minute                    INT NOT NULL CHECK (minute >= 0 AND minute <= 59),
+  use_seasonal_mincha_offset BOOLEAN NOT NULL DEFAULT false,
+  sort_order                INT NOT NULL DEFAULT 0,
+  created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_schedule_entries_order ON schedule_entries(sort_order);
