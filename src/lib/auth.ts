@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
-import { createUser, findUserByEmail } from "./households";
 import type { UserStatus } from "./households";
+import { dbCreatePendingUser, dbFindUserByEmail } from "@/lib/db-users";
 
 const SALT_ROUNDS = 10;
 
@@ -32,17 +32,12 @@ export async function registerUser(
   if (!input.password || input.password.length < 8) {
     return { success: false, error: "הסיסמה חייבת להכיל לפחות 8 תווים." };
   }
-  if (findUserByEmail(email)) {
-    return { success: false, error: "משתמש עם אימייל זה כבר קיים." };
-  }
+  const existing = await dbFindUserByEmail(email);
+  if (existing) return { success: false, error: "משתמש עם אימייל זה כבר קיים." };
+
   const passwordHash = await hashPassword(input.password);
-  const user = createUser({
-    email,
-    fullName,
-    passwordHash,
-    status: "PENDING",
-  });
-  return { success: true, userId: user.id };
+  const created = await dbCreatePendingUser({ email, fullName, passwordHash });
+  return { success: true, userId: created.id };
 }
 
 export async function verifyCredentials(
@@ -52,14 +47,14 @@ export async function verifyCredentials(
   | { success: true; userId: string; status: UserStatus }
   | { success: false; error: string }
 > {
-  const user = findUserByEmail(email);
+  const user = await dbFindUserByEmail(email);
   if (!user) {
     return { success: false, error: "אימייל או סיסמה לא נכונים." };
   }
-  if (!user.passwordHash) {
+  if (!user.password_hash) {
     return { success: false, error: "חשבון זה לא מוגדר להתחברות בסיסמה. פנה להנהלה." };
   }
-  const ok = await verifyPassword(password, user.passwordHash);
+  const ok = await verifyPassword(password, user.password_hash);
   if (!ok) {
     return { success: false, error: "אימייל או סיסמה לא נכונים." };
   }

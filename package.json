@@ -13,6 +13,7 @@
     "bcryptjs": "^2.4.3",
     "next": "16.1.6",
     "next-auth": "^4.24.10",
+    "@supabase/supabase-js": "^2.49.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

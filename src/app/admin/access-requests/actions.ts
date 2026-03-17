@@ -12,8 +12,8 @@ import {
   createHousehold,
   createUser,
   getHouseholdById,
-  setUserStatus,
 } from "@/lib/households";
+import { dbSetUserStatus } from "@/lib/db-users";
 
 const REVIEWED_BY = "admin";
 
@@ -88,8 +88,7 @@ export async function rejectAccessRequestAction(requestId: string) {
 
 /** Promote a PENDING user (signed up) to MEMBER. */
 export async function approvePendingUserAction(userId: string) {
-  const ok = setUserStatus(userId, "MEMBER");
-  if (!ok) return { success: false, error: "משתמש לא נמצא." };
+  await dbSetUserStatus(userId, "MEMBER");
   revalidatePath("/admin/access-requests");
   return { success: true };
 }
