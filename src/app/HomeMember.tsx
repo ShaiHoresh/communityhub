@@ -14,11 +14,51 @@ type Props = {
   gmachPreview: GmachItem[];
   /** True if current user is ADMIN (sees admin links). */
   isAdmin: boolean;
+  /** Seasonal modules toggles for contextual UI. */
+  highHolidaysEnabled: boolean;
+  purimEnabled: boolean;
 };
 
-export function HomeMember({ schedule, upcoming, formatTime, gmachPreview, isAdmin }: Props) {
+export function HomeMember({
+  schedule,
+  upcoming,
+  formatTime,
+  gmachPreview,
+  isAdmin,
+  highHolidaysEnabled,
+  purimEnabled,
+}: Props) {
   return (
     <>
+      {(highHolidaysEnabled || purimEnabled) && (
+        <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 px-5 py-4">
+          <div className="space-y-1">
+            <p className="text-sm font-heading font-semibold text-foreground">
+              עונת חגים פעילה במערכת
+            </p>
+            <p className="text-xs text-primary/80">
+              {highHolidaysEnabled && purimEnabled
+                ? "רישום לימים נוראים ובחירת משלוחי מנות זמינים כעת."
+                : highHolidaysEnabled
+                  ? "רישום משפחתי למקומות בימים נוראים פתוח כעת."
+                  : "בחירת חבילת משלוחי מנות לפורים פתוחה כעת."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            {highHolidaysEnabled && (
+              <Link href="/high-holidays" className="btn-secondary px-4 py-1.5 text-xs">
+                רישום ימים נוראים
+              </Link>
+            )}
+            {purimEnabled && (
+              <Link href="/purim" className="btn-secondary px-4 py-1.5 text-xs">
+                פורים – משלוחי מנות
+              </Link>
+            )}
+          </div>
+        </section>
+      )}
+
       <section className="surface-card overflow-hidden p-0">
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
           <p className="text-xs font-bold uppercase tracking-wider text-primary/90">

@@ -3,6 +3,7 @@ import { BrandHeader } from "@/components/BrandHeader";
 import { getLocations } from "@/lib/locations";
 import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getGmachItems } from "@/lib/gmach";
+import { isModuleEnabled } from "@/lib/system-toggles";
 import { authOptions } from "@/lib/auth-config";
 import { HomeGuest } from "@/app/HomeGuest";
 import { HomeMember } from "@/app/HomeMember";
@@ -35,6 +36,8 @@ export default async function Home({ searchParams }: HomeProps) {
     .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
 
   const gmachPreview = isMember ? getGmachItems().slice(0, 5) : [];
+  const highHolidaysEnabled = isModuleEnabled("rosh_hashanah");
+  const purimEnabled = isModuleEnabled("purim");
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -60,6 +63,8 @@ export default async function Home({ searchParams }: HomeProps) {
             formatTime={formatTime}
             gmachPreview={gmachPreview}
             isAdmin={status === "ADMIN"}
+            highHolidaysEnabled={highHolidaysEnabled}
+            purimEnabled={purimEnabled}
           />
         ) : (
           <HomeGuest
