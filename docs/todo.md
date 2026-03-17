@@ -26,6 +26,13 @@ Phase 1b: Database Setup (prioritized for early User Role testing: Admin, Member
 
 [x] Database Documentation: Add `docs/DATABASE.md` (or `DATABASE.md` in project root) describing table structures and relationships.
 
+Supabase rollout (replace in-memory stores):
+[ ] Create Supabase project + run `scripts/schema.sql` and `scripts/rls.sql` in SQL Editor.
+[ ] Add Supabase env vars to `.env` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
+[ ] Implement `src/lib/supabase.ts` client + server helpers.
+[ ] Migrate in-memory stores (`households`, `access-requests`, `gmach`, `life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`) to Supabase tables.
+[ ] Replace `/api/seed` to seed Supabase (or provide SQL seed).
+
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).
 
