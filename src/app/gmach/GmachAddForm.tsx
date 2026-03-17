@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import type { GmachCategory } from "@/lib/gmach";
+import type { GmachCategory } from "@/lib/gmach-categories";
 import { addGmachItemAction } from "./actions";
 
 type Props = { categories: GmachCategory[] };

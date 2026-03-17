@@ -11,7 +11,7 @@
 import bcrypt from "bcryptjs";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { dbEnsureGmachCategories } from "@/lib/db-gmach";
-import { getGmachCategories } from "@/lib/gmach";
+import { getGmachCategories } from "@/lib/gmach-categories";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
