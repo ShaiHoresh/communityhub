@@ -1,6 +1,6 @@
 /**
- * Development seed: Admin, Member household (2 users), Pending user, one project.
- * Call from GET /api/seed to populate in-memory store for role testing.
+ * Development seed for Supabase:
+ * Creates Admin, Member household (2 users + managers), Pending user.
  *
  * Test users (password for all: Test1234!):
  * - admin@test.com   → ADMIN
@@ -9,16 +9,7 @@
  */
 
 import bcrypt from "bcryptjs";
-import {
-  createUser,
-  findUserByEmail,
-  getUsers,
-  createHousehold,
-  assignUserToHousehold,
-  addHouseholdManager,
-} from "./households";
-import { createProject, getProjects } from "./projects";
-import { getGmachItems, addGmachItem } from "./gmach";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
@@ -27,83 +18,127 @@ async function hash(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
+async function upsertUserByEmail(input: {
+  email: string;
+  fullName: string;
+  passwordHash: string;
+  status: "PENDING" | "MEMBER" | "ADMIN";
+  householdId?: string | null;
+  role?: string | null;
+}) {
+  const sb = supabaseAdmin();
+
+  const normalizedEmail = input.email.trim().toLowerCase();
+  const { data: existing, error: existingErr } = await sb
+    .from("users")
+    .select("id")
+    .ilike("email", normalizedEmail)
+    .maybeSingle();
+  if (existingErr) throw existingErr;
+
+  if (existing?.id) {
+    const { error } = await sb
+      .from("users")
+      .update({
+        full_name: input.fullName,
+        password_hash: input.passwordHash,
+        status: input.status,
+        household_id: input.householdId ?? null,
+        role: input.role ?? null,
+      })
+      .eq("id", existing.id);
+    if (error) throw error;
+    return { id: existing.id as string };
+  }
+
+  const { data, error } = await sb
+    .from("users")
+    .insert({
+      full_name: input.fullName,
+      email: normalizedEmail,
+      password_hash: input.passwordHash,
+      status: input.status,
+      household_id: input.householdId ?? null,
+      role: input.role ?? null,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return { id: (data as { id: string }).id };
+}
+
 export async function runSeed(): Promise<{ ok: boolean; message: string }> {
-  if (getUsers().length > 0 && findUserByEmail("admin@test.com")) {
+  const sb = supabaseAdmin();
+
+  // If admin already exists, assume seed applied.
+  const { data: existingAdmin, error: adminErr } = await sb
+    .from("users")
+    .select("id")
+    .ilike("email", "admin@test.com")
+    .maybeSingle();
+  if (adminErr) throw adminErr;
+
+  if (existingAdmin?.id) {
     return {
       ok: true,
       message:
-        "Seed already applied. Sign in as admin@test.com | member1@test.com | member2@test.com | pending@test.com with password: " +
+        "Seed already applied (Supabase). Sign in as admin@test.com | member1@test.com | member2@test.com | pending@test.com with password: " +
         SEED_PASSWORD,
     };
   }
 
   const passwordHash = await hash(SEED_PASSWORD);
 
-  createUser({
-    fullName: "מנהל מערכת",
+  // Admin user (no household)
+  await upsertUserByEmail({
     email: "admin@test.com",
+    fullName: "מנהל מערכת",
     passwordHash,
     status: "ADMIN",
   });
 
-  const household = createHousehold("משפחת כהן (לדוגמה)");
+  // One member household + 2 managers
+  const { data: hh, error: hhErr } = await sb
+    .from("households")
+    .insert({ name: "משפחת כהן (לדוגמה)" })
+    .select("id")
+    .single();
+  if (hhErr) throw hhErr;
+  const householdId = (hh as { id: string }).id;
 
-  const member1 = createUser({
-    fullName: "ישראל כהן",
+  const member1 = await upsertUserByEmail({
     email: "member1@test.com",
+    fullName: "ישראל כהן",
     passwordHash,
     status: "MEMBER",
-    householdId: household.id,
+    householdId,
     role: "adult",
   });
-  assignUserToHousehold(member1.id, household.id);
-  addHouseholdManager(household.id, member1.id);
-
-  const member2 = createUser({
-    fullName: "רחל כהן",
+  const member2 = await upsertUserByEmail({
     email: "member2@test.com",
+    fullName: "רחל כהן",
     passwordHash,
     status: "MEMBER",
-    householdId: household.id,
+    householdId,
     role: "adult",
   });
-  assignUserToHousehold(member2.id, household.id);
-  addHouseholdManager(household.id, member2.id);
 
-  createUser({
-    fullName: "משתמש ממתין",
+  const { error: mgrErr } = await sb.from("household_managers").insert([
+    { household_id: householdId, user_id: member1.id },
+    { household_id: householdId, user_id: member2.id },
+  ]);
+  if (mgrErr) throw mgrErr;
+
+  // Pending user (no household until approved)
+  await upsertUserByEmail({
     email: "pending@test.com",
+    fullName: "משתמש ממתין",
     passwordHash,
     status: "PENDING",
   });
 
-  if (getProjects().length === 0) {
-    createProject("קרן בניין (לדוגמה)");
-  }
-
-  if (getGmachItems().length === 0) {
-    addGmachItem({
-      categoryId: "books",
-      title: "ספרי קודש להשאלה",
-      description: "מגשרת עם ספרי קודש. לפנות בשעות הערב.",
-      contactInfo: "דרך הלוח",
-      isPinnedByCommittee: true,
-    });
-    addGmachItem({
-      categoryId: "baby",
-      title: "עגלת תינוק",
-      description: "עגלה במצב טוב, למי שצריך.",
-      contactInfo: "פנה בדואר",
-    });
-    addGmachItem({
-      categoryId: "tools",
-      title: "מקדחה וכלי עבודה",
-      description: "השאלה לשבוע.",
-    });
-  }
-
   return {
     ok: true,
-    message: `Seed applied. Sign in as admin@test.com | member1@test.com | member2@test.com | pending@test.com with password: ${SEED_PASSWORD}`,
+    message: `Seed applied (Supabase). Sign in as admin@test.com | member1@test.com | member2@test.com | pending@test.com with password: ${SEED_PASSWORD}`,
   };
 }
