@@ -3,8 +3,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { addHighHolidayRegistration, type HighHolidaySlot } from "@/lib/high-holidays";
-import { getUsers, getHouseholds } from "@/lib/households";
 import { revalidatePath } from "next/cache";
+import { dbGetUserHouseholdId } from "@/lib/db-users";
+import { dbGetHouseholdById } from "@/lib/db-households";
 
 export async function submitHighHolidayRegistration(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -24,13 +25,12 @@ export async function submitHighHolidayRegistration(formData: FormData) {
   const committeeInterest =
     committees.length === 0 ? "לא נבחרו ועדות" : `ועדות: ${committees.join(", ")}`;
 
-  const user = getUsers().find((u) => u.id === userId);
-  const householdName =
-    user?.householdId && getHouseholds().find((h) => h.id === user.householdId)?.name
-      ? getHouseholds().find((h) => h.id === user.householdId)!.name
-      : undefined;
+  const householdId = await dbGetUserHouseholdId(userId);
+  const householdName = householdId
+    ? (await dbGetHouseholdById(householdId))?.name
+    : undefined;
 
-  const result = addHighHolidayRegistration({
+  const result = await addHighHolidayRegistration({
     userId,
     fullName,
     householdName,

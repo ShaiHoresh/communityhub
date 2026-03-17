@@ -16,18 +16,23 @@ const CAPACITY_BY_SLOT: Record<HighHolidaySlot, number> = {
   erev_yk_setup: 40,
 };
 
-const registrations: HighHolidayRegistration[] = [];
+import {
+  dbGetHighHolidayRegistrations,
+  dbGetTotalSeats,
+  dbGetUsedForSlot,
+  dbUpsertHighHolidayRegistration,
+} from "@/lib/db-high-holidays";
 
-export function getHighHolidayRegistrations(): HighHolidayRegistration[] {
-  return [...registrations];
+export async function getHighHolidayRegistrations(): Promise<HighHolidayRegistration[]> {
+  return dbGetHighHolidayRegistrations();
 }
 
-export function getTotalSeats(): number {
-  return registrations.reduce((sum, r) => sum + r.seats, 0);
+export async function getTotalSeats(): Promise<number> {
+  return dbGetTotalSeats();
 }
 
-export function getUsedForSlot(slot: HighHolidaySlot): number {
-  return registrations.filter((r) => r.prepSlot === slot).length;
+export async function getUsedForSlot(slot: HighHolidaySlot): Promise<number> {
+  return dbGetUsedForSlot(slot);
 }
 
 export function getSlotCapacity(slot: HighHolidaySlot): number {
@@ -36,30 +41,30 @@ export function getSlotCapacity(slot: HighHolidaySlot): number {
 
 export function addHighHolidayRegistration(
   data: Omit<HighHolidayRegistration, "createdAt">
-): { ok: true } | { ok: false; error: string } {
-  if (data.seats <= 0) {
-    return { ok: false, error: "מספר המקומות חייב להיות גדול מאפס." };
-  }
-
-  // Optional: very simple global capacity check (e.g. 300 seats overall)
-  const TOTAL_CAPACITY = 300;
-  if (getTotalSeats() + data.seats > TOTAL_CAPACITY) {
-    return { ok: false, error: "אין עוד מקומות זמינים. פנה להנהלת הקהילה." };
-  }
-
-  if (data.prepSlot) {
-    const used = getUsedForSlot(data.prepSlot);
-    const cap = getSlotCapacity(data.prepSlot);
-    if (used >= cap) {
-      return { ok: false, error: "המשמרת שבחרת מלאה. נסה משבצת אחרת." };
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  return (async () => {
+    if (data.seats <= 0) {
+      return { ok: false, error: "מספר המקומות חייב להיות גדול מאפס." };
     }
-  }
 
-  registrations.push({
-    ...data,
-    createdAt: new Date(),
-  });
+    // Optional: very simple global capacity check (e.g. 300 seats overall)
+    const TOTAL_CAPACITY = 300;
+    // Note: in Supabase mode this is not race-safe; acceptable for now.
+    // If needed we can implement a DB-side function/transaction.
+    if ((await getTotalSeats()) + data.seats > TOTAL_CAPACITY) {
+      return { ok: false, error: "אין עוד מקומות זמינים. פנה להנהלת הקהילה." };
+    }
 
-  return { ok: true };
+    if (data.prepSlot) {
+      const used = await getUsedForSlot(data.prepSlot);
+      const cap = getSlotCapacity(data.prepSlot);
+      if (used >= cap) {
+        return { ok: false, error: "המשמרת שבחרת מלאה. נסה משבצת אחרת." };
+      }
+    }
+
+    await dbUpsertHighHolidayRegistration(data);
+    return { ok: true };
+  })();
 }
 

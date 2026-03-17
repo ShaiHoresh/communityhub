@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function HighHolidaysPage() {
   const session = await getServerSession(authOptions);
   const enabled = isModuleEnabled("rosh_hashanah");
-  const registrations = getHighHolidayRegistrations();
+  const registrations = await getHighHolidayRegistrations();
 
   if (!session) {
     return (
@@ -180,7 +180,7 @@ export default async function HighHolidaysPage() {
           <section className="mt-8 text-xs text-primary/60">
             <p>
               סיכום טכני (נראה רק בסביבת פיתוח): {registrations.length} רישומים
-              נשמרו בזיכרון.
+              נשמרו.
             </p>
           </section>
         )}
