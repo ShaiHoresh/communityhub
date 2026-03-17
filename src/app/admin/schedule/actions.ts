@@ -8,6 +8,7 @@ import {
   type ScheduleEntryType,
 } from "@/lib/schedule-entries";
 import { getLocations } from "@/lib/locations";
+import { dbEnsureLocations } from "@/lib/db-locations";
 import { revalidatePath } from "next/cache";
 
 export async function addEntryAction(formData: FormData) {
@@ -24,6 +25,8 @@ export async function addEntryAction(formData: FormData) {
   if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
     return { ok: false, error: "שעה לא חוקית." };
   }
+
+  await dbEnsureLocations(getLocations());
 
   await addScheduleEntry({
     type,
@@ -74,6 +77,7 @@ export async function seedDefaultScheduleAction() {
   const locations = getLocations();
   const mainId = locations[0]?.id;
   if (!mainId) return { ok: false, error: "אין מיקומים." };
+  await dbEnsureLocations(locations);
   await ensureDefaultScheduleEntries(mainId);
   revalidatePath("/admin/schedule");
   revalidatePath("/");
