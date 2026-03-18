@@ -1,25 +1,30 @@
 /**
- * In-memory feature toggles for seasonal modules (Phase 4b).
+ * Supabase-backed feature toggles for seasonal modules (Phase 4b).
  * Used by Admin Overview KPIs and System Toggles settings page.
  */
 
 export type SeasonalModule = "rosh_hashanah" | "purim";
 
-const toggles: Record<SeasonalModule, boolean> = {
-  rosh_hashanah: false,
-  purim: false,
-};
+import {
+  dbEnsureDefaultToggles,
+  dbGetAllToggles,
+  dbIsModuleEnabled,
+  dbSetModuleEnabled,
+} from "@/lib/db-system-toggles";
 
-export function isModuleEnabled(module: SeasonalModule): boolean {
-  return toggles[module];
+export async function isModuleEnabled(module: SeasonalModule): Promise<boolean> {
+  await dbEnsureDefaultToggles();
+  return dbIsModuleEnabled(module);
 }
 
-export function setModuleEnabled(module: SeasonalModule, enabled: boolean): void {
-  toggles[module] = enabled;
+export async function setModuleEnabled(module: SeasonalModule, enabled: boolean): Promise<void> {
+  await dbEnsureDefaultToggles();
+  await dbSetModuleEnabled(module, enabled);
 }
 
-export function getAllToggles(): Record<SeasonalModule, boolean> {
-  return { ...toggles };
+export async function getAllToggles(): Promise<Record<SeasonalModule, boolean>> {
+  await dbEnsureDefaultToggles();
+  return dbGetAllToggles();
 }
 
 export function getModuleLabel(module: SeasonalModule): string {

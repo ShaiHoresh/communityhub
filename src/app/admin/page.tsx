@@ -25,7 +25,7 @@ export default async function AdminOverviewPage() {
   const membersCount = await dbGetActiveMembersCount();
   const projects = await getProjects();
   const totalBalanceCents = await getTotalBalanceCents(projects.map((p) => p.id));
-  const toggles = getAllToggles();
+  const toggles = await getAllToggles();
 
   return (
     <div className="space-y-10">

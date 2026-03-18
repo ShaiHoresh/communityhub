@@ -14,6 +14,7 @@ import { dbEnsureGmachCategories } from "@/lib/db-gmach";
 import { getGmachCategories } from "@/lib/gmach-categories";
 import { dbEnsureLocations } from "@/lib/db-locations";
 import { DEFAULT_LOCATIONS } from "@/lib/default-locations";
+import { dbEnsureDefaultToggles } from "@/lib/db-system-toggles";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
@@ -76,6 +77,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
 
   // Ensure core reference data exists
   await dbEnsureLocations(DEFAULT_LOCATIONS);
+  await dbEnsureDefaultToggles();
 
   // If admin already exists, assume seed applied.
   const { data: existingAdmin, error: adminErr } = await sb

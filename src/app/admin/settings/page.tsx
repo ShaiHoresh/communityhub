@@ -13,7 +13,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
-  const toggles = getAllToggles();
+  const toggles = await getAllToggles();
 
   return (
     <div className="space-y-10">

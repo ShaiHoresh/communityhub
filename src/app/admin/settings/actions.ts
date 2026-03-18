@@ -11,9 +11,12 @@ export async function toggleModuleAction(
   const valid: SeasonalModule[] = ["rosh_hashanah", "purim"];
 
   for (const key of valid) {
-    setModuleEnabled(key, modules.includes(key));
+    await setModuleEnabled(key, modules.includes(key));
   }
   revalidatePath("/admin");
   revalidatePath("/admin/settings");
+  revalidatePath("/");
+  revalidatePath("/purim");
+  revalidatePath("/high-holidays");
   return { success: true };
 }

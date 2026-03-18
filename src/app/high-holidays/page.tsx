@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HighHolidaysPage() {
   const session = await getServerSession(authOptions);
-  const enabled = isModuleEnabled("rosh_hashanah");
+  const enabled = await isModuleEnabled("rosh_hashanah");
   const registrations = await getHighHolidayRegistrations();
 
   if (!session) {

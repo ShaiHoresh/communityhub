@@ -178,3 +178,10 @@ CREATE TABLE high_holiday_registrations (
 );
 
 CREATE INDEX idx_high_holiday_prep_slot ON high_holiday_registrations(prep_slot);
+
+-- System toggles (feature flags)
+CREATE TABLE system_toggles (
+  key     TEXT PRIMARY KEY,
+  enabled BOOLEAN NOT NULL DEFAULT false,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
