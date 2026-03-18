@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="CommunityHub">
+  <rect width="512" height="512" rx="96" fill="#111827"/>
+  <path d="M256 120c-84 0-152 68-152 152s68 152 152 152 152-68 152-152-68-152-152-152Z" fill="#7c3aed" opacity="0.95"/>
+  <path d="M256 184c-48.6 0-88 39.4-88 88s39.4 88 88 88 88-39.4 88-88-39.4-88-88-88Z" fill="#f3f4f6"/>
+  <path d="M256 216l14 28 28 14-28 14-14 28-14-28-28-14 28-14 14-28Z" fill="#111827" opacity="0.85"/>
+</svg>
+

@@ -10,16 +10,17 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "bcryptjs": "^2.4.3",
     "next": "16.1.6",
     "next-auth": "^4.24.10",
-    "@supabase/supabase-js": "^2.49.1",
+    "next-pwa": "^5.6.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

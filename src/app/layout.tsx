@@ -17,6 +17,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CommunityHub",
   description: "CommunityHub – Synagogue & Community Center platform",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+  },
+};
+
+export const viewport = {
+  themeColor: "#111827",
 };
 
 export default function RootLayout({
