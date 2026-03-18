@@ -86,8 +86,8 @@ Accessibility:
 [x] ARIA & feedback: Add ARIA attributes and live regions where appropriate so errors and status changes are announced clearly.
 
 Phase 6: PWA & Polish
-[ ] Configure next-pwa for manifest, icons, and offline caching.
-[ ] Add metadata/manifest icons and ensure installability (Chrome).
+[x] Configure next-pwa for manifest, icons, and offline caching.
+[x] Add metadata/manifest icons and ensure installability (Chrome).
 
 [ ] Final Hebrew translation/string audit for all UI components.
 
