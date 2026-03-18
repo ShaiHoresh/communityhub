@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   description: "CommunityHub – Synagogue & Community Center platform",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/icon-512.png", type: "image/png" }],
+    apple: [{ url: "/icon-512.png", type: "image/png" }],
   },
 };
 
