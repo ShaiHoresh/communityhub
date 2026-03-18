@@ -5,6 +5,7 @@ const navItems = [
   { href: "/admin", label: "סקירה" },
   { href: "/admin/access-requests", label: "תור משתמשים" },
   { href: "/admin/schedule", label: "מנהל לוח זמנים" },
+  { href: "/admin/locations", label: "מיקומים" },
   { href: "/admin/finance", label: "מרכז כספים" },
   { href: "/admin/purim-report", label: "דוח פורים" },
   { href: "/admin/settings", label: "הגדרות מערכת" },

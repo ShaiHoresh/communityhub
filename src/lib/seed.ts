@@ -12,6 +12,8 @@ import bcrypt from "bcryptjs";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { dbEnsureGmachCategories } from "@/lib/db-gmach";
 import { getGmachCategories } from "@/lib/gmach-categories";
+import { dbEnsureLocations } from "@/lib/db-locations";
+import { DEFAULT_LOCATIONS } from "@/lib/default-locations";
 
 const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
@@ -71,6 +73,9 @@ async function upsertUserByEmail(input: {
 
 export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   const sb = supabaseAdmin();
+
+  // Ensure core reference data exists
+  await dbEnsureLocations(DEFAULT_LOCATIONS);
 
   // If admin already exists, assume seed applied.
   const { data: existingAdmin, error: adminErr } = await sb

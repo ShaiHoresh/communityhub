@@ -34,7 +34,7 @@ Supabase rollout (replace in-memory stores):
 [x] Replace `/api/seed` to seed Supabase (admin/member/pending).
 [x] Migrate: `gmach` (gmach_posts + categories) to Supabase so homepage updates are live.
 [x] Migrate: `life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`, `directory` to Supabase.
-[ ] Migrate: `locations` off hardcoded list (use Supabase `locations` table everywhere).
+[x] Migrate: `locations` off hardcoded list (use Supabase `locations` table everywhere).
 
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).

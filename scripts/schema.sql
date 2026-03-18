@@ -42,7 +42,8 @@ CREATE TABLE household_managers (
 CREATE TABLE locations (
   id           TEXT PRIMARY KEY,
   name         TEXT NOT NULL,
-  max_capacity INT NOT NULL DEFAULT 0
+  max_capacity INT NOT NULL DEFAULT 0,
+  space_category TEXT NOT NULL DEFAULT 'Indoor' CHECK (space_category IN ('Indoor','Covered','OpenAir','Protected'))
 );
 
 -- Prayers / lessons (schedule events; supports Shabbat Mincha logic)
