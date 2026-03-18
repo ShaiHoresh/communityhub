@@ -32,8 +32,9 @@ Supabase rollout (replace in-memory stores):
 [x] Implement server helpers (`src/lib/supabase-admin.ts`).
 [x] Migrate: `users` (auth + pending queue), `access_requests`, and approval-created `households/household_managers` to Supabase.
 [x] Replace `/api/seed` to seed Supabase (admin/member/pending).
-[ ] Migrate: `gmach` (gmach_posts + categories) to Supabase so homepage updates are live.
-[ ] Migrate remaining stores (`life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`) to Supabase tables.
+[x] Migrate: `gmach` (gmach_posts + categories) to Supabase so homepage updates are live.
+[x] Migrate: `life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`, `directory` to Supabase.
+[ ] Migrate: `locations` off hardcoded list (use Supabase `locations` table everywhere).
 
 Phase 2: The Prayer & Schedule Engine
 [x] Create locations table (Name, Max Capacity).

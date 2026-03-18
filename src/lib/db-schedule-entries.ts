@@ -50,7 +50,9 @@ export async function dbAddScheduleEntry(input: Omit<DbScheduleEntry, "id">): Pr
     })
     .select("id, type, title, location_id, hour, minute, use_seasonal_mincha_offset, sort_order")
     .single();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return mapRow(data);
 }
 
@@ -133,6 +135,8 @@ export async function dbEnsureDefaultScheduleEntries(locationId: string): Promis
       sort_order: d.sortOrder,
     })),
   );
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 }
 

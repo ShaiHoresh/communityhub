@@ -24,7 +24,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const status = session?.user ? (session.user as { status?: string }).status : null;
   const isMember = status === "MEMBER" || status === "ADMIN";
 
-  const locations = getLocations();
+  const locations = await getLocations();
   const mainLocation = locations[0];
   const today = new Date();
   const params = await searchParams;

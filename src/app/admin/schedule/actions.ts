@@ -26,7 +26,7 @@ export async function addEntryAction(formData: FormData) {
     return { ok: false, error: "שעה לא חוקית." };
   }
 
-  await dbEnsureLocations(getLocations());
+  await dbEnsureLocations(await getLocations());
 
   await addScheduleEntry({
     type,
@@ -74,11 +74,11 @@ export async function deleteEntryAction(entryId: string) {
 }
 
 export async function seedDefaultScheduleAction() {
-  const locations = getLocations();
-  const mainId = locations[0]?.id;
-  if (!mainId) return { ok: false, error: "אין מיקומים." };
-  await dbEnsureLocations(locations);
-  await ensureDefaultScheduleEntries(mainId);
+  const resolved = await getLocations();
+  const resolvedMainId = resolved[0]?.id;
+  if (!resolvedMainId) return { ok: false, error: "אין מיקומים." };
+  await dbEnsureLocations(resolved);
+  await ensureDefaultScheduleEntries(resolvedMainId);
   revalidatePath("/admin/schedule");
   revalidatePath("/");
   return { ok: true };

@@ -12,7 +12,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminSchedulePage() {
-  const locations = getLocations();
+  const locations = await getLocations();
   const entries = await getScheduleEntries();
 
   return (

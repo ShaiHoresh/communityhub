@@ -1,5 +1,7 @@
 import type { Location } from "@/lib/locations";
+import { getLocations } from "@/lib/locations";
 import { getLocationById } from "@/lib/locations";
+import { dbEnsureLocations } from "@/lib/db-locations";
 import {
   getScheduleEntries,
   ensureDefaultScheduleEntries,
@@ -49,6 +51,8 @@ export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
 ): Promise<DailySchedule> {
+  const seedLocations = await getLocations();
+  await dbEnsureLocations(seedLocations);
   await ensureDefaultScheduleEntries(mainLocation.id);
   const entries = await getScheduleEntries();
   const baseDate = new Date(date);
@@ -57,7 +61,7 @@ export async function buildDailyScheduleForDate(
   const events: PrayerEvent[] = [];
 
   for (const entry of entries) {
-    const location = getLocationById(entry.locationId) ?? mainLocation;
+    const location = (await getLocationById(entry.locationId)) ?? mainLocation;
     let start = new Date(baseDate);
     start.setHours(entry.hour, entry.minute, 0, 0);
 
