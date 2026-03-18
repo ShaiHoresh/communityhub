@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
         title="שכחת סיסמה"
         subtitle="לאפס את הסיסמה יש לפנות להנהלת הקהילה או להשתמש בשירות איפוס (יופעל בהמשך)."
       />
-      <main className="mx-auto max-w-xl px-6 py-12 text-right">
+      <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
         <div className="surface-card card-interactive space-y-6 rounded-2xl p-8 sm:p-10">
           <p className="leading-relaxed text-foreground">
             כרגע איפוס סיסמה מתבצע דרך הנהלת הקהילה. פנה למנהל המערכת עם פרטי

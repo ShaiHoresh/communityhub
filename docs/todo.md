@@ -80,13 +80,14 @@ Phase 5: Seasonal Modules
 [x] Build the "Recipient Aggregator" report for Admin.
 
 Accessibility:
-[ ] Semantic structure: Audit pages for proper headings, landmarks (header/nav/main/footer), and descriptive labels.
-[ ] Keyboard navigation: Ensure all interactive elements (buttons, tabs, cards, forms) are reachable and operable via keyboard only.
-[ ] Color & contrast: Verify color contrast for text and controls meets WCAG AA; adjust palette or add outlines as needed.
-[ ] ARIA & feedback: Add ARIA attributes and live regions where appropriate so errors and status changes are announced clearly.
+[x] Semantic structure: Audit pages for proper headings, landmarks (header/nav/main/footer), and descriptive labels.
+[x] Keyboard navigation: Ensure all interactive elements (buttons, tabs, cards, forms) are reachable and operable via keyboard only.
+[x] Color & contrast: Verify color contrast for text and controls meets WCAG AA; adjust palette or add outlines as needed.
+[x] ARIA & feedback: Add ARIA attributes and live regions where appropriate so errors and status changes are announced clearly.
 
 Phase 6: PWA & Polish
 [ ] Configure next-pwa for manifest, icons, and offline caching.
+[ ] Add metadata/manifest icons and ensure installability (Chrome).
 
 [ ] Final Hebrew translation/string audit for all UI components.
 

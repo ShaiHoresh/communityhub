@@ -64,12 +64,16 @@ export function LifeEventForm() {
           className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground placeholder:text-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
       </div>
-      {state?.error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
-      )}
-      {state?.success && (
-        <p className="text-sm text-primary">האירוע נרשם בהצלחה.</p>
-      )}
+      <div aria-live="polite" aria-atomic="true">
+        {state?.error && (
+          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+            {state.error}
+          </p>
+        )}
+        {state?.success && (
+          <p className="text-sm font-medium text-primary">האירוע נרשם בהצלחה.</p>
+        )}
+      </div>
       <button type="submit" className="btn-primary">
         הוספת אירוע
       </button>

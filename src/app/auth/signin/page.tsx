@@ -15,7 +15,7 @@ export default function SignInPage() {
         title="התחברות"
         subtitle="הזן אימייל וסיסמה כדי להיכנס לחשבון."
       />
-      <main className="mx-auto max-w-md px-6 py-12 text-right">
+      <main id="main-content" className="mx-auto max-w-md px-6 py-12 text-right">
         <div className="surface-card card-interactive rounded-2xl p-8">
           <Suspense fallback={<div className="text-center text-primary/80">טוען...</div>}>
             <SignInForm />

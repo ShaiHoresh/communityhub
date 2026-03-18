@@ -18,7 +18,7 @@ export function ToggleForm({ initialToggles, labels }: Props) {
         ([key, enabled]) => (
           <label
             key={key}
-            className="flex cursor-pointer items-center gap-3 rounded-lg border border-secondary/20 bg-white/50 p-4 transition hover:border-primary/30"
+            className="flex cursor-pointer items-center gap-3 rounded-lg border border-secondary/20 bg-white/50 p-4 transition hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-2"
           >
             <input
               type="checkbox"
@@ -34,12 +34,18 @@ export function ToggleForm({ initialToggles, labels }: Props) {
       <button type="submit" className="btn-primary mt-4">
         שמירה
       </button>
-      {state?.success && (
-        <p className="text-sm text-green-600 dark:text-green-400">נשמר בהצלחה.</p>
-      )}
-      {state?.error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
-      )}
+      <div aria-live="polite" aria-atomic="true">
+        {state?.success && (
+          <p className="text-sm font-medium text-green-700 dark:text-green-400">
+            נשמר בהצלחה.
+          </p>
+        )}
+        {state?.error && (
+          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+            {state.error}
+          </p>
+        )}
+      </div>
     </form>
   );
 }

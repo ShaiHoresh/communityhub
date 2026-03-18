@@ -81,8 +81,14 @@ export function LocationForm() {
         <button type="submit" className="btn-primary text-sm">
           שמירה
         </button>
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {state?.ok && <p className="text-sm text-primary">נשמר.</p>}
+        <div aria-live="polite" aria-atomic="true">
+          {state?.error && (
+            <p role="alert" className="text-sm font-medium text-red-600">
+              {state.error}
+            </p>
+          )}
+          {state?.ok && <p className="text-sm font-medium text-primary">נשמר.</p>}
+        </div>
       </div>
     </form>
   );

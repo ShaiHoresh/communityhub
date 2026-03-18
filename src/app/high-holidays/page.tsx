@@ -20,7 +20,7 @@ export default async function HighHolidaysPage() {
   if (!session) {
     return (
       <div className="min-h-screen bg-background font-sans">
-        <main className="mx-auto max-w-xl px-6 py-12 text-right">
+        <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
           <div className="surface-card p-8 text-center">
             <p className="mb-3 text-lg font-medium text-foreground">
               יש להתחבר כדי להירשם למקומות.
@@ -37,7 +37,7 @@ export default async function HighHolidaysPage() {
   if (!enabled) {
     return (
       <div className="min-h-screen bg-background font-sans">
-        <main className="mx-auto max-w-xl px-6 py-12 text-right">
+        <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
           <div className="surface-card p-8 text-center">
             <p className="text-lg font-medium text-foreground">
               רישום לימים נוראים כרגע סגור.
@@ -53,7 +53,7 @@ export default async function HighHolidaysPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
-      <main className="mx-auto max-w-2xl px-6 py-12 text-right">
+      <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 text-right">
         <div className="mb-8">
           <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
             רישום מקומות לימים נוראים

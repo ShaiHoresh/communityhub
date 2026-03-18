@@ -19,7 +19,7 @@ export default async function RequestAccessPage({ searchParams }: Props) {
         title="בקשת גישה למערכת"
         subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
       />
-      <main className="mx-auto max-w-xl px-6 py-10 text-right">
+      <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
         <Link
           href="/"
           className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
@@ -29,7 +29,11 @@ export default async function RequestAccessPage({ searchParams }: Props) {
 
         <div className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         {errorMsg && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+          >
             {errorMsg}
           </div>
         )}

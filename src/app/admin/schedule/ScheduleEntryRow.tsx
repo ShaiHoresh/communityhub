@@ -125,7 +125,7 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
           type="button"
           onClick={handleDelete}
           disabled={deleting}
-          className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+          className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:ring-offset-2 disabled:opacity-50"
         >
           {deleting ? "…" : "מחיקה"}
         </button>

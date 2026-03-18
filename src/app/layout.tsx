@@ -29,6 +29,9 @@ export default function RootLayout({
       <body
         className={`${heebo.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans`}
       >
+        <a href="#main-content" className="skip-link">
+          דלג לתוכן המרכזי
+        </a>
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

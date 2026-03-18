@@ -78,12 +78,25 @@ export function TransactionForm({ projectId }: Props) {
           >
             ביטול
           </button>
-          {state?.error && <p className="w-full text-sm text-red-600">{state.error}</p>}
-          {state?.success && (
-            <p className="w-full text-sm text-primary">
-              נרשם. <button type="button" onClick={() => setOpen(false)} className="underline">סגור</button>
-            </p>
-          )}
+          <div aria-live="polite" aria-atomic="true" className="w-full">
+            {state?.error && (
+              <p role="alert" className="text-sm font-medium text-red-600">
+                {state.error}
+              </p>
+            )}
+            {state?.success && (
+              <p className="text-sm font-medium text-primary">
+                נרשם.{" "}
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="underline"
+                >
+                  סגור
+                </button>
+              </p>
+            )}
+          </div>
         </form>
       )}
     </div>

@@ -34,7 +34,7 @@ export default function AdminLayout({
               <li>
                 <Link
                   href="/"
-                  className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-primary/90 transition hover:bg-primary/10 hover:text-primary"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-primary/90 transition hover:bg-primary/10 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
                 >
                   ← דף הבית
                 </Link>
@@ -43,7 +43,7 @@ export default function AdminLayout({
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="block rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary/10 hover:text-primary"
+                    className="block rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary/10 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
                   >
                     {item.label}
                   </Link>
@@ -52,7 +52,9 @@ export default function AdminLayout({
             </ul>
           </nav>
         </aside>
-        <main className="min-w-0 flex-1">{children}</main>
+        <main id="main-content" className="min-w-0 flex-1">
+          {children}
+        </main>
       </div>
     </div>
   );

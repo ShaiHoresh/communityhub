@@ -14,7 +14,7 @@ export default function SignUpPage() {
         title="הרשמה"
         subtitle="אחרי ההרשמה חשבונך יועבר לאישור הנהלת הקהילה. לאחר האישור תוכל לגשת לכל האזור האישי."
       />
-      <main className="mx-auto max-w-md px-6 py-12 text-right">
+      <main id="main-content" className="mx-auto max-w-md px-6 py-12 text-right">
         <div className="surface-card card-interactive rounded-2xl p-8">
           <SignUpForm />
         </div>

@@ -28,7 +28,7 @@ export default async function DirectoryPage({ searchParams }: PageProps) {
         title="משפחות הקהילה"
         subtitle="ספר טלפונים קהילתי, סינון לפי תגיות (רב, רופא, מתנדב). פרטי התצוגה לפי הגדרות הפרטיות של כל משפחה."
       />
-      <main className="mx-auto max-w-3xl px-6 py-10 text-right">
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
         <Link
           href="/"
           className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"

@@ -68,8 +68,16 @@ export function GmachAddForm({ categories }: Props) {
           className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
         />
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.success && <p className="text-sm text-primary">הפריט נוסף.</p>}
+      <div aria-live="polite" aria-atomic="true">
+        {state?.error && (
+          <p role="alert" className="text-sm font-medium text-red-600">
+            {state.error}
+          </p>
+        )}
+        {state?.success && (
+          <p className="text-sm font-medium text-primary">הפריט נוסף.</p>
+        )}
+      </div>
       <button type="submit" className="btn-primary text-sm">
         הוספה
       </button>

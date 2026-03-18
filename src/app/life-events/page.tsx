@@ -25,7 +25,7 @@ export default async function LifeEventsPage() {
         title="אירועי חיים"
         subtitle="רישום ימי הולדת ואזכרות (יארצייט). התצוגה מציגה אירועים קרובים ל־60 הימים הבאים."
       />
-      <main className="mx-auto max-w-3xl px-6 py-10 text-right">
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
         <Link
           href="/"
           className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"

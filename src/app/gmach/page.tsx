@@ -35,7 +35,7 @@ export default async function GmachPage({ searchParams }: PageProps) {
         title="לוח גמ״ח"
         subtitle="פריטים לפי קטגוריות. פריטים מסומני עדיפות ועדה מופיעים בראש הרשימה."
       />
-      <main className="mx-auto max-w-3xl px-6 py-10 text-right">
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
         <Link
           href="/"
           className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"

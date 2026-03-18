@@ -22,7 +22,7 @@ export default async function PurimPage() {
   if (!session) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-        <main className="mx-auto max-w-xl px-6 py-16 text-right">
+        <main id="main-content" className="mx-auto max-w-xl px-6 py-16 text-right">
           <div className="surface-card card-interactive rounded-3xl p-10 text-center">
             <p className="mb-3 text-lg font-heading font-bold text-foreground">
               🎭 כדי לבחור חבילת פורים יש להתחבר.
@@ -39,7 +39,7 @@ export default async function PurimPage() {
   if (!enabled) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-        <main className="mx-auto max-w-xl px-6 py-16 text-right">
+        <main id="main-content" className="mx-auto max-w-xl px-6 py-16 text-right">
           <div className="surface-card rounded-3xl p-10 text-center">
             <p className="text-lg font-heading font-bold text-foreground">
               🎉 מערכת משלוחי המנות כרגע סגורה.
@@ -60,7 +60,7 @@ export default async function PurimPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-      <main className="mx-auto max-w-3xl px-6 py-12 text-right sm:py-16">
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-12 text-right sm:py-16">
         <header className="mb-8 text-center">
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-700">
             פורים שמח 🎭🎁
@@ -84,7 +84,7 @@ export default async function PurimPage() {
           className="space-y-8"
         >
           <section className="grid gap-4 sm:grid-cols-3">
-            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400">
+            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400 focus-within:ring-2 focus-within:ring-fuchsia-400/60 focus-within:ring-offset-2">
               <input
                 type="radio"
                 name="tier"
@@ -101,7 +101,7 @@ export default async function PurimPage() {
               </span>
             </label>
 
-            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400">
+            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400 focus-within:ring-2 focus-within:ring-fuchsia-400/60 focus-within:ring-offset-2">
               <input
                 type="radio"
                 name="tier"
@@ -118,7 +118,7 @@ export default async function PurimPage() {
               </span>
             </label>
 
-            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400">
+            <label className="card-interactive surface-card flex cursor-pointer flex-col items-stretch rounded-3xl border-2 border-transparent p-5 text-center hover:border-fuchsia-400 focus-within:ring-2 focus-within:ring-fuchsia-400/60 focus-within:ring-offset-2">
               <input
                 type="radio"
                 name="tier"
@@ -156,7 +156,7 @@ export default async function PurimPage() {
                 households.map((h) => (
                   <label
                     key={h.id}
-                    className="flex cursor-pointer items-center justify-between gap-2 rounded-xl bg-fuchsia-50/80 px-3 py-2 text-primary/90 hover:bg-fuchsia-100"
+                    className="flex cursor-pointer items-center justify-between gap-2 rounded-xl bg-fuchsia-50/80 px-3 py-2 text-primary/90 hover:bg-fuchsia-100 focus-within:ring-2 focus-within:ring-fuchsia-400/60 focus-within:ring-offset-2"
                   >
                     <span className="font-medium">{h.name}</span>
                     <input

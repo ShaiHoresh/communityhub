@@ -61,7 +61,13 @@ export function SignInForm() {
           className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <div aria-live="polite" aria-atomic="true">
+        {error && (
+          <p role="alert" className="text-sm font-medium text-red-600">
+            {error}
+          </p>
+        )}
+      </div>
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? "מתחבר…" : "התחברות"}
       </button>
