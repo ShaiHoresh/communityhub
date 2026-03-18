@@ -45,14 +45,20 @@ export async function dbSetModuleEnabled(module: SeasonalModule, enabled: boolea
 
 export async function dbEnsureDefaultToggles(): Promise<void> {
   const sb = supabaseAdmin();
-  const { error } = await sb.from("system_toggles").upsert(
-    ALL_MODULES.map((key) => ({
+  // IMPORTANT: do not overwrite existing values.
+  const { data: existing, error: readErr } = await sb.from("system_toggles").select("key");
+  if (readErr) throw readErr;
+  const existingKeys = new Set((existing ?? []).map((r: any) => r.key as string));
+  const missing = ALL_MODULES.filter((k) => !existingKeys.has(k));
+  if (missing.length === 0) return;
+
+  const { error: insErr } = await sb.from("system_toggles").insert(
+    missing.map((key) => ({
       key,
       enabled: false,
       updated_at: new Date().toISOString(),
     })),
-    { onConflict: "key" },
   );
-  if (error) throw error;
+  if (insErr) throw insErr;
 }
 
