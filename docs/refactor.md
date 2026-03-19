@@ -36,12 +36,12 @@ Current problem:
   Every `db-*.ts` mapper uses `(r: any)`. 50+ occurrences of `if (error) throw error`.
   Several domain types are defined in two places (service layer + db layer).
 
-[ ] Define Supabase row types (`DbLocationRow`, `DbUserRow`, etc.) and replace all `any` mappers (25+ occurrences across all `db-*.ts`).
-[ ] Add `unwrap<T>({ data, error }): T` helper to replace repeated `if (error) throw error` blocks.
-[ ] Deduplicate types: `DirectoryTag`, `AccessRequestType`, `HighHolidaySlot`, `HighHolidayRegistration` — define once, import everywhere.
-[ ] Move location upsert/delete logic from `src/app/admin/locations/actions.ts` into `db-locations.ts` (currently bypasses the db layer).
-[ ] Remove redundant service wrappers that only re-export db functions with no added logic (`access-requests.ts`, `directory.ts`, `projects.ts`, `transactions.ts`).
-[ ] Run `dbEnsureLocations` / `dbEnsureDefaultToggles` once at startup or seed, not on every read call.
+[x] Define Supabase row types (`LocationRow`, `UserRow`, `ProjectRow`, etc.) and replace all `any` mappers across all 13 `db-*.ts` files.
+[x] Add `unwrap<T>`, `unwrapList<T>`, `unwrapMaybe<T>`, `unwrapCount` helpers in `src/lib/supabase-helpers.ts` to replace 69 `if (error) throw error` blocks.
+[x] Deduplicate types: `DirectoryTag` (canonical in `households.ts`), `AccessRequestType`/`AccessRequestStatus` (canonical in `db-access-requests.ts`), `HighHolidaySlot`/`SeatAllocation` (canonical in `db-high-holidays.ts`). Service layers re-export.
+[x] Move location upsert/delete logic into `db-locations.ts` (`dbUpsertLocation`, `dbDeleteLocation`); actions now call the db layer.
+[~] Service wrappers reviewed — only `projects.ts` is pure pass-through; others add validation/aggregation logic. Left as-is to avoid churn.
+[x] Run `dbEnsureLocations` / `dbEnsureDefaultToggles` only in seed, not on every read call.
 
 
 Phase R3: Server Action Standardization
@@ -54,7 +54,7 @@ Current problem:
 [ ] Add `parseFormString(formData, key)` helper (or adopt Zod) to eliminate repeated `.get()` + `.toString().trim()` + validation blocks.
 [ ] Add `revalidateAdminPaths()` and `revalidateAppPaths()` helpers to replace scattered `revalidatePath` calls.
 [x] Add session checks (`getServerSession`) in admin server actions (schedule, finance, locations, settings) as a defense-in-depth layer beyond middleware.
-[ ] Convert High Holidays and Purim inline `"use server"` form actions to use `useActionState` with proper error display.
+[x] Convert High Holidays and Purim inline `"use server"` form actions to use `useActionState` with proper error display.
 [x] Reuse `hashPassword` from `auth.ts` in `seed.ts` (currently duplicated).
 
 

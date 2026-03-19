@@ -1,12 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 import { requireAdmin } from "@/lib/auth-guard";
+import { dbUpsertLocation, dbDeleteLocation } from "@/lib/db-locations";
+import type { Location } from "@/lib/locations";
 
 const ALLOWED_CATEGORIES = ["Indoor", "Covered", "OpenAir", "Protected"] as const;
 
-function isCategory(v: string): v is (typeof ALLOWED_CATEGORIES)[number] {
+function isCategory(v: string): v is Location["spaceCategory"] {
   return (ALLOWED_CATEGORIES as readonly string[]).includes(v);
 }
 
@@ -29,17 +30,11 @@ export async function upsertLocationAction(formData: FormData) {
     return { ok: false, error: "סוג מרחב לא תקין." };
   }
 
-  const sb = supabaseAdmin();
-  const { error } = await sb.from("locations").upsert(
-    {
-      id,
-      name,
-      max_capacity: maxCapacity,
-      space_category: spaceCategoryRaw,
-    },
-    { onConflict: "id" },
-  );
-  if (error) return { ok: false, error: error.message };
+  try {
+    await dbUpsertLocation({ id, name, maxCapacity, spaceCategory: spaceCategoryRaw });
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "שגיאה בשמירת מיקום." };
+  }
 
   revalidatePath("/admin/locations");
   revalidatePath("/admin/schedule");
@@ -49,13 +44,14 @@ export async function upsertLocationAction(formData: FormData) {
 
 export async function deleteLocationAction(id: string) {
   await requireAdmin();
-  const sb = supabaseAdmin();
-  const { error } = await sb.from("locations").delete().eq("id", id);
-  if (error) return { ok: false, error: error.message };
+  try {
+    await dbDeleteLocation(id);
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "שגיאה במחיקת מיקום." };
+  }
 
   revalidatePath("/admin/locations");
   revalidatePath("/admin/schedule");
   revalidatePath("/");
   return { ok: true };
 }
-

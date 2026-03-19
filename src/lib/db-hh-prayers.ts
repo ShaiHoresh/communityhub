@@ -1,4 +1,11 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList } from "@/lib/supabase-helpers";
+
+export type HhPrayerRow = {
+  id: string;
+  name: string;
+  sort_order: number;
+};
 
 export type HhPrayer = {
   id: string;
@@ -8,12 +15,10 @@ export type HhPrayer = {
 
 export async function dbGetHhPrayers(): Promise<HhPrayer[]> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("hh_prayers")
-    .select("id, name, sort_order")
-    .order("sort_order", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map((r: any) => ({
+  const data = unwrapList<HhPrayerRow>(
+    await sb.from("hh_prayers").select("id, name, sort_order").order("sort_order", { ascending: true }),
+  );
+  return data.map((r) => ({
     id: r.id,
     name: r.name,
     sortOrder: r.sort_order,
@@ -22,13 +27,10 @@ export async function dbGetHhPrayers(): Promise<HhPrayer[]> {
 
 export async function dbCreateHhPrayer(name: string, sortOrder: number): Promise<HhPrayer> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("hh_prayers")
-    .insert({ name, sort_order: sortOrder })
-    .select("id, name, sort_order")
-    .single();
-  if (error) throw error;
-  return { id: (data as any).id, name: (data as any).name, sortOrder: (data as any).sort_order };
+  const data = unwrap<HhPrayerRow>(
+    await sb.from("hh_prayers").insert({ name, sort_order: sortOrder }).select("id, name, sort_order").single(),
+  );
+  return { id: data.id, name: data.name, sortOrder: data.sort_order };
 }
 
 export async function dbUpdateHhPrayer(id: string, name: string, sortOrder: number): Promise<void> {

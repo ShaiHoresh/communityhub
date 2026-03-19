@@ -1,25 +1,9 @@
+export type { AccessRequestType, AccessRequestStatus } from "@/lib/db-access-requests";
+export type { DbAccessRequest as AccessRequest } from "@/lib/db-access-requests";
+import type { DbAccessRequest as AccessRequest } from "@/lib/db-access-requests";
+
 export type AccessRequestId = string;
 
-export type AccessRequestType = "new_household" | "join_household";
-
-export type AccessRequest = {
-  id: AccessRequestId;
-  type: AccessRequestType;
-  /** For new_household: desired household name. For join_household: existing household id. */
-  householdNameOrId: string;
-  requesterName: string;
-  requesterEmail: string;
-  requesterPhone?: string;
-  /** Optional second adult (e.g. spouse) for new household – both become managers. */
-  secondAdultName?: string;
-  secondAdultEmail?: string;
-  secondAdultPhone?: string;
-  notes?: string;
-  status: "pending" | "approved" | "rejected";
-  createdAt: Date;
-  reviewedAt?: Date;
-  reviewedBy?: string;
-};
 import {
   dbApproveAccessRequest,
   dbCreateAccessRequest,

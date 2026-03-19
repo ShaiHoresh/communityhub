@@ -1,4 +1,17 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList, unwrapCount } from "@/lib/supabase-helpers";
+
+export type ScheduleEntryRow = {
+  id: string;
+  type: string;
+  title: string;
+  location_id: string;
+  hour: number;
+  minute: number;
+  use_seasonal_mincha_offset: boolean;
+  sort_order: number;
+  created_at?: string;
+};
 
 export type DbScheduleEntry = {
   id: string;
@@ -11,10 +24,10 @@ export type DbScheduleEntry = {
   sortOrder: number;
 };
 
-function mapRow(r: any): DbScheduleEntry {
+function mapRow(r: ScheduleEntryRow): DbScheduleEntry {
   return {
     id: r.id,
-    type: r.type,
+    type: r.type as DbScheduleEntry["type"],
     title: r.title,
     locationId: r.location_id,
     hour: r.hour,
@@ -26,18 +39,17 @@ function mapRow(r: any): DbScheduleEntry {
 
 export async function dbGetScheduleEntries(): Promise<DbScheduleEntry[]> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const result = await sb
     .from("schedule_entries")
     .select("id, type, title, location_id, hour, minute, use_seasonal_mincha_offset, sort_order")
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map(mapRow);
+  return unwrapList(result).map(mapRow);
 }
 
 export async function dbAddScheduleEntry(input: Omit<DbScheduleEntry, "id">): Promise<DbScheduleEntry> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const result = await sb
     .from("schedule_entries")
     .insert({
       type: input.type,
@@ -50,10 +62,7 @@ export async function dbAddScheduleEntry(input: Omit<DbScheduleEntry, "id">): Pr
     })
     .select("id, type, title, location_id, hour, minute, use_seasonal_mincha_offset, sort_order")
     .single();
-  if (error) {
-    throw error;
-  }
-  return mapRow(data);
+  return mapRow(unwrap(result));
 }
 
 export async function dbUpdateScheduleEntry(
@@ -88,11 +97,10 @@ export async function dbDeleteScheduleEntry(id: string): Promise<boolean> {
 
 export async function dbEnsureDefaultScheduleEntries(locationId: string): Promise<void> {
   const sb = supabaseAdmin();
-  const { count, error: countErr } = await sb
+  const countResult = await sb
     .from("schedule_entries")
     .select("id", { count: "exact", head: true });
-  if (countErr) throw countErr;
-  if ((count ?? 0) > 0) return;
+  if (unwrapCount(countResult) > 0) return;
 
   const defaults: Array<Omit<DbScheduleEntry, "id">> = [
     {

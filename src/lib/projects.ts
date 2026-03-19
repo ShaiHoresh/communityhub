@@ -1,12 +1,9 @@
+export type { DbProject as Project } from "@/lib/db-finance";
+
 export type ProjectId = string;
 
-export type Project = {
-  id: ProjectId;
-  name: string;
-  createdAt: Date;
-};
-
 import { dbCreateProject, dbGetProjects } from "@/lib/db-finance";
+import type { DbProject as Project } from "@/lib/db-finance";
 
 export async function getProjects(): Promise<Project[]> {
   return dbGetProjects();

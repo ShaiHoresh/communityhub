@@ -1,4 +1,22 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList, unwrapMaybe } from "@/lib/supabase-helpers";
+
+export type AccessRequestRow = {
+  id: string;
+  type: string;
+  household_name_or_id: string;
+  requester_name: string;
+  requester_email: string;
+  requester_phone: string | null;
+  second_adult_name: string | null;
+  second_adult_email: string | null;
+  second_adult_phone: string | null;
+  notes: string | null;
+  status: string;
+  created_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+};
 
 export type AccessRequestType = "new_household" | "join_household";
 export type AccessRequestStatus = "pending" | "approved" | "rejected";
@@ -20,10 +38,10 @@ export type DbAccessRequest = {
   reviewedBy?: string;
 };
 
-function mapRow(r: any): DbAccessRequest {
+function mapRow(r: AccessRequestRow): DbAccessRequest {
   return {
     id: r.id,
-    type: r.type,
+    type: r.type as AccessRequestType,
     householdNameOrId: r.household_name_or_id,
     requesterName: r.requester_name,
     requesterEmail: r.requester_email,
@@ -32,7 +50,7 @@ function mapRow(r: any): DbAccessRequest {
     secondAdultEmail: r.second_adult_email ?? undefined,
     secondAdultPhone: r.second_adult_phone ?? undefined,
     notes: r.notes ?? undefined,
-    status: r.status,
+    status: r.status as AccessRequestStatus,
     createdAt: new Date(r.created_at),
     reviewedAt: r.reviewed_at ? new Date(r.reviewed_at) : undefined,
     reviewedBy: r.reviewed_by ?? undefined,
@@ -51,7 +69,7 @@ export async function dbCreateAccessRequest(input: {
   notes?: string;
 }): Promise<DbAccessRequest> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const result = await sb
     .from("access_requests")
     .insert({
       type: input.type,
@@ -67,25 +85,24 @@ export async function dbCreateAccessRequest(input: {
     })
     .select("*")
     .single();
-  if (error) throw error;
-  return mapRow(data);
+  return mapRow(unwrap(result));
 }
 
 export async function dbGetPendingAccessRequests(): Promise<DbAccessRequest[]> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const result = await sb
     .from("access_requests")
     .select("*")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map(mapRow);
+  return unwrapList(result).map(mapRow);
 }
 
 export async function dbGetAccessRequestById(id: string): Promise<DbAccessRequest | null> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb.from("access_requests").select("*").eq("id", id).maybeSingle();
-  if (error) throw error;
+  const data = unwrapMaybe(
+    await sb.from("access_requests").select("*").eq("id", id).maybeSingle(),
+  );
   return data ? mapRow(data) : null;
 }
 

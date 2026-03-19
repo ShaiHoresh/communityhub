@@ -1,36 +1,62 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrapList, unwrapMaybe } from "@/lib/supabase-helpers";
 import type { Location } from "@/lib/locations";
 
-export async function dbGetLocations(): Promise<Location[]> {
-  const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("locations")
-    .select("id, name, max_capacity, space_category")
-    .order("id", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map((r: any) => ({
+export type LocationRow = {
+  id: string;
+  name: string;
+  max_capacity: number;
+  space_category: string;
+};
+
+function mapRow(r: LocationRow): Location {
+  return {
     id: r.id,
     name: r.name,
     maxCapacity: r.max_capacity ?? 0,
-    spaceCategory: r.space_category ?? "Indoor",
-  }));
+    spaceCategory: (r.space_category ?? "Indoor") as Location["spaceCategory"],
+  };
+}
+
+export async function dbGetLocations(): Promise<Location[]> {
+  const sb = supabaseAdmin();
+  const result = await sb
+    .from("locations")
+    .select("id, name, max_capacity, space_category")
+    .order("id", { ascending: true });
+  return unwrapList(result).map(mapRow);
 }
 
 export async function dbGetLocationById(id: string): Promise<Location | undefined> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("locations")
-    .select("id, name, max_capacity, space_category")
-    .eq("id", id)
-    .maybeSingle();
+  const data = unwrapMaybe(
+    await sb
+      .from("locations")
+      .select("id, name, max_capacity, space_category")
+      .eq("id", id)
+      .maybeSingle(),
+  );
+  return data ? mapRow(data) : undefined;
+}
+
+export async function dbUpsertLocation(loc: Location): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb.from("locations").upsert(
+    {
+      id: loc.id,
+      name: loc.name,
+      max_capacity: loc.maxCapacity,
+      space_category: loc.spaceCategory,
+    },
+    { onConflict: "id" },
+  );
   if (error) throw error;
-  if (!data) return undefined;
-  return {
-    id: (data as any).id,
-    name: (data as any).name,
-    maxCapacity: (data as any).max_capacity ?? 0,
-    spaceCategory: (data as any).space_category ?? "Indoor",
-  };
+}
+
+export async function dbDeleteLocation(id: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb.from("locations").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export async function dbEnsureLocations(locations: Location[]): Promise<void> {

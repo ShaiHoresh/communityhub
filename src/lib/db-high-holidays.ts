@@ -1,6 +1,23 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapCount, unwrapList, unwrapMaybe } from "@/lib/supabase-helpers";
 
 export type HighHolidaySlot = "erev_rh_early" | "erev_rh_late" | "erev_yk_setup";
+
+export type RegistrationRow = {
+  id: string;
+  household_id: string;
+  household_name: string | null;
+  committee_interest: string | null;
+  prep_slot: string | null;
+  created_at: string;
+};
+
+export type SeatRow = {
+  registration_id: string;
+  prayer_id: string;
+  men_seats: number;
+  women_seats: number;
+};
 
 export type SeatAllocation = {
   prayerId: string;
@@ -20,33 +37,32 @@ export type DbHighHolidayRegistration = {
 
 export async function dbGetHighHolidayRegistrations(): Promise<DbHighHolidayRegistration[]> {
   const sb = supabaseAdmin();
-  const { data: regs, error: regErr } = await sb
-    .from("high_holiday_registrations")
-    .select("id, household_id, household_name, committee_interest, prep_slot, created_at")
-    .order("created_at", { ascending: false });
-  if (regErr) throw regErr;
+  const regs = unwrapList<RegistrationRow>(
+    await sb
+      .from("high_holiday_registrations")
+      .select("id, household_id, household_name, committee_interest, prep_slot, created_at")
+      .order("created_at", { ascending: false }),
+  );
 
-  const regIds = (regs ?? []).map((r: any) => r.id);
+  const regIds = regs.map((r) => r.id);
   const seatsByReg: Record<string, SeatAllocation[]> = {};
 
   if (regIds.length > 0) {
-    const { data: allSeats, error: seatsErr } = await sb
-      .from("hh_registration_seats")
-      .select("registration_id, prayer_id, men_seats, women_seats")
-      .in("registration_id", regIds);
-    if (seatsErr) throw seatsErr;
-    for (const s of allSeats ?? []) {
-      const rid = (s as any).registration_id;
+    const allSeats = unwrapList<SeatRow>(
+      await sb.from("hh_registration_seats").select("registration_id, prayer_id, men_seats, women_seats").in("registration_id", regIds),
+    );
+    for (const s of allSeats) {
+      const rid = s.registration_id;
       if (!seatsByReg[rid]) seatsByReg[rid] = [];
       seatsByReg[rid].push({
-        prayerId: (s as any).prayer_id,
-        menSeats: (s as any).men_seats,
-        womenSeats: (s as any).women_seats,
+        prayerId: s.prayer_id,
+        menSeats: s.men_seats,
+        womenSeats: s.women_seats,
       });
     }
   }
 
-  return (regs ?? []).map((r: any) => ({
+  return regs.map((r) => ({
     id: r.id,
     householdId: r.household_id,
     householdName: r.household_name ?? "",
@@ -61,55 +77,50 @@ export async function dbGetRegistrationForHousehold(
   householdId: string,
 ): Promise<DbHighHolidayRegistration | null> {
   const sb = supabaseAdmin();
-  const { data: reg, error: regErr } = await sb
-    .from("high_holiday_registrations")
-    .select("id, household_id, household_name, committee_interest, prep_slot, created_at")
-    .eq("household_id", householdId)
-    .maybeSingle();
-  if (regErr) throw regErr;
+  const reg = unwrapMaybe<RegistrationRow>(
+    await sb
+      .from("high_holiday_registrations")
+      .select("id, household_id, household_name, committee_interest, prep_slot, created_at")
+      .eq("household_id", householdId)
+      .maybeSingle(),
+  );
   if (!reg) return null;
 
-  const { data: seats, error: seatsErr } = await sb
-    .from("hh_registration_seats")
-    .select("prayer_id, men_seats, women_seats")
-    .eq("registration_id", (reg as any).id);
-  if (seatsErr) throw seatsErr;
+  const seats = unwrapList<Pick<SeatRow, "prayer_id" | "men_seats" | "women_seats">>(
+    await sb.from("hh_registration_seats").select("prayer_id, men_seats, women_seats").eq("registration_id", reg.id),
+  );
 
   return {
-    id: (reg as any).id,
-    householdId: (reg as any).household_id,
-    householdName: (reg as any).household_name ?? "",
-    committeeInterest: (reg as any).committee_interest ?? "",
-    prepSlot: ((reg as any).prep_slot as HighHolidaySlot | null) ?? null,
-    seats: (seats ?? []).map((s: any) => ({
+    id: reg.id,
+    householdId: reg.household_id,
+    householdName: reg.household_name ?? "",
+    committeeInterest: reg.committee_interest ?? "",
+    prepSlot: (reg.prep_slot as HighHolidaySlot | null) ?? null,
+    seats: seats.map((s) => ({
       prayerId: s.prayer_id,
       menSeats: s.men_seats,
       womenSeats: s.women_seats,
     })),
-    createdAt: new Date((reg as any).created_at),
+    createdAt: new Date(reg.created_at),
   };
 }
 
 export async function dbGetTotalSeats(): Promise<number> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("hh_registration_seats")
-    .select("men_seats, women_seats");
-  if (error) throw error;
-  return (data ?? []).reduce(
-    (sum: number, r: any) => sum + (r.men_seats ?? 0) + (r.women_seats ?? 0),
-    0,
+  const data = unwrapList<Pick<SeatRow, "men_seats" | "women_seats">>(
+    await sb.from("hh_registration_seats").select("men_seats, women_seats"),
   );
+  return data.reduce((sum, r) => sum + (r.men_seats ?? 0) + (r.women_seats ?? 0), 0);
 }
 
 export async function dbGetUsedForSlot(slot: HighHolidaySlot): Promise<number> {
   const sb = supabaseAdmin();
-  const { count, error } = await sb
-    .from("high_holiday_registrations")
-    .select("household_id", { count: "exact", head: true })
-    .eq("prep_slot", slot);
-  if (error) throw error;
-  return count ?? 0;
+  return unwrapCount(
+    await sb
+      .from("high_holiday_registrations")
+      .select("household_id", { count: "exact", head: true })
+      .eq("prep_slot", slot),
+  );
 }
 
 export async function dbUpsertHighHolidayRegistration(input: {
@@ -121,23 +132,24 @@ export async function dbUpsertHighHolidayRegistration(input: {
 }) {
   const sb = supabaseAdmin();
 
-  const { data: reg, error: upsertErr } = await sb
-    .from("high_holiday_registrations")
-    .upsert(
-      {
-        household_id: input.householdId,
-        household_name: input.householdName,
-        committee_interest: input.committeeInterest ?? "",
-        prep_slot: input.prepSlot ?? null,
-        created_at: new Date().toISOString(),
-      },
-      { onConflict: "household_id" },
-    )
-    .select("id")
-    .single();
-  if (upsertErr) throw upsertErr;
+  const reg = unwrap<Pick<RegistrationRow, "id">>(
+    await sb
+      .from("high_holiday_registrations")
+      .upsert(
+        {
+          household_id: input.householdId,
+          household_name: input.householdName,
+          committee_interest: input.committeeInterest ?? "",
+          prep_slot: input.prepSlot ?? null,
+          created_at: new Date().toISOString(),
+        },
+        { onConflict: "household_id" },
+      )
+      .select("id")
+      .single(),
+  );
 
-  const registrationId = (reg as any).id as string;
+  const registrationId = reg.id;
 
   const { error: delErr } = await sb
     .from("hh_registration_seats")

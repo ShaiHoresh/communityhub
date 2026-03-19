@@ -1,4 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList } from "@/lib/supabase-helpers";
+
+type GmachPostRow = { id: string; category_id: string; title: string; description: string | null; contact_info: string | null; is_pinned_by_committee: boolean; created_at: string };
 
 export type DbGmachPost = {
   id: string;
@@ -10,7 +13,7 @@ export type DbGmachPost = {
   createdAt: Date;
 };
 
-function mapRow(r: any): DbGmachPost {
+function mapRow(r: GmachPostRow): DbGmachPost {
   return {
     id: r.id,
     categoryId: r.category_id,
@@ -29,12 +32,10 @@ export async function dbGetGmachPosts(categoryId?: string): Promise<DbGmachPost[
     .select("id, category_id, title, description, contact_info, is_pinned_by_committee, created_at");
   if (categoryId) q = q.eq("category_id", categoryId);
 
-  // Pinned first, then newest first
-  const { data, error } = await q
+  const data = unwrapList(await q
     .order("is_pinned_by_committee", { ascending: false })
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []).map(mapRow);
+    .order("created_at", { ascending: false }));
+  return data.map(mapRow);
 }
 
 export async function dbAddGmachPost(input: {
@@ -44,7 +45,7 @@ export async function dbAddGmachPost(input: {
   contactInfo?: string;
 }): Promise<DbGmachPost> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const data = unwrap(await sb
     .from("gmach_posts")
     .insert({
       category_id: input.categoryId,
@@ -53,26 +54,27 @@ export async function dbAddGmachPost(input: {
       contact_info: input.contactInfo ?? null,
     })
     .select("id, category_id, title, description, contact_info, is_pinned_by_committee, created_at")
-    .single();
-  if (error) throw error;
+    .single());
   return mapRow(data);
 }
 
+type GmachPinnedRow = { id: string; is_pinned_by_committee: boolean };
+
 export async function dbToggleGmachPinned(itemId: string): Promise<void> {
   const sb = supabaseAdmin();
-  const { data: row, error: readErr } = await sb
+  const row = unwrap(await sb
     .from("gmach_posts")
     .select("id, is_pinned_by_committee")
     .eq("id", itemId)
-    .single();
-  if (readErr) throw readErr;
+    .single()) as GmachPinnedRow;
 
-  const nextPinned = !(row as any).is_pinned_by_committee;
-  const { error: writeErr } = await sb
+  const nextPinned = !row.is_pinned_by_committee;
+  unwrap(await sb
     .from("gmach_posts")
     .update({ is_pinned_by_committee: nextPinned })
-    .eq("id", itemId);
-  if (writeErr) throw writeErr;
+    .eq("id", itemId)
+    .select()
+    .single());
 }
 
 export async function dbEnsureGmachCategories(categories: Array<{ id: string; label: string; color: string }>) {

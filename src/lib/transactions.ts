@@ -6,19 +6,11 @@ import {
   dbGetTransactionsByProject,
 } from "@/lib/db-finance";
 
+export type { DbTransaction as Transaction } from "@/lib/db-finance";
+import type { DbTransaction as Transaction } from "@/lib/db-finance";
+
 export type TransactionId = string;
-
 export type TransactionType = "income" | "expense";
-
-export type Transaction = {
-  id: TransactionId;
-  projectId: ProjectId;
-  type: TransactionType;
-  amountCents: number;
-  description: string;
-  date: Date;
-  createdAt: Date;
-};
 
 export async function getTransactionsByProject(projectId: ProjectId): Promise<Transaction[]> {
   return dbGetTransactionsByProject(projectId);

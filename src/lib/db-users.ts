@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList, unwrapMaybe, unwrapCount } from "@/lib/supabase-helpers";
 import type { UserStatus } from "@/lib/households";
 
 export type DbUserRow = {
@@ -9,16 +10,26 @@ export type DbUserRow = {
   status: UserStatus;
 };
 
+interface PendingUserRow {
+  id: string;
+  full_name: string;
+  email: string | null;
+}
+
+interface HouseholdIdRow {
+  household_id: string | null;
+}
+
 export async function dbFindUserByEmail(email: string): Promise<DbUserRow | null> {
   const normalized = email.trim().toLowerCase();
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("users")
-    .select("id, full_name, email, password_hash, status")
-    .ilike("email", normalized)
-    .maybeSingle();
-  if (error) throw error;
-  return (data as DbUserRow | null) ?? null;
+  return unwrapMaybe(
+    await sb
+      .from("users")
+      .select("id, full_name, email, password_hash, status")
+      .ilike("email", normalized)
+      .maybeSingle(),
+  );
 }
 
 export async function dbCreatePendingUser(input: {
@@ -27,31 +38,32 @@ export async function dbCreatePendingUser(input: {
   passwordHash: string;
 }): Promise<{ id: string }> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("users")
-    .insert({
-      full_name: input.fullName,
-      email: input.email.trim().toLowerCase(),
-      password_hash: input.passwordHash,
-      status: "PENDING",
-    })
-    .select("id")
-    .single();
-  if (error) throw error;
-  return { id: (data as { id: string }).id };
+  const data = unwrap(
+    await sb
+      .from("users")
+      .insert({
+        full_name: input.fullName,
+        email: input.email.trim().toLowerCase(),
+        password_hash: input.passwordHash,
+        status: "PENDING",
+      })
+      .select("id")
+      .single(),
+  );
+  return { id: data.id };
 }
 
 export async function dbGetPendingUsers(): Promise<
   Array<{ id: string; fullName: string; email?: string }>
 > {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
-    .from("users")
-    .select("id, full_name, email, status")
-    .eq("status", "PENDING")
-    .order("created_at", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map((r: any) => ({
+  return unwrapList(
+    await sb
+      .from("users")
+      .select("id, full_name, email, status")
+      .eq("status", "PENDING")
+      .order("created_at", { ascending: true }),
+  ).map((r: PendingUserRow) => ({
     id: r.id,
     fullName: r.full_name,
     email: r.email ?? undefined,
@@ -67,9 +79,10 @@ export async function dbSetUserStatus(userId: string, status: UserStatus) {
 
 export async function dbGetUserHouseholdId(userId: string): Promise<string | null> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb.from("users").select("household_id").eq("id", userId).maybeSingle();
-  if (error) throw error;
-  return (data as any)?.household_id ?? null;
+  const data = unwrapMaybe<HouseholdIdRow>(
+    await sb.from("users").select("household_id").eq("id", userId).maybeSingle(),
+  );
+  return data?.household_id ?? null;
 }
 
 export async function dbUpsertUser(input: {
@@ -105,20 +118,21 @@ export async function dbUpsertUser(input: {
     return { id: existing.id as string };
   }
 
-  const { data, error } = await sb
-    .from("users")
-    .insert({
-      full_name: input.fullName,
-      email: normalizedEmail,
-      password_hash: input.passwordHash,
-      status: input.status,
-      household_id: input.householdId ?? null,
-      role: input.role ?? null,
-    })
-    .select("id")
-    .single();
-  if (error) throw error;
-  return { id: (data as { id: string }).id };
+  const data = unwrap(
+    await sb
+      .from("users")
+      .insert({
+        full_name: input.fullName,
+        email: normalizedEmail,
+        password_hash: input.passwordHash,
+        status: input.status,
+        household_id: input.householdId ?? null,
+        role: input.role ?? null,
+      })
+      .select("id")
+      .single(),
+  );
+  return { id: data.id };
 }
 
 export async function dbGetActiveMembersCount(): Promise<number> {
@@ -127,7 +141,6 @@ export async function dbGetActiveMembersCount(): Promise<number> {
     .from("users")
     .select("id", { count: "exact", head: true })
     .in("status", ["MEMBER", "ADMIN"]);
-  if (error) throw error;
-  return count ?? 0;
+  return unwrapCount({ count, error });
 }
 

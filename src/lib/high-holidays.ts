@@ -1,10 +1,5 @@
-export type HighHolidaySlot = "erev_rh_early" | "erev_rh_late" | "erev_yk_setup";
-
-export type SeatAllocation = {
-  prayerId: string;
-  menSeats: number;
-  womenSeats: number;
-};
+export type { HighHolidaySlot, SeatAllocation } from "@/lib/db-high-holidays";
+import type { HighHolidaySlot, SeatAllocation } from "@/lib/db-high-holidays";
 
 export type HighHolidayRegistration = {
   id: string;

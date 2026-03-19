@@ -1,14 +1,8 @@
-import type { DirectoryTag } from "@/lib/db-directory";
+import type { DirectoryTag } from "@/lib/households";
 import { dbGetDirectoryEntries } from "@/lib/db-directory";
 
-export type DirectoryEntry = {
-  userId: string;
-  fullName: string;
-  householdName: string | null;
-  phone: string | null;
-  email: string | null;
-  tags: DirectoryTag[];
-};
+export type { DbDirectoryEntry as DirectoryEntry } from "@/lib/db-directory";
+import type { DbDirectoryEntry as DirectoryEntry } from "@/lib/db-directory";
 
 const TAG_LABELS: Record<DirectoryTag, string> = {
   rabbi: "רב",

@@ -1,4 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { unwrap, unwrapList } from "@/lib/supabase-helpers";
+
+type LifeEventRow = { id: string; type: string; name: string; date: string; household_id: string | null; notes: string | null; created_at: string };
 
 export type DbLifeEventRow = {
   id: string;
@@ -10,10 +13,10 @@ export type DbLifeEventRow = {
   createdAt: Date;
 };
 
-function mapRow(r: any): DbLifeEventRow {
+function mapRow(r: LifeEventRow): DbLifeEventRow {
   return {
     id: r.id,
-    type: r.type,
+    type: r.type as "birth" | "yahrzeit",
     name: r.name,
     date: new Date(r.date),
     householdId: r.household_id ?? undefined,
@@ -24,12 +27,11 @@ function mapRow(r: any): DbLifeEventRow {
 
 export async function dbGetLifeEvents(): Promise<DbLifeEventRow[]> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const data = unwrapList(await sb
     .from("life_events")
     .select("id, type, name, date, household_id, notes, created_at")
-    .order("date", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map(mapRow);
+    .order("date", { ascending: true }));
+  return data.map(mapRow);
 }
 
 export async function dbCreateLifeEvent(input: {
@@ -40,7 +42,7 @@ export async function dbCreateLifeEvent(input: {
   notes?: string;
 }): Promise<DbLifeEventRow> {
   const sb = supabaseAdmin();
-  const { data, error } = await sb
+  const data = unwrap(await sb
     .from("life_events")
     .insert({
       type: input.type,
@@ -50,8 +52,7 @@ export async function dbCreateLifeEvent(input: {
       notes: input.notes ?? null,
     })
     .select("id, type, name, date, household_id, notes, created_at")
-    .single();
-  if (error) throw error;
+    .single());
   return mapRow(data);
 }
 
