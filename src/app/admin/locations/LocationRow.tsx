@@ -5,10 +5,10 @@ import type { Location } from "@/lib/locations";
 import { deleteLocationAction, upsertLocationAction } from "./actions";
 
 const CATEGORIES = [
-  { value: "Indoor", label: "Indoor" },
-  { value: "Covered", label: "Covered" },
-  { value: "OpenAir", label: "Open-air" },
-  { value: "Protected", label: "Protected" },
+  { value: "Indoor", label: "פנים" },
+  { value: "Covered", label: "חוץ מקורה" },
+  { value: "OpenAir", label: "חוץ פתוח" },
+  { value: "Protected", label: "מרחב מוגן" },
 ] as const;
 
 export function LocationRow({ location }: { location: Location }) {
@@ -89,8 +89,8 @@ export function LocationRow({ location }: { location: Location }) {
       <div className="min-w-0">
         <p className="font-heading font-semibold text-foreground">{location.name}</p>
         <p className="mt-1 text-sm text-primary/80">
-          id: <span className="font-mono">{location.id}</span> · קיבולת: {location.maxCapacity} · סוג:{" "}
-          {location.spaceCategory}
+          מזהה: <span className="font-mono">{location.id}</span> · קיבולת: {location.maxCapacity} · סוג:{" "}
+          {CATEGORIES.find((c) => c.value === location.spaceCategory)?.label ?? location.spaceCategory}
         </p>
       </div>
       <div className="flex gap-2">

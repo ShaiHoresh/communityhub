@@ -89,6 +89,6 @@ Phase 6: PWA & Polish
 [x] Configure next-pwa for manifest, icons, and offline caching.
 [x] Add metadata/manifest icons and ensure installability (Chrome).
 
-[ ] Final Hebrew translation/string audit for all UI components.
+[x] Final Hebrew translation/string audit for all UI components.
 
 [ ] Export to Excel functionality for all Admin tables.

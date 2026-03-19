@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CommunityHub",
-  description: "CommunityHub – Synagogue & Community Center platform",
+  description: "CommunityHub – פלטפורמה לבית כנסת וקהילה",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [{ url: "/icon-512.png", type: "image/png" }],

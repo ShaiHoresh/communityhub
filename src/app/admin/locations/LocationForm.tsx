@@ -4,10 +4,10 @@ import { useActionState } from "react";
 import { upsertLocationAction } from "./actions";
 
 const CATEGORIES = [
-  { value: "Indoor", label: "Indoor (פנים)" },
-  { value: "Covered", label: "Covered (חוץ מקורה)" },
-  { value: "OpenAir", label: "Open-air (חוץ פתוח)" },
-  { value: "Protected", label: "Protected space (מרחב מוגן)" },
+  { value: "Indoor", label: "פנים" },
+  { value: "Covered", label: "חוץ מקורה" },
+  { value: "OpenAir", label: "חוץ פתוח" },
+  { value: "Protected", label: "מרחב מוגן" },
 ] as const;
 
 export function LocationForm() {
@@ -22,7 +22,7 @@ export function LocationForm() {
     <form action={formAction} className="grid gap-4 sm:grid-cols-4">
       <div className="sm:col-span-1">
         <label htmlFor="loc-id" className="mb-1 block text-xs font-medium text-primary/80">
-          מזהה (id)
+          מזהה (ID)
         </label>
         <input
           id="loc-id"

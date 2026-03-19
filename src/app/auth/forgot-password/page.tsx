@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
             החשבון (אימייל) כדי לאפס את הסיסמה.
           </p>
           <p className="text-sm leading-relaxed text-primary/85">
-            בעתיד יתווסף שליחת קישור איפוס לאימייל (Password Reset flow).
+            בעתיד יתווסף שליחת קישור איפוס לאימייל (תהליך איפוס אוטומטי).
           </p>
           <div className="flex flex-wrap gap-4 pt-2">
             <Link href="/auth/signin" className="btn-primary">
