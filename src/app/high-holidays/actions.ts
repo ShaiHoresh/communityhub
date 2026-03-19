@@ -6,6 +6,7 @@ import { addHighHolidayRegistration, type HighHolidaySlot } from "@/lib/high-hol
 import { revalidatePath } from "next/cache";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { dbGetHouseholdById, dbIsHouseholdManager } from "@/lib/db-households";
+import { dbGetHhPrayers } from "@/lib/db-hh-prayers";
 
 export async function submitHighHolidayRegistration(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -28,14 +29,19 @@ export async function submitHighHolidayRegistration(formData: FormData) {
   const household = await dbGetHouseholdById(householdId);
   const householdName = household?.name ?? "";
 
-  const seatsStr = (formData.get("seats") as string) ?? "0";
-  const seats = parseInt(seatsStr, 10);
+  const prayers = await dbGetHhPrayers();
+  const seats = prayers.map((p) => ({
+    prayerId: p.id,
+    menSeats: parseInt((formData.get(`men_${p.id}`) as string) ?? "0", 10) || 0,
+    womenSeats: parseInt((formData.get(`women_${p.id}`) as string) ?? "0", 10) || 0,
+  }));
+
   const committees = formData.getAll("committees") as string[];
   const prepSlotRaw = formData.get("prepSlot") as string | null;
   const prepSlot = prepSlotRaw ? (prepSlotRaw as HighHolidaySlot) : null;
 
   const committeeInterest =
-    committees.length === 0 ? "לא נבחרו ועדות" : `ועדות: ${committees.join(", ")}`;
+    committees.length === 0 ? "" : `ועדות: ${committees.join(", ")}`;
 
   const result = await addHighHolidayRegistration({
     householdId,

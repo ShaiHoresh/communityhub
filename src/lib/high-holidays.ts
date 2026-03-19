@@ -1,13 +1,28 @@
 export type HighHolidaySlot = "erev_rh_early" | "erev_rh_late" | "erev_yk_setup";
 
+export type SeatAllocation = {
+  prayerId: string;
+  menSeats: number;
+  womenSeats: number;
+};
+
 export type HighHolidayRegistration = {
+  id: string;
   householdId: string;
   householdName: string;
-  seats: number;
   committeeInterest: string;
   prepSlot: HighHolidaySlot | null;
+  seats: SeatAllocation[];
   createdAt: Date;
 };
+
+import {
+  dbGetHighHolidayRegistrations,
+  dbGetRegistrationForHousehold,
+  dbGetTotalSeats,
+  dbGetUsedForSlot,
+  dbUpsertHighHolidayRegistration,
+} from "@/lib/db-high-holidays";
 
 const CAPACITY_BY_SLOT: Record<HighHolidaySlot, number> = {
   erev_rh_early: 120,
@@ -15,15 +30,14 @@ const CAPACITY_BY_SLOT: Record<HighHolidaySlot, number> = {
   erev_yk_setup: 40,
 };
 
-import {
-  dbGetHighHolidayRegistrations,
-  dbGetTotalSeats,
-  dbGetUsedForSlot,
-  dbUpsertHighHolidayRegistration,
-} from "@/lib/db-high-holidays";
-
 export async function getHighHolidayRegistrations(): Promise<HighHolidayRegistration[]> {
   return dbGetHighHolidayRegistrations();
+}
+
+export async function getRegistrationForHousehold(
+  householdId: string,
+): Promise<HighHolidayRegistration | null> {
+  return dbGetRegistrationForHousehold(householdId);
 }
 
 export async function getTotalSeats(): Promise<number> {
@@ -39,15 +53,14 @@ export function getSlotCapacity(slot: HighHolidaySlot): number {
 }
 
 export async function addHighHolidayRegistration(
-  data: Omit<HighHolidayRegistration, "createdAt">
+  data: Omit<HighHolidayRegistration, "id" | "createdAt">,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (data.seats <= 0) {
-    return { ok: false, error: "מספר המקומות חייב להיות גדול מאפס." };
-  }
-
-  const TOTAL_CAPACITY = 300;
-  if ((await getTotalSeats()) + data.seats > TOTAL_CAPACITY) {
-    return { ok: false, error: "אין עוד מקומות זמינים. פנה להנהלת הקהילה." };
+  const totalNewSeats = data.seats.reduce(
+    (sum, s) => sum + s.menSeats + s.womenSeats,
+    0,
+  );
+  if (totalNewSeats <= 0) {
+    return { ok: false, error: "יש לבקש לפחות מקום אחד." };
   }
 
   if (data.prepSlot) {

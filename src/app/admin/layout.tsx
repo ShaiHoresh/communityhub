@@ -7,6 +7,7 @@ const navItems = [
   { href: "/admin/schedule", label: "מנהל לוח זמנים" },
   { href: "/admin/locations", label: "מיקומים" },
   { href: "/admin/finance", label: "מרכז כספים" },
+  { href: "/admin/high-holidays", label: "ימים נוראים" },
   { href: "/admin/purim-report", label: "דוח פורים" },
   { href: "/admin/settings", label: "הגדרות מערכת" },
 ];

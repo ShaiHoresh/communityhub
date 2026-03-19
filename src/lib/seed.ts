@@ -26,23 +26,6 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   await dbEnsureLocations(DEFAULT_LOCATIONS);
   await dbEnsureDefaultToggles();
 
-  // If admin already exists, assume seed applied.
-  const { data: existingAdmin, error: adminErr } = await sb
-    .from("users")
-    .select("id")
-    .ilike("email", "admin@test.com")
-    .maybeSingle();
-  if (adminErr) throw adminErr;
-
-  if (existingAdmin?.id) {
-    return {
-      ok: true,
-      message:
-        "Seed already applied (Supabase). Sign in as admin@test.com | member1@test.com | member2@test.com | pending@test.com with password: " +
-        SEED_PASSWORD,
-    };
-  }
-
   const passwordHash = await hashPassword(SEED_PASSWORD);
 
   // Admin user (no household)
@@ -53,14 +36,26 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     status: "ADMIN",
   });
 
-  // One member household + 2 managers
-  const { data: hh, error: hhErr } = await sb
+  // Ensure a member household exists
+  let householdId: string;
+  const { data: existingHH, error: hhFindErr } = await sb
     .from("households")
-    .insert({ name: "משפחת כהן (לדוגמה)" })
     .select("id")
-    .single();
-  if (hhErr) throw hhErr;
-  const householdId = (hh as { id: string }).id;
+    .eq("name", "משפחת כהן (לדוגמה)")
+    .maybeSingle();
+  if (hhFindErr) throw hhFindErr;
+
+  if (existingHH?.id) {
+    householdId = existingHH.id as string;
+  } else {
+    const { data: hh, error: hhErr } = await sb
+      .from("households")
+      .insert({ name: "משפחת כהן (לדוגמה)" })
+      .select("id")
+      .single();
+    if (hhErr) throw hhErr;
+    householdId = (hh as { id: string }).id;
+  }
 
   const member1 = await dbUpsertUser({
     email: "member1@test.com",
@@ -79,11 +74,14 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     role: "adult",
   });
 
-  const { error: mgrErr } = await sb.from("household_managers").insert([
-    { household_id: householdId, user_id: member1.id },
-    { household_id: householdId, user_id: member2.id },
-  ]);
-  if (mgrErr) throw mgrErr;
+  // Ensure both members are household managers (upsert via ON CONFLICT)
+  await sb.from("household_managers").upsert(
+    [
+      { household_id: householdId, user_id: member1.id },
+      { household_id: householdId, user_id: member2.id },
+    ],
+    { onConflict: "household_id,user_id" },
+  );
 
   // Pending user (no household until approved)
   await dbUpsertUser({
@@ -92,6 +90,28 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     passwordHash,
     status: "PENDING",
   });
+
+  // Ensure default High Holiday prayers exist
+  const { count: hhPrayerCount, error: hhPrayerCountErr } = await sb
+    .from("hh_prayers")
+    .select("id", { count: "exact", head: true });
+  if (hhPrayerCountErr) throw hhPrayerCountErr;
+  if ((hhPrayerCount ?? 0) === 0) {
+    const defaultPrayers = [
+      { name: "ערבית ראש השנה", sort_order: 1 },
+      { name: "שחרית ראש השנה א׳", sort_order: 2 },
+      { name: "מוסף ראש השנה א׳", sort_order: 3 },
+      { name: "שחרית ראש השנה ב׳", sort_order: 4 },
+      { name: "מוסף ראש השנה ב׳", sort_order: 5 },
+      { name: "כל נדרי", sort_order: 6 },
+      { name: "שחרית יום כיפור", sort_order: 7 },
+      { name: "מוסף יום כיפור", sort_order: 8 },
+      { name: "מנחה יום כיפור", sort_order: 9 },
+      { name: "נעילה", sort_order: 10 },
+    ];
+    const { error: hhPrayerErr } = await sb.from("hh_prayers").insert(defaultPrayers);
+    if (hhPrayerErr) throw hhPrayerErr;
+  }
 
   // Ensure Gmach categories exist, and add a few default posts if empty
   await dbEnsureGmachCategories(getGmachCategories());

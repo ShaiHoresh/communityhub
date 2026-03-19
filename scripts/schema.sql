@@ -164,12 +164,21 @@ CREATE TABLE purim_selection_recipients (
 
 CREATE INDEX idx_purim_recipients_household ON purim_selection_recipients(household_id);
 
+-- High Holiday prayers (admin-configurable list of prayers for seat registration)
+CREATE TABLE hh_prayers (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name       TEXT NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_hh_prayers_order ON hh_prayers(sort_order);
+
 -- High Holidays registrations (seasonal module; one per household)
 CREATE TABLE high_holiday_registrations (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   household_id        UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
   household_name      TEXT,
-  seats               INT NOT NULL CHECK (seats > 0),
   committee_interest  TEXT NOT NULL DEFAULT '',
   prep_slot           TEXT,
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -177,6 +186,18 @@ CREATE TABLE high_holiday_registrations (
 );
 
 CREATE INDEX idx_high_holiday_prep_slot ON high_holiday_registrations(prep_slot);
+
+-- Per-prayer seat allocations (men's / women's sections)
+CREATE TABLE hh_registration_seats (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  registration_id UUID NOT NULL REFERENCES high_holiday_registrations(id) ON DELETE CASCADE,
+  prayer_id       UUID NOT NULL REFERENCES hh_prayers(id) ON DELETE CASCADE,
+  men_seats       INT NOT NULL DEFAULT 0 CHECK (men_seats >= 0),
+  women_seats     INT NOT NULL DEFAULT 0 CHECK (women_seats >= 0),
+  UNIQUE (registration_id, prayer_id)
+);
+
+CREATE INDEX idx_hh_reg_seats_registration ON hh_registration_seats(registration_id);
 
 -- System toggles (feature flags)
 CREATE TABLE system_toggles (
