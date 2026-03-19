@@ -1,5 +1,6 @@
 import { getPurimRecipientReport, getPurimSelections } from "@/lib/purim";
 import { dbGetHouseholds } from "@/lib/db-households";
+import { ExportExcelButton } from "@/components/ExportExcelButton";
 
 export const metadata = {
   title: "דוח פורים | CommunityHub",
@@ -26,9 +27,24 @@ export default async function AdminPurimReportPage() {
 
   return (
     <div className="space-y-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-        דוח פורים – מקבלי משלוחי מנות
-      </h1>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+          דוח פורים – מקבלי משלוחי מנות
+        </h1>
+        <ExportExcelButton
+          filename={`admin-purim-report-${new Date().toISOString().slice(0, 10)}.xlsx`}
+          sheetName="PurimReport"
+          rows={rows.map((r) => ({
+            "מזהה משפחה": r.householdId,
+            משפחה: r.householdName,
+            "כמות שולחים": r.givers.length,
+            שולחים: r.givers
+              .map((sel) => (sel.householdId ? (byId[sel.householdId] ?? sel.householdId) : sel.userId))
+              .join(", "),
+          }))}
+          className="btn-secondary text-sm"
+        />
+      </div>
 
       <section className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         <p className="text-sm text-primary/80">

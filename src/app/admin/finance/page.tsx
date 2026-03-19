@@ -8,6 +8,7 @@ import { CreateProjectForm } from "./CreateProjectForm";
 import { TransactionForm } from "./TransactionForm";
 import { GeneralLedger } from "./GeneralLedger";
 import { PaymentGatewayPlaceholder } from "./PaymentGatewayPlaceholder";
+import { ExportExcelButton } from "@/components/ExportExcelButton";
 
 function formatCents(cents: number): string {
   return (cents / 100).toLocaleString("he-IL", {
@@ -38,11 +39,28 @@ export default async function AdminFinancePage() {
     }),
   );
 
+  const projectNames = Object.fromEntries(projects.map((p) => [p.id, p.name]));
+
   return (
     <div className="space-y-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-        מרכז כספים – פרויקטים והכנסות/הוצאות
-      </h1>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+          מרכז כספים – פרויקטים והכנסות/הוצאות
+        </h1>
+        <ExportExcelButton
+          filename={`admin-ledger-${new Date().toISOString().slice(0, 10)}.xlsx`}
+          sheetName="Ledger"
+          rows={allTransactions.map((t) => ({
+            תאריך: formatDate(t.date),
+            פרויקט: projectNames[t.projectId] ?? t.projectId,
+            סוג: t.type === "income" ? "הכנסה" : "הוצאה",
+            תיאור: t.description || "—",
+            סכום: `${t.type === "income" ? "+" : "−"}₪${formatCents(t.amountCents)}`,
+            מזהה: t.id,
+          }))}
+          className="btn-secondary text-sm"
+        />
+      </div>
 
       <section className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
           <h2 className="mb-5 font-heading text-lg font-bold text-foreground">

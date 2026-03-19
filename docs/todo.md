@@ -91,4 +91,4 @@ Phase 6: PWA & Polish
 
 [x] Final Hebrew translation/string audit for all UI components.
 
-[ ] Export to Excel functionality for all Admin tables.
+[x] Export to Excel functionality for all Admin tables.

@@ -1,5 +1,6 @@
 import { getLocations } from "@/lib/locations";
 import { getScheduleEntries } from "@/lib/schedule-entries";
+import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { ScheduleEntryForm } from "./ScheduleEntryForm";
 import { ScheduleEntryRow } from "./ScheduleEntryRow";
 import { SeedScheduleButton } from "./SeedScheduleButton";
@@ -14,12 +15,35 @@ export const dynamic = "force-dynamic";
 export default async function AdminSchedulePage() {
   const locations = await getLocations();
   const entries = await getScheduleEntries();
+  const locationNames = Object.fromEntries(locations.map((l) => [l.id, l.name]));
+  const typeLabels: Record<string, string> = {
+    shacharit: "שחרית",
+    mincha: "מנחה",
+    arvit: "ערבית",
+    lesson: "שיעור",
+  };
 
   return (
     <div className="space-y-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-        מנהל לוח זמנים
-      </h1>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+          מנהל לוח זמנים
+        </h1>
+        <ExportExcelButton
+          filename={`admin-schedule-${new Date().toISOString().slice(0, 10)}.xlsx`}
+          sheetName="Schedule"
+          rows={entries.map((e) => ({
+            מזהה: e.id,
+            סוג: typeLabels[e.type] ?? e.type,
+            כותרת: e.title,
+            שעה: `${String(e.hour).padStart(2, "0")}:${String(e.minute).padStart(2, "0")}`,
+            מיקום: locationNames[e.locationId] ?? e.locationId,
+            "התאמה עונתית": e.useSeasonalMinchaOffset ? "כן" : "לא",
+            "סדר מיון": e.sortOrder,
+          }))}
+          className="btn-secondary text-sm"
+        />
+      </div>
 
       <section className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         <h2 className="mb-5 font-heading text-lg font-bold text-foreground">
