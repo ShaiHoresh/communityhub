@@ -10,6 +10,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { hashPassword } from "@/lib/auth";
+import { dbUpsertUser } from "@/lib/db-users";
 import { dbEnsureGmachCategories } from "@/lib/db-gmach";
 import { getGmachCategories } from "@/lib/gmach-categories";
 import { dbEnsureLocations } from "@/lib/db-locations";
@@ -17,55 +18,6 @@ import { DEFAULT_LOCATIONS } from "@/lib/default-locations";
 import { dbEnsureDefaultToggles } from "@/lib/db-system-toggles";
 
 export const SEED_PASSWORD = "Test1234!";
-
-async function upsertUserByEmail(input: {
-  email: string;
-  fullName: string;
-  passwordHash: string;
-  status: "PENDING" | "MEMBER" | "ADMIN";
-  householdId?: string | null;
-  role?: string | null;
-}) {
-  const sb = supabaseAdmin();
-
-  const normalizedEmail = input.email.trim().toLowerCase();
-  const { data: existing, error: existingErr } = await sb
-    .from("users")
-    .select("id")
-    .ilike("email", normalizedEmail)
-    .maybeSingle();
-  if (existingErr) throw existingErr;
-
-  if (existing?.id) {
-    const { error } = await sb
-      .from("users")
-      .update({
-        full_name: input.fullName,
-        password_hash: input.passwordHash,
-        status: input.status,
-        household_id: input.householdId ?? null,
-        role: input.role ?? null,
-      })
-      .eq("id", existing.id);
-    if (error) throw error;
-    return { id: existing.id as string };
-  }
-
-  const { data, error } = await sb
-    .from("users")
-    .insert({
-      full_name: input.fullName,
-      email: normalizedEmail,
-      password_hash: input.passwordHash,
-      status: input.status,
-      household_id: input.householdId ?? null,
-      role: input.role ?? null,
-    })
-    .select("id")
-    .single();
-  if (error) throw error;
-  return { id: (data as { id: string }).id };
-}
 
 export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   const sb = supabaseAdmin();
@@ -94,7 +46,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   const passwordHash = await hashPassword(SEED_PASSWORD);
 
   // Admin user (no household)
-  await upsertUserByEmail({
+  await dbUpsertUser({
     email: "admin@test.com",
     fullName: "מנהל מערכת",
     passwordHash,
@@ -110,7 +62,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   if (hhErr) throw hhErr;
   const householdId = (hh as { id: string }).id;
 
-  const member1 = await upsertUserByEmail({
+  const member1 = await dbUpsertUser({
     email: "member1@test.com",
     fullName: "ישראל כהן",
     passwordHash,
@@ -118,7 +70,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     householdId,
     role: "adult",
   });
-  const member2 = await upsertUserByEmail({
+  const member2 = await dbUpsertUser({
     email: "member2@test.com",
     fullName: "רחל כהן",
     passwordHash,
@@ -134,7 +86,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
   if (mgrErr) throw mgrErr;
 
   // Pending user (no household until approved)
-  await upsertUserByEmail({
+  await dbUpsertUser({
     email: "pending@test.com",
     fullName: "משתמש ממתין",
     passwordHash,

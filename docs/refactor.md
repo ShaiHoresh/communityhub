@@ -19,14 +19,15 @@ Recommended model:
   - On submit: resolve the logged-in user's `householdId`, verify they are a manager, upsert for that household.
   - Either spouse (manager) can submit or update; the registration belongs to the household, not the individual.
 
-[ ] Remove dead `memberIds` / `managerIds` from `Household` type in `src/lib/households.ts`.
-[ ] Add `getHouseholdMembers(householdId)` helper in `src/lib/db-households.ts`.
-[ ] Migrate `purim_selections`: change unique constraint from `user_id` to `household_id`; update `db-purim.ts` and `purim.ts` accordingly.
-[ ] Migrate `high_holiday_registrations`: replace `user_id` + `household_name` with `household_id` FK; update `db-high-holidays.ts` and `high-holidays.ts`.
-[ ] Update Purim page (`src/app/purim/page.tsx`) and action to resolve session user → household, verify manager, upsert per household.
-[ ] Update High Holidays page (`src/app/high-holidays/page.tsx`) and action with the same household-based flow.
-[ ] Update Purim report and High Holidays admin views to display household name from FK (not free text).
-[ ] Consolidate user-creation paths (`dbCreatePendingUser`, `dbCreateHouseholdUser`, seed `upsertUserByEmail`) into fewer functions.
+[x] Remove dead `memberIds` / `managerIds` from `Household` type in `src/lib/households.ts`.
+[x] Add `getHouseholdMembers(householdId)` helper in `src/lib/db-households.ts`.
+[x] Migrate `purim_selections`: change unique constraint from `user_id` to `household_id`; update `db-purim.ts` and `purim.ts` accordingly.
+[x] Migrate `high_holiday_registrations`: replace `user_id` + `household_name` with `household_id` FK; update `db-high-holidays.ts` and `high-holidays.ts`.
+[x] Update Purim page (`src/app/purim/page.tsx`) and action to resolve session user → household, verify manager, upsert per household.
+[x] Update High Holidays page (`src/app/high-holidays/page.tsx`) and action with the same household-based flow.
+[x] Update Purim report and High Holidays admin views to display household name from FK (not free text).
+[x] Consolidate user-creation paths (`dbCreatePendingUser`, `dbCreateHouseholdUser`, seed `upsertUserByEmail`) into fewer functions.
+[x] SQL migration script: `scripts/migration-r1-household-registration.sql`.
 
 
 Phase R2: DB Layer – Type Safety & DRY
@@ -82,7 +83,7 @@ Current problem:
 
 [ ] Fix schedule N+1: load all locations once, build a Map, look up per entry.
 [ ] Parallelize home page fetches (`getLocations`, `buildDailyScheduleForDate`, `getGmachItems`, `isModuleEnabled` x2) with `Promise.all`.
-[ ] Parallelize Purim page fetches (`getPurimSelectionForUser`, `dbGetHouseholds`, `getPurimSelections`) with `Promise.all`.
+[ ] Parallelize Purim page fetches (`getPurimSelectionForHousehold`, `dbGetHouseholds`, `getPurimSelections`) with `Promise.all`.
 [x] Remove redundant `if (!session)` checks in `/high-holidays` and `/purim` pages (middleware already protects these routes).
 [ ] Simplify `addHighHolidayRegistration` IIFE into a normal async function body.
 [ ] Consider `unstable_cache` for relatively static data (locations, schedule entries, system toggles).

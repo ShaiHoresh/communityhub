@@ -72,6 +72,55 @@ export async function dbGetUserHouseholdId(userId: string): Promise<string | nul
   return (data as any)?.household_id ?? null;
 }
 
+export async function dbUpsertUser(input: {
+  email: string;
+  fullName: string;
+  passwordHash: string;
+  status: UserStatus;
+  householdId?: string | null;
+  role?: string | null;
+}): Promise<{ id: string }> {
+  const sb = supabaseAdmin();
+  const normalizedEmail = input.email.trim().toLowerCase();
+
+  const { data: existing, error: existingErr } = await sb
+    .from("users")
+    .select("id")
+    .ilike("email", normalizedEmail)
+    .maybeSingle();
+  if (existingErr) throw existingErr;
+
+  if (existing?.id) {
+    const { error } = await sb
+      .from("users")
+      .update({
+        full_name: input.fullName,
+        password_hash: input.passwordHash,
+        status: input.status,
+        household_id: input.householdId ?? null,
+        role: input.role ?? null,
+      })
+      .eq("id", existing.id);
+    if (error) throw error;
+    return { id: existing.id as string };
+  }
+
+  const { data, error } = await sb
+    .from("users")
+    .insert({
+      full_name: input.fullName,
+      email: normalizedEmail,
+      password_hash: input.passwordHash,
+      status: input.status,
+      household_id: input.householdId ?? null,
+      role: input.role ?? null,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return { id: (data as { id: string }).id };
+}
+
 export async function dbGetActiveMembersCount(): Promise<number> {
   const sb = supabaseAdmin();
   const { count, error } = await sb

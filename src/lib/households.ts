@@ -4,10 +4,6 @@ export type UserId = string;
 export type Household = {
   id: HouseholdId;
   name: string;
-  // Users who belong to this household (foreign key: User.householdId)
-  memberIds: UserId[];
-  // Managers are a subset of members, typically spouses.
-  managerIds: UserId[];
 };
 
 /** Tags for directory (e.g. רב, רופא, מתנדב). */

@@ -1,7 +1,7 @@
-import type { HouseholdId, UserId } from "./households";
+import type { HouseholdId } from "./households";
 import {
   dbGetPurimRecipientReport,
-  dbGetPurimSelectionForUser,
+  dbGetPurimSelectionForHousehold,
   dbGetPurimSelections,
   dbUpsertPurimSelection,
   type PurimTier,
@@ -10,10 +10,9 @@ import {
 export type { PurimTier };
 
 export type PurimSelection = {
-  userId: UserId;
-  householdId?: HouseholdId;
+  householdId: HouseholdId;
   tier: PurimTier;
-  recipientHouseholdIds: HouseholdId[]; // for 5 / 20 tiers
+  recipientHouseholdIds: HouseholdId[];
   createdAt: Date;
 };
 
@@ -21,8 +20,8 @@ export async function getPurimSelections(): Promise<PurimSelection[]> {
   return dbGetPurimSelections();
 }
 
-export async function getPurimSelectionForUser(userId: UserId): Promise<PurimSelection | undefined> {
-  const sel = await dbGetPurimSelectionForUser(userId);
+export async function getPurimSelectionForHousehold(householdId: HouseholdId): Promise<PurimSelection | undefined> {
+  const sel = await dbGetPurimSelectionForHousehold(householdId);
   return sel ?? undefined;
 }
 
@@ -37,7 +36,7 @@ export async function upsertPurimSelection(
   }
 
   await dbUpsertPurimSelection({
-    userId: data.userId,
+    householdId: data.householdId,
     tier: data.tier,
     recipientHouseholdIds: data.recipientHouseholdIds,
   });
@@ -48,4 +47,3 @@ export async function upsertPurimSelection(
 export async function getPurimRecipientReport(): Promise<Record<HouseholdId, PurimSelection[]>> {
   return dbGetPurimRecipientReport() as Promise<Record<HouseholdId, PurimSelection[]>>;
 }
-

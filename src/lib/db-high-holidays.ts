@@ -3,9 +3,8 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 export type HighHolidaySlot = "erev_rh_early" | "erev_rh_late" | "erev_yk_setup";
 
 export type DbHighHolidayRegistration = {
-  userId: string;
-  fullName: string;
-  householdName?: string;
+  householdId: string;
+  householdName: string;
   seats: number;
   committeeInterest: string;
   prepSlot: HighHolidaySlot | null;
@@ -14,9 +13,8 @@ export type DbHighHolidayRegistration = {
 
 function mapRow(r: any): DbHighHolidayRegistration {
   return {
-    userId: r.user_id,
-    fullName: r.full_name,
-    householdName: r.household_name ?? undefined,
+    householdId: r.household_id,
+    householdName: r.household_name ?? "",
     seats: r.seats,
     committeeInterest: r.committee_interest ?? "",
     prepSlot: (r.prep_slot as HighHolidaySlot | null) ?? null,
@@ -28,7 +26,7 @@ export async function dbGetHighHolidayRegistrations(): Promise<DbHighHolidayRegi
   const sb = supabaseAdmin();
   const { data, error } = await sb
     .from("high_holiday_registrations")
-    .select("user_id, full_name, household_name, seats, committee_interest, prep_slot, created_at")
+    .select("household_id, household_name, seats, committee_interest, prep_slot, created_at")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map(mapRow);
@@ -43,7 +41,7 @@ export async function dbGetUsedForSlot(slot: HighHolidaySlot): Promise<number> {
   const sb = supabaseAdmin();
   const { count, error } = await sb
     .from("high_holiday_registrations")
-    .select("user_id", { count: "exact", head: true })
+    .select("household_id", { count: "exact", head: true })
     .eq("prep_slot", slot);
   if (error) throw error;
   return count ?? 0;
@@ -55,17 +53,15 @@ export async function dbUpsertHighHolidayRegistration(input: Omit<DbHighHolidayR
     .from("high_holiday_registrations")
     .upsert(
       {
-        user_id: input.userId,
-        full_name: input.fullName,
-        household_name: input.householdName ?? null,
+        household_id: input.householdId,
+        household_name: input.householdName,
         seats: input.seats,
         committee_interest: input.committeeInterest ?? "",
         prep_slot: input.prepSlot ?? null,
         created_at: new Date().toISOString(),
       },
-      { onConflict: "user_id" },
+      { onConflict: "household_id" },
     );
   if (error) throw error;
   return { ok: true as const };
 }
-

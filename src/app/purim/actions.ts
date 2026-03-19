@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { upsertPurimSelection, type PurimTier } from "@/lib/purim";
 import { revalidatePath } from "next/cache";
-import { dbGetHouseholds } from "@/lib/db-households";
+import { dbGetHouseholds, dbIsHouseholdManager } from "@/lib/db-households";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
 
 export async function submitPurimSelection(formData: FormData) {
@@ -13,6 +13,16 @@ export async function submitPurimSelection(formData: FormData) {
 
   if (!session || !userId) {
     return { ok: false, error: "יש להתחבר כדי לבחור חבילה." };
+  }
+
+  const householdId = await dbGetUserHouseholdId(userId);
+  if (!householdId) {
+    return { ok: false, error: "לא משויך למשק בית. פנה להנהלת הקהילה." };
+  }
+
+  const isManager = await dbIsHouseholdManager(householdId, userId);
+  if (!isManager) {
+    return { ok: false, error: "רק מנהל משק בית יכול לבחור חבילת פורים." };
   }
 
   const tier = formData.get("tier") as PurimTier | null;
@@ -26,11 +36,8 @@ export async function submitPurimSelection(formData: FormData) {
     households.some((h) => h.id === id)
   );
 
-  const householdId = await dbGetUserHouseholdId(userId);
-
   const result = await upsertPurimSelection({
-    userId,
-    householdId: householdId ?? undefined,
+    householdId,
     tier,
     recipientHouseholdIds: tier === "full" ? [] : validRecipientIds,
   });
@@ -42,4 +49,3 @@ export async function submitPurimSelection(formData: FormData) {
   revalidatePath("/purim");
   return { ok: true };
 }
-

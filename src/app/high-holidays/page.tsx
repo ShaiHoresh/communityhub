@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
 import { getHighHolidayRegistrations } from "@/lib/high-holidays";
 import { submitHighHolidayRegistration } from "./actions";
@@ -12,7 +10,6 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HighHolidaysPage() {
-  const session = await getServerSession(authOptions);
   const enabled = await isModuleEnabled("rosh_hashanah");
   const registrations = await getHighHolidayRegistrations();
 

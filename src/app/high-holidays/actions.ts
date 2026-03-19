@@ -5,16 +5,28 @@ import { authOptions } from "@/lib/auth-config";
 import { addHighHolidayRegistration, type HighHolidaySlot } from "@/lib/high-holidays";
 import { revalidatePath } from "next/cache";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
-import { dbGetHouseholdById } from "@/lib/db-households";
+import { dbGetHouseholdById, dbIsHouseholdManager } from "@/lib/db-households";
 
 export async function submitHighHolidayRegistration(formData: FormData) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { userId?: string })?.userId;
-  const fullName = (session?.user as { name?: string; email?: string })?.name ?? session?.user?.email ?? "";
 
   if (!session || !userId) {
     return { ok: false, error: "יש להתחבר כדי להירשם." };
   }
+
+  const householdId = await dbGetUserHouseholdId(userId);
+  if (!householdId) {
+    return { ok: false, error: "לא משויך למשק בית. פנה להנהלת הקהילה." };
+  }
+
+  const isManager = await dbIsHouseholdManager(householdId, userId);
+  if (!isManager) {
+    return { ok: false, error: "רק מנהל משק בית יכול לרשום מקומות." };
+  }
+
+  const household = await dbGetHouseholdById(householdId);
+  const householdName = household?.name ?? "";
 
   const seatsStr = (formData.get("seats") as string) ?? "0";
   const seats = parseInt(seatsStr, 10);
@@ -25,14 +37,8 @@ export async function submitHighHolidayRegistration(formData: FormData) {
   const committeeInterest =
     committees.length === 0 ? "לא נבחרו ועדות" : `ועדות: ${committees.join(", ")}`;
 
-  const householdId = await dbGetUserHouseholdId(userId);
-  const householdName = householdId
-    ? (await dbGetHouseholdById(householdId))?.name
-    : undefined;
-
   const result = await addHighHolidayRegistration({
-    userId,
-    fullName,
+    householdId,
     householdName,
     seats,
     committeeInterest,
@@ -46,4 +52,3 @@ export async function submitHighHolidayRegistration(formData: FormData) {
   revalidatePath("/high-holidays");
   return { ok: true };
 }
-

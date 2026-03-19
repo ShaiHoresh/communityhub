@@ -1,9 +1,10 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
-import { getPurimSelectionForUser, getPurimSelections } from "@/lib/purim";
+import { getPurimSelectionForHousehold, getPurimSelections } from "@/lib/purim";
 import { submitPurimSelection } from "./actions";
 import { dbGetHouseholds } from "@/lib/db-households";
+import { dbGetUserHouseholdId } from "@/lib/db-users";
 
 export const metadata = {
   title: "פורים – משלוח מנות | CommunityHub",
@@ -36,7 +37,8 @@ export default async function PurimPage() {
     );
   }
 
-  const previousSelection = userId ? await getPurimSelectionForUser(userId) : undefined;
+  const householdId = userId ? await dbGetUserHouseholdId(userId) : null;
+  const previousSelection = householdId ? await getPurimSelectionForHousehold(householdId) : undefined;
   const households = await dbGetHouseholds();
   const devSelectionsCount = (await getPurimSelections()).length;
 

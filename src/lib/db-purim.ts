@@ -3,19 +3,19 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 export type PurimTier = "full" | "twenty" | "five";
 
 export type DbPurimSelection = {
-  userId: string;
+  householdId: string;
   tier: PurimTier;
   recipientHouseholdIds: string[];
   createdAt: Date;
 };
 
-export async function dbGetPurimSelectionForUser(userId: string): Promise<DbPurimSelection | null> {
+export async function dbGetPurimSelectionForHousehold(householdId: string): Promise<DbPurimSelection | null> {
   const sb = supabaseAdmin();
 
   const { data: sel, error: selErr } = await sb
     .from("purim_selections")
-    .select("id, user_id, tier, created_at")
-    .eq("user_id", userId)
+    .select("id, household_id, tier, created_at")
+    .eq("household_id", householdId)
     .maybeSingle();
   if (selErr) throw selErr;
   if (!sel) return null;
@@ -27,7 +27,7 @@ export async function dbGetPurimSelectionForUser(userId: string): Promise<DbPuri
   if (recErr) throw recErr;
 
   return {
-    userId: (sel as any).user_id,
+    householdId: (sel as any).household_id,
     tier: (sel as any).tier,
     recipientHouseholdIds: (recs ?? []).map((r: any) => r.household_id),
     createdAt: new Date((sel as any).created_at),
@@ -38,7 +38,7 @@ export async function dbGetPurimSelections(): Promise<DbPurimSelection[]> {
   const sb = supabaseAdmin();
   const { data: sels, error: selErr } = await sb
     .from("purim_selections")
-    .select("id, user_id, tier, created_at")
+    .select("id, household_id, tier, created_at")
     .order("created_at", { ascending: false });
   if (selErr) throw selErr;
 
@@ -59,7 +59,7 @@ export async function dbGetPurimSelections(): Promise<DbPurimSelection[]> {
   }
 
   return (sels ?? []).map((s: any) => ({
-    userId: s.user_id,
+    householdId: s.household_id,
     tier: s.tier,
     recipientHouseholdIds: recipientsBySel[s.id] ?? [],
     createdAt: new Date(s.created_at),
@@ -67,7 +67,7 @@ export async function dbGetPurimSelections(): Promise<DbPurimSelection[]> {
 }
 
 export async function dbUpsertPurimSelection(input: {
-  userId: string;
+  householdId: string;
   tier: PurimTier;
   recipientHouseholdIds: string[];
 }): Promise<void> {
@@ -77,11 +77,11 @@ export async function dbUpsertPurimSelection(input: {
     .from("purim_selections")
     .upsert(
       {
-        user_id: input.userId,
+        household_id: input.householdId,
         tier: input.tier,
         created_at: new Date().toISOString(),
       },
-      { onConflict: "user_id" },
+      { onConflict: "household_id" },
     )
     .select("id")
     .single();
@@ -89,7 +89,6 @@ export async function dbUpsertPurimSelection(input: {
 
   const selectionId = (sel as any).id as string;
 
-  // Replace recipients
   const { error: delErr } = await sb.from("purim_selection_recipients").delete().eq("selection_id", selectionId);
   if (delErr) throw delErr;
 
@@ -116,4 +115,3 @@ export async function dbGetPurimRecipientReport(): Promise<Record<string, DbPuri
   }
   return result;
 }
-

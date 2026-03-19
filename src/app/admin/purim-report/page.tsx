@@ -39,7 +39,7 @@ export default async function AdminPurimReportPage() {
             משפחה: r.householdName,
             "כמות שולחים": r.givers.length,
             שולחים: r.givers
-              .map((sel) => (sel.householdId ? (byId[sel.householdId] ?? sel.householdId) : sel.userId))
+              .map((sel) => byId[sel.householdId] ?? sel.householdId)
               .join(", "),
           }))}
           className="btn-secondary text-sm"
@@ -72,12 +72,10 @@ export default async function AdminPurimReportPage() {
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {fullCommunityGivers.map((sel, idx) => (
               <li
-                key={`${sel.userId}_${idx}`}
+                key={`${sel.householdId}_${idx}`}
                 className="rounded-xl border border-secondary/20 bg-secondary/5 px-3 py-2 text-sm text-primary/90"
               >
-                {sel.householdId
-                  ? (byId[sel.householdId] ?? sel.householdId)
-                  : sel.userId}
+                {byId[sel.householdId] ?? sel.householdId}
               </li>
             ))}
           </ul>
@@ -104,8 +102,8 @@ export default async function AdminPurimReportPage() {
                   ) : (
                     <ul className="space-y-1">
                       {row.givers.map((sel, idx) => (
-                        <li key={`${sel.userId}_${idx}`} className="text-primary/85">
-                          {sel.householdId ? (byId[sel.householdId] ?? sel.householdId) : sel.userId}
+                        <li key={`${sel.householdId}_${idx}`} className="text-primary/85">
+                          {byId[sel.householdId] ?? sel.householdId}
                         </li>
                       ))}
                     </ul>

@@ -147,13 +147,13 @@ CREATE TABLE schedule_entries (
 
 CREATE INDEX idx_schedule_entries_order ON schedule_entries(sort_order);
 
--- Purim selections (seasonal module)
+-- Purim selections (seasonal module; one per household)
 CREATE TABLE purim_selections (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  tier       TEXT NOT NULL CHECK (tier IN ('full', 'twenty', 'five')),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (user_id)
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  tier         TEXT NOT NULL CHECK (tier IN ('full', 'twenty', 'five')),
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (household_id)
 );
 
 CREATE TABLE purim_selection_recipients (
@@ -164,17 +164,16 @@ CREATE TABLE purim_selection_recipients (
 
 CREATE INDEX idx_purim_recipients_household ON purim_selection_recipients(household_id);
 
--- High Holidays registrations (seasonal module)
+-- High Holidays registrations (seasonal module; one per household)
 CREATE TABLE high_holiday_registrations (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id             UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  full_name           TEXT NOT NULL,
+  household_id        UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
   household_name      TEXT,
   seats               INT NOT NULL CHECK (seats > 0),
   committee_interest  TEXT NOT NULL DEFAULT '',
   prep_slot           TEXT,
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (user_id)
+  UNIQUE (household_id)
 );
 
 CREATE INDEX idx_high_holiday_prep_slot ON high_holiday_registrations(prep_slot);

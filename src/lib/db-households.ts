@@ -5,8 +5,6 @@ function mapHouseholdRow(r: any): Household {
   return {
     id: r.id,
     name: r.name,
-    memberIds: [],
-    managerIds: [],
   };
 }
 
@@ -94,5 +92,35 @@ export async function dbAddHouseholdManager(
     .from("household_managers")
     .insert({ household_id: householdId, user_id: userId });
   if (error) throw error;
+}
+
+export async function dbGetHouseholdMembers(
+  householdId: HouseholdId,
+): Promise<User[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("users")
+    .select(
+      "id, full_name, phone, email, password_hash, status, household_id, role, directory_tags, show_phone_in_dir, show_email_in_dir",
+    )
+    .eq("household_id", householdId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapUserRow);
+}
+
+export async function dbIsHouseholdManager(
+  householdId: HouseholdId,
+  userId: UserId,
+): Promise<boolean> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("household_managers")
+    .select("user_id")
+    .eq("household_id", householdId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
 }
 
