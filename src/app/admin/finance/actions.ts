@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createProject } from "@/lib/projects";
 import { addTransaction } from "@/lib/transactions";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function createProjectAction(formData: FormData) {
+  await requireAdmin();
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { success: false, error: "נא להזין שם פרויקט." };
   await createProject(name);
@@ -13,6 +15,7 @@ export async function createProjectAction(formData: FormData) {
 }
 
 export async function addTransactionAction(formData: FormData) {
+  await requireAdmin();
   const projectId = (formData.get("projectId") as string)?.trim();
   const type = formData.get("type") as "income" | "expense" | null;
   const amountStr = (formData.get("amount") as string)?.trim();

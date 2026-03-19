@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
@@ -18,23 +17,6 @@ export default async function PurimPage() {
   const session = await getServerSession(authOptions);
   const enabled = await isModuleEnabled("purim");
   const userId = (session?.user as { userId?: string })?.userId;
-
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-        <main id="main-content" className="mx-auto max-w-xl px-6 py-16 text-right">
-          <div className="surface-card card-interactive rounded-3xl p-10 text-center">
-            <p className="mb-3 text-lg font-heading font-bold text-foreground">
-              🎭 כדי לבחור חבילת פורים יש להתחבר.
-            </p>
-            <Link href="/auth/signin" className="btn-primary">
-              מעבר למסך התחברות
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   if (!enabled) {
     return (

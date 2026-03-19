@@ -10,8 +10,10 @@ import {
 import { getLocations } from "@/lib/locations";
 import { dbEnsureLocations } from "@/lib/db-locations";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function addEntryAction(formData: FormData) {
+  await requireAdmin();
   const type = formData.get("type") as ScheduleEntryType;
   const title = (formData.get("title") as string)?.trim();
   const locationId = formData.get("locationId") as string;
@@ -42,6 +44,7 @@ export async function addEntryAction(formData: FormData) {
 }
 
 export async function updateEntryAction(entryId: string, formData: FormData) {
+  await requireAdmin();
   const type = formData.get("type") as ScheduleEntryType;
   const title = (formData.get("title") as string)?.trim();
   const locationId = formData.get("locationId") as string;
@@ -67,6 +70,7 @@ export async function updateEntryAction(entryId: string, formData: FormData) {
 }
 
 export async function deleteEntryAction(entryId: string) {
+  await requireAdmin();
   const deleted = await deleteScheduleEntry(entryId);
   revalidatePath("/admin/schedule");
   revalidatePath("/");
@@ -74,6 +78,7 @@ export async function deleteEntryAction(entryId: string) {
 }
 
 export async function seedDefaultScheduleAction() {
+  await requireAdmin();
   const resolved = await getLocations();
   const resolvedMainId = resolved[0]?.id;
   if (!resolvedMainId) return { ok: false, error: "אין מיקומים." };

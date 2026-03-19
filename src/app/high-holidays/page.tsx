@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
@@ -16,23 +15,6 @@ export default async function HighHolidaysPage() {
   const session = await getServerSession(authOptions);
   const enabled = await isModuleEnabled("rosh_hashanah");
   const registrations = await getHighHolidayRegistrations();
-
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-background font-sans">
-        <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
-          <div className="surface-card p-8 text-center">
-            <p className="mb-3 text-lg font-medium text-foreground">
-              יש להתחבר כדי להירשם למקומות.
-            </p>
-            <Link href="/auth/signin" className="btn-primary">
-              מעבר למסך התחברות
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   if (!enabled) {
     return (

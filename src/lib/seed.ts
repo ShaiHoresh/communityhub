@@ -8,20 +8,15 @@
  * - pending@test.com → PENDING
  */
 
-import bcrypt from "bcryptjs";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { hashPassword } from "@/lib/auth";
 import { dbEnsureGmachCategories } from "@/lib/db-gmach";
 import { getGmachCategories } from "@/lib/gmach-categories";
 import { dbEnsureLocations } from "@/lib/db-locations";
 import { DEFAULT_LOCATIONS } from "@/lib/default-locations";
 import { dbEnsureDefaultToggles } from "@/lib/db-system-toggles";
 
-const SALT_ROUNDS = 10;
 export const SEED_PASSWORD = "Test1234!";
-
-async function hash(password: string): Promise<string> {
-  return bcrypt.hash(password, SALT_ROUNDS);
-}
 
 async function upsertUserByEmail(input: {
   email: string;
@@ -96,7 +91,7 @@ export async function runSeed(): Promise<{ ok: boolean; message: string }> {
     };
   }
 
-  const passwordHash = await hash(SEED_PASSWORD);
+  const passwordHash = await hashPassword(SEED_PASSWORD);
 
   // Admin user (no household)
   await upsertUserByEmail({

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const ALLOWED_CATEGORIES = ["Indoor", "Covered", "OpenAir", "Protected"] as const;
 
@@ -10,6 +11,7 @@ function isCategory(v: string): v is (typeof ALLOWED_CATEGORIES)[number] {
 }
 
 export async function upsertLocationAction(formData: FormData) {
+  await requireAdmin();
   const id = (formData.get("id") as string | null)?.trim();
   const name = (formData.get("name") as string | null)?.trim();
   const capStr = (formData.get("maxCapacity") as string | null)?.trim();
@@ -46,6 +48,7 @@ export async function upsertLocationAction(formData: FormData) {
 }
 
 export async function deleteLocationAction(id: string) {
+  await requireAdmin();
   const sb = supabaseAdmin();
   const { error } = await sb.from("locations").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };

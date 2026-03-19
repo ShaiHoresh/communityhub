@@ -13,10 +13,12 @@ import {
   dbCreateHouseholdUser,
   dbGetHouseholdById,
 } from "@/lib/db-households";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const REVIEWED_BY = "admin";
 
 export async function approveAccessRequestAction(requestId: string) {
+  await requireAdmin();
   const request = await getAccessRequestById(requestId);
   if (!request || request.status !== "pending") {
     return { success: false, error: "בקשה לא נמצאה או כבר טופלה." };
@@ -79,6 +81,7 @@ export async function approveAccessRequestAction(requestId: string) {
 }
 
 export async function rejectAccessRequestAction(requestId: string) {
+  await requireAdmin();
   const result = await rejectAccessRequest(requestId, REVIEWED_BY);
   if (!result.success) return result;
   revalidatePath("/admin/access-requests");
@@ -87,6 +90,7 @@ export async function rejectAccessRequestAction(requestId: string) {
 
 /** Promote a PENDING user (signed up) to MEMBER. */
 export async function approvePendingUserAction(userId: string) {
+  await requireAdmin();
   await dbSetUserStatus(userId, "MEMBER");
   revalidatePath("/admin/access-requests");
   return { success: true };
