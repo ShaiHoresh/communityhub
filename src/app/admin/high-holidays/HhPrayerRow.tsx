@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { updateHhPrayerAction, deleteHhPrayerAction } from "./actions";
+import { FormError } from "@/components/FormFeedback";
 
 type Props = {
   prayer: { id: string; name: string; sortOrder: number };
@@ -47,9 +48,7 @@ export function HhPrayerRow({ prayer }: Props) {
             />
             <button type="submit" className="btn-primary text-xs">שמור</button>
             <button type="button" onClick={() => setEditing(false)} className="btn-secondary text-xs">ביטול</button>
-            {updateState && !updateState.ok && updateState.error && (
-              <span className="text-xs text-red-600">{updateState.error}</span>
-            )}
+            <FormError message={updateState?.error} />
           </form>
         </td>
       </tr>

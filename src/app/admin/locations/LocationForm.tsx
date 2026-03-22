@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { upsertLocationAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 const CATEGORIES = [
   { value: "Indoor", label: "פנים" },
@@ -82,12 +83,8 @@ export function LocationForm() {
           שמירה
         </button>
         <div aria-live="polite" aria-atomic="true">
-          {state?.error && (
-            <p role="alert" className="text-sm font-medium text-red-600">
-              {state.error}
-            </p>
-          )}
-          {state?.ok && <p className="text-sm font-medium text-primary">נשמר.</p>}
+          <FormError message={state?.error} />
+          {state?.ok && <FormSuccess message="נשמר." />}
         </div>
       </div>
     </form>

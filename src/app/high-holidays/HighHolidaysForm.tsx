@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitHighHolidayRegistration } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 type Prayer = { id: string; name: string };
 type SeatAlloc = { prayerId: string; menSeats: number; womenSeats: number };
@@ -175,18 +176,9 @@ export function HighHolidaysForm({ prayers, previousReg }: Props) {
           </label>
         </fieldset>
 
-        {/* Status messages */}
         <div aria-live="polite" aria-atomic="true">
-          {state && !state.ok && state.error && (
-            <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {state.error}
-            </p>
-          )}
-          {state?.ok && (
-            <p className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
-              הרישום נשמר בהצלחה.
-            </p>
-          )}
+          <FormError message={state?.error} />
+          {state?.ok && <FormSuccess message="הרישום נשמר בהצלחה." />}
         </div>
 
         <button type="submit" className="btn-primary">

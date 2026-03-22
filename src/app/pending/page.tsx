@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { BrandHeader } from "@/components/BrandHeader";
 import { authOptions } from "@/lib/auth-config";
-import { SignOutButton } from "./SignOutButton";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export const metadata = {
   title: "ממתין לאישור | CommunityHub",

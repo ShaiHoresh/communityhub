@@ -2,12 +2,14 @@
 
 import { signOut } from "next-auth/react";
 
-export function SignOutButton() {
+type Props = { className?: string };
+
+export function SignOutButton({ className }: Props) {
   return (
     <button
       type="button"
       onClick={() => signOut({ callbackUrl: "/" })}
-      className="btn-secondary"
+      className={className ?? "btn-secondary"}
     >
       התנתק
     </button>

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitPurimSelection } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 type Household = { id: string; name: string };
 type PreviousSelection = {
@@ -118,16 +119,8 @@ export function PurimForm({ households, previousSelection }: Props) {
         </section>
 
         <div aria-live="polite" aria-atomic="true">
-          {state && !state.ok && state.error && (
-            <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {state.error}
-            </p>
-          )}
-          {state?.ok && (
-            <p className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
-              הבחירה נשמרה בהצלחה.
-            </p>
-          )}
+          <FormError message={state?.error} />
+          {state?.ok && <FormSuccess message="הבחירה נשמרה בהצלחה." />}
         </div>
 
         <button type="submit" className="btn-primary">

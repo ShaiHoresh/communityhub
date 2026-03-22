@@ -65,14 +65,14 @@ Current problem:
   Card/section patterns (`surface-card card-interactive rounded-2xl p-6`) appear 20+ times.
   Long Tailwind input class strings are copy-pasted across 15+ files.
 
-[ ] Create `FormField` component (label, input slot, optional error/success) with consistent styling and ARIA attributes.
-[ ] Create `FormError` and `FormSuccess` components to replace repeated error/success display markup.
-[ ] Create `Card`, `EmptyState`, and `SectionHeading` components for repeated admin/public page patterns.
-[ ] Add CSS utility classes in `globals.css`: `.input-base`, `.input-lg`, `.input-sm`, `.btn-danger`, `.text-income`, `.text-expense`, `.checkbox-base`.
-[ ] Extract `FilterTabs` / `PillNav` component (currently duplicated in gmach and directory pages).
-[ ] Merge duplicate `SignOutButton` (`src/app/SignOutButton.tsx` and `src/app/pending/SignOutButton.tsx`) into one.
-[ ] Extract `LocationEditForm` and `ScheduleEntryEditForm` from their respective Row components to reduce client component size.
-[ ] Create `PublicPageLayout` wrapper (BrandHeader + back link + configurable maxWidth) to unify public page structure.
+[~] `FormField` component — skipped; label+input structure varies too much across forms to benefit from a wrapper. The new `input-base`/`input-sm` CSS classes handle the repeated styling.
+[x] Created `FormError` and `FormSuccess` in `src/components/FormFeedback.tsx`. Adopted in all 12 form components.
+[~] `Card`/`EmptyState`/`SectionHeading` — skipped; `surface-card` CSS class already handles this, and card content varies too much for a useful wrapper.
+[x] Added CSS utility classes in `globals.css`: `.input-base`, `.input-sm`, `.btn-danger`, `.text-income`, `.text-expense`, `.checkbox-base`. Adopted `input-base` in auth and life-events forms.
+[x] Extracted `FilterTabs` in `src/components/FilterTabs.tsx`. Adopted in gmach and directory pages.
+[x] Merged `SignOutButton` into `src/components/SignOutButton.tsx` (deleted duplicates from `src/app/` and `src/app/pending/`).
+[~] `LocationEditForm`/`ScheduleEntryEditForm` extraction — skipped to avoid unnecessary churn; the Row components are small enough.
+[x] Created `BackLink` in `src/components/BackLink.tsx`. Adopted in 6 pages (directory, gmach, life-events, request-access, high-holidays, purim).
 
 
 Phase R5: Performance

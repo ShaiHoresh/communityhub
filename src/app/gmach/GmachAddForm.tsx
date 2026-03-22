@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { GmachCategory } from "@/lib/gmach-categories";
 import { addGmachItemAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 type Props = { categories: GmachCategory[] };
 
@@ -69,14 +70,8 @@ export function GmachAddForm({ categories }: Props) {
         />
       </div>
       <div aria-live="polite" aria-atomic="true">
-        {state?.error && (
-          <p role="alert" className="text-sm font-medium text-red-600">
-            {state.error}
-          </p>
-        )}
-        {state?.ok && (
-          <p className="text-sm font-medium text-primary">הפריט נוסף.</p>
-        )}
+        <FormError message={state?.error} />
+        {state?.ok && <FormSuccess message="הפריט נוסף." />}
       </div>
       <button type="submit" className="btn-primary text-sm">
         הוספה

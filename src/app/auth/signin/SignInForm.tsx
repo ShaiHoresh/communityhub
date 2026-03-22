@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { FormError } from "@/components/FormFeedback";
 
 export function SignInForm() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export function SignInForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base"
         />
       </div>
       <div>
@@ -58,15 +59,11 @@ export function SignInForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base"
         />
       </div>
       <div aria-live="polite" aria-atomic="true">
-        {error && (
-          <p role="alert" className="text-sm font-medium text-red-600">
-            {error}
-          </p>
-        )}
+        <FormError message={error || undefined} />
       </div>
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? "מתחבר…" : "התחברות"}

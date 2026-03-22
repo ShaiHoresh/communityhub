@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { toggleModuleAction } from "./actions";
 import type { SeasonalModule } from "@/lib/system-toggles";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 type Props = {
   initialToggles: Record<SeasonalModule, boolean>;
@@ -35,16 +36,8 @@ export function ToggleForm({ initialToggles, labels }: Props) {
         שמירה
       </button>
       <div aria-live="polite" aria-atomic="true">
-        {state?.ok && (
-          <p className="text-sm font-medium text-green-700 dark:text-green-400">
-            נשמר בהצלחה.
-          </p>
-        )}
-        {state?.error && (
-          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state?.ok && <FormSuccess message="נשמר בהצלחה." />}
+        <FormError message={state?.error} />
       </div>
     </form>
   );

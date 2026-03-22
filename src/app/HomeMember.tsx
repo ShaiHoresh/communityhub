@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { DailySchedule, PrayerEvent } from "@/lib/schedule";
 import type { GmachItem } from "@/lib/gmach";
 import { getGmachCategoryById } from "@/lib/gmach";
-import { SignOutButton } from "./SignOutButton";
+import { SignOutButton } from "@/components/SignOutButton";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
 

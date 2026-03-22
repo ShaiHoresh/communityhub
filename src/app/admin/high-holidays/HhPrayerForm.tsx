@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { addHhPrayerAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 export function HhPrayerForm() {
   const [state, formAction] = useActionState(
@@ -41,12 +42,8 @@ export function HhPrayerForm() {
       <button type="submit" className="btn-primary text-sm">
         הוספה
       </button>
-      {state && !state.ok && state.error && (
-        <p role="alert" className="w-full text-sm text-red-600">{state.error}</p>
-      )}
-      {state?.ok && (
-        <p className="w-full text-sm text-green-700">התפילה נוספה.</p>
-      )}
+      <FormError message={state?.error} />
+      {state?.ok && <FormSuccess message="התפילה נוספה." />}
     </form>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitLifeEventAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 export function LifeEventForm() {
   const [state, formAction] = useActionState(
@@ -21,7 +22,7 @@ export function LifeEventForm() {
           id="type"
           name="type"
           required
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base"
         >
           <option value="birth">יום הולדת</option>
           <option value="yahrzeit">אזכרה (יארצייט)</option>
@@ -37,7 +38,7 @@ export function LifeEventForm() {
           type="text"
           required
           placeholder="שם הפרט או המשפחה"
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground placeholder:text-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base placeholder:text-primary/50"
         />
       </div>
       <div>
@@ -49,7 +50,7 @@ export function LifeEventForm() {
           name="date"
           type="date"
           required
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base"
         />
       </div>
       <div>
@@ -61,18 +62,12 @@ export function LifeEventForm() {
           name="notes"
           type="text"
           placeholder="פרטים נוספים"
-          className="w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground placeholder:text-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="input-base placeholder:text-primary/50"
         />
       </div>
       <div aria-live="polite" aria-atomic="true">
-        {state?.error && (
-          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
-        {state?.ok && (
-          <p className="text-sm font-medium text-primary">האירוע נרשם בהצלחה.</p>
-        )}
+        <FormError message={state?.error} />
+        {state?.ok && <FormSuccess message="האירוע נרשם בהצלחה." />}
       </div>
       <button type="submit" className="btn-primary">
         הוספת אירוע

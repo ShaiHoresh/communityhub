@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createProjectAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 
 export function CreateProjectForm() {
   const [state, formAction] = useActionState(
@@ -29,8 +30,8 @@ export function CreateProjectForm() {
       <button type="submit" className="btn-primary py-2 px-4 text-sm">
         הוסף פרויקט
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-primary">הפרויקט נוסף.</p>}
+      <FormError message={state?.error} />
+      {state?.ok && <FormSuccess message="הפרויקט נוסף." />}
     </form>
   );
 }

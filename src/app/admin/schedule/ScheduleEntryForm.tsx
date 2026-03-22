@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { addEntryAction } from "./actions";
+import { FormError, FormSuccess } from "@/components/FormFeedback";
 import type { ScheduleEntryType } from "@/lib/schedule-entries";
 import type { Location } from "@/lib/locations";
 
@@ -120,8 +121,8 @@ export function ScheduleEntryForm({ locations }: Props) {
       <button type="submit" className="btn-primary">
         הוספת רשומה
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-600">נוסף בהצלחה.</p>}
+      <FormError message={state?.error} />
+      {state?.ok && <FormSuccess message="נוסף בהצלחה." />}
     </form>
   );
 }

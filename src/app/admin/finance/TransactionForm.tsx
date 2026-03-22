@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { addTransactionAction } from "./actions";
+import { FormError } from "@/components/FormFeedback";
 
 type Props = { projectId: string };
 
@@ -79,11 +80,7 @@ export function TransactionForm({ projectId }: Props) {
             ביטול
           </button>
           <div aria-live="polite" aria-atomic="true" className="w-full">
-            {state?.error && (
-              <p role="alert" className="text-sm font-medium text-red-600">
-                {state.error}
-              </p>
-            )}
+            <FormError message={state?.error} />
             {state?.ok && (
               <p className="text-sm font-medium text-primary">
                 נרשם.{" "}

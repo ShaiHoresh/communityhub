@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { BrandHeader } from "@/components/BrandHeader";
+import { BackLink } from "@/components/BackLink";
 import { getUpcomingLifeEvents } from "@/lib/life-events";
 import { LifeEventForm } from "./LifeEventForm";
 
@@ -26,12 +26,7 @@ export default async function LifeEventsPage() {
         subtitle="רישום ימי הולדת ואזכרות (יארצייט). התצוגה מציגה אירועים קרובים ל־60 הימים הבאים."
       />
       <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-        >
-          ← חזרה לדף הבית
-        </Link>
+        <BackLink />
 
         <section className="surface-card card-interactive mb-10 p-6 sm:p-8">
           <h2 className="mb-5 font-heading text-lg font-bold text-foreground">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandHeader } from "@/components/BrandHeader";
+import { BackLink } from "@/components/BackLink";
 import { requestAccessAction } from "./actions";
 
 export const metadata = {
@@ -20,12 +21,7 @@ export default async function RequestAccessPage({ searchParams }: Props) {
         subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
       />
       <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-        >
-          ← חזרה לדף הבית
-        </Link>
+        <BackLink />
 
         <div className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         {errorMsg && (

@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { BrandHeader } from "@/components/BrandHeader";
+import { BackLink } from "@/components/BackLink";
+import { FilterTabs } from "@/components/FilterTabs";
 import {
   getGmachCategories,
   getGmachItems,
@@ -36,38 +37,19 @@ export default async function GmachPage({ searchParams }: PageProps) {
         subtitle="פריטים לפי קטגוריות. פריטים מסומני עדיפות ועדה מופיעים בראש הרשימה."
       />
       <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-        >
-          ← חזרה לדף הבית
-        </Link>
+        <BackLink />
 
-        <div className="mb-8 flex flex-wrap gap-3">
-          <Link
-            href="/gmach"
-            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
-              !categoryId
-                ? "bg-accent text-white shadow-sm hover:shadow"
-                : "border border-secondary/40 bg-white text-primary hover:border-primary/40 hover:bg-primary/5"
-            }`}
-          >
-            הכל
-          </Link>
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/gmach?category=${cat.id}`}
-              className={`rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                categoryId === cat.id
-                  ? "border-accent bg-accent text-white shadow-sm"
-                  : `${cat.color} hover:opacity-90 hover:shadow-sm`
-              }`}
-            >
-              {cat.label}
-            </Link>
-          ))}
-        </div>
+        <FilterTabs
+          tabs={[
+            { href: "/gmach", label: "הכל", active: !categoryId },
+            ...categories.map((cat) => ({
+              href: `/gmach?category=${cat.id}`,
+              label: cat.label,
+              active: categoryId === cat.id,
+              color: cat.color,
+            })),
+          ]}
+        />
 
         {items.length === 0 ? (
           <div className="surface-card card-interactive p-10 text-center">

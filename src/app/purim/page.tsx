@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { BackLink } from "@/components/BackLink";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
 import { getPurimSelectionForHousehold, getPurimSelections } from "@/lib/purim";
@@ -24,12 +24,7 @@ export default async function PurimPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
         <main id="main-content" className="mx-auto max-w-xl px-6 py-16 text-right">
-          <Link
-            href="/"
-            className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-          >
-            ← חזרה לדף הבית
-          </Link>
+          <BackLink />
           <div className="surface-card rounded-3xl p-10 text-center">
             <p className="text-lg font-heading font-bold text-foreground">
               🎉 מערכת משלוחי המנות כרגע סגורה.
@@ -63,12 +58,7 @@ export default async function PurimPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
       <main id="main-content" className="mx-auto max-w-3xl px-6 py-12 text-right sm:py-16">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-        >
-          ← חזרה לדף הבית
-        </Link>
+        <BackLink />
         <header className="mb-8 text-center">
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-700">
             פורים שמח 🎭🎁

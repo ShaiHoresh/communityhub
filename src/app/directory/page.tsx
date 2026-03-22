@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { BrandHeader } from "@/components/BrandHeader";
+import { BackLink } from "@/components/BackLink";
+import { FilterTabs } from "@/components/FilterTabs";
 import {
   getDirectoryEntries,
   getDirectoryTagLabel,
@@ -29,38 +30,18 @@ export default async function DirectoryPage({ searchParams }: PageProps) {
         subtitle="ספר טלפונים קהילתי, סינון לפי תגיות (רב, רופא, מתנדב). פרטי התצוגה לפי הגדרות הפרטיות של כל משפחה."
       />
       <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm font-medium text-primary/90 transition hover:text-primary hover:underline"
-        >
-          ← חזרה לדף הבית
-        </Link>
+        <BackLink />
 
-        <div className="mb-8 flex flex-wrap gap-3">
-          <Link
-            href="/directory"
-            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
-              !filterTag
-                ? "bg-accent text-white shadow-sm hover:shadow"
-                : "border border-secondary/40 bg-white text-primary hover:border-primary/40 hover:bg-primary/5"
-            }`}
-          >
-            הכל
-          </Link>
-          {tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/directory?tag=${tag}`}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                filterTag === tag
-                  ? "bg-accent text-white shadow-sm"
-                  : "border border-secondary/40 bg-white text-primary hover:border-primary/40 hover:bg-primary/5"
-              }`}
-            >
-              {getDirectoryTagLabel(tag)}
-            </Link>
-          ))}
-        </div>
+        <FilterTabs
+          tabs={[
+            { href: "/directory", label: "הכל", active: !filterTag },
+            ...tags.map((tag) => ({
+              href: `/directory?tag=${tag}`,
+              label: getDirectoryTagLabel(tag),
+              active: filterTag === tag,
+            })),
+          ]}
+        />
 
         {entries.length === 0 ? (
           <div className="surface-card card-interactive p-10 text-center">
