@@ -5,6 +5,14 @@ import {
   type ScheduleEntry,
   type ScheduleEntryType,
 } from "@/lib/schedule-entries";
+import { dbGetOverridesForDate } from "@/lib/db-schedule-entries";
+import {
+  fetchZmanim,
+  getDayType,
+  isSeasonApplicable,
+  calculatePrayerTime,
+  type ZmanimData,
+} from "@/lib/zmanim";
 
 export type PrayerType = ScheduleEntryType;
 
@@ -21,49 +29,87 @@ export type DailySchedule = {
   events: PrayerEvent[];
 };
 
-// Month index → mincha offset in minutes (winter=-15, shoulder=0, summer=+15)
-const MINCHA_OFFSET_BY_MONTH: Record<number, number> = {
-  0: -15, 1: -15, 11: -15,  // Dec–Feb: winter
-  2: 0, 3: 0, 8: 0, 9: 0,  // Mar–Apr, Sep–Oct: shoulder
-  4: 15, 5: 15, 6: 15, 7: 15, 10: 15,  // May–Aug, Nov: summer
-};
-
-export function getSeasonalShabbatMinchaOffsetMinutes(date: Date): number {
-  return MINCHA_OFFSET_BY_MONTH[date.getMonth()] ?? 0;
-}
-
+/**
+ * Build a concrete daily schedule for a given date.
+ *
+ * 1. Loads all schedule-entry rules and today's overrides in parallel.
+ * 2. Fetches zmanim from Hebcal (cached per day).
+ * 3. Filters entries by day-type, season, and specific-date applicability.
+ * 4. Applies overrides (cancellations or time changes).
+ * 5. Resolves each entry's time via calculatePrayerTime().
+ */
 export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
 ): Promise<DailySchedule> {
-  const [locations, entries] = await Promise.all([
+  const baseDate = new Date(date);
+  baseDate.setHours(0, 0, 0, 0);
+  const dateStr = baseDate.toISOString().slice(0, 10);
+
+  const [locations, entries, overrides, zmanim] = await Promise.all([
     getLocations(),
     getScheduleEntries(),
+    dbGetOverridesForDate(dateStr),
+    fetchZmanim(baseDate),
   ]);
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
+  const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
+  const dayType = getDayType(baseDate);
 
-  const baseDate = new Date(date);
-  baseDate.setHours(0, 0, 0, 0);
+  const events: PrayerEvent[] = [];
 
-  const events: PrayerEvent[] = entries.map((entry) => {
-    const location = locationMap.get(entry.locationId) ?? mainLocation;
-    let start = new Date(baseDate);
-    start.setHours(entry.hour, entry.minute, 0, 0);
+  for (const entry of entries) {
+    // ── Applicability checks ──
+    if (!isSeasonApplicable(entry.season, baseDate)) continue;
 
-    if (entry.type === "mincha" && entry.useSeasonalMinchaOffset) {
-      const offset = getSeasonalShabbatMinchaOffsetMinutes(date);
-      start = new Date(start.getTime() + offset * 60 * 1000);
+    const matchesDay = entry.dayTypes.includes(dayType);
+    const matchesSpecific =
+      entry.dayTypes.includes("specific_date") &&
+      entry.specificDate === dateStr;
+    if (!matchesDay && !matchesSpecific) continue;
+
+    // ── Override check ──
+    const override = overrideMap.get(entry.id);
+    if (override?.isCancelled) continue;
+
+    // ── Resolve time ──
+    let hour: number;
+    let minute: number;
+
+    if (override && override.overrideHour != null && override.overrideMinute != null) {
+      hour = override.overrideHour;
+      minute = override.overrideMinute;
+    } else {
+      const resolved = calculatePrayerTime(
+        {
+          timeType: entry.timeType,
+          fixedHour: entry.fixedHour,
+          fixedMinute: entry.fixedMinute,
+          zmanKey: entry.zmanKey,
+          offsetMinutes: entry.offsetMinutes,
+          roundTo: entry.roundTo,
+        },
+        zmanim,
+      );
+      if (!resolved) continue;
+      hour = resolved.hour;
+      minute = resolved.minute;
     }
 
-    return {
+    const start = new Date(baseDate);
+    start.setHours(hour, minute, 0, 0);
+
+    events.push({
       id: entry.id,
       title: entry.title,
       type: entry.type,
       start,
-      location,
-    };
-  });
+      location: locationMap.get(entry.locationId) ?? mainLocation,
+    });
+  }
+
+  events.sort((a, b) => a.start.getTime() - b.start.getTime());
 
   return { date: baseDate, events };
 }

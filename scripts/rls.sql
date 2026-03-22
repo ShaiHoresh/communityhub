@@ -103,6 +103,11 @@ CREATE POLICY life_events_admin ON life_events
 CREATE POLICY schedule_entries_select ON schedule_entries FOR SELECT USING (true);
 CREATE POLICY schedule_entries_admin ON schedule_entries FOR ALL USING (current_user_status() = 'ADMIN');
 
+-- schedule_overrides: public read; ADMIN write
+ALTER TABLE schedule_overrides ENABLE ROW LEVEL SECURITY;
+CREATE POLICY schedule_overrides_select ON schedule_overrides FOR SELECT USING (true);
+CREATE POLICY schedule_overrides_admin ON schedule_overrides FOR ALL USING (current_user_status() = 'ADMIN');
+
 -- purim_selections: own household or ADMIN
 CREATE POLICY purim_selections_select ON purim_selections
   FOR SELECT USING (

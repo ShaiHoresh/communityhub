@@ -134,18 +134,46 @@ CREATE INDEX idx_life_events_date ON life_events(date);
 
 -- Schedule entry templates (admin-managed; used to build the daily schedule)
 CREATE TABLE schedule_entries (
-  id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  type                      TEXT NOT NULL,
-  title                     TEXT NOT NULL,
-  location_id               TEXT NOT NULL REFERENCES locations(id),
-  hour                      INT NOT NULL CHECK (hour >= 0 AND hour <= 23),
-  minute                    INT NOT NULL CHECK (minute >= 0 AND minute <= 59),
-  use_seasonal_mincha_offset BOOLEAN NOT NULL DEFAULT false,
-  sort_order                INT NOT NULL DEFAULT 0,
-  created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type              TEXT NOT NULL,
+  title             TEXT NOT NULL,
+  location_id       TEXT NOT NULL REFERENCES locations(id),
+
+  -- Applicability rules
+  day_types         TEXT[] NOT NULL DEFAULT '{weekday,shabbat}',
+  specific_date     DATE,
+  season            TEXT NOT NULL DEFAULT 'always'
+                      CHECK (season IN ('always','winter_only','summer_only')),
+
+  -- Time calculation
+  time_type         TEXT NOT NULL DEFAULT 'FIXED'
+                      CHECK (time_type IN ('FIXED','ZMANIM_BASED','DYNAMIC_OFFSET')),
+  fixed_hour        INT CHECK (fixed_hour >= 0 AND fixed_hour <= 23),
+  fixed_minute      INT CHECK (fixed_minute >= 0 AND fixed_minute <= 59),
+  zman_key          TEXT,
+  offset_minutes    INT NOT NULL DEFAULT 0,
+  round_to          INT NOT NULL DEFAULT 0 CHECK (round_to >= 0),
+
+  sort_order        INT NOT NULL DEFAULT 0,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_schedule_entries_order ON schedule_entries(sort_order);
+
+-- Manual overrides for specific dates (suspend or reschedule a prayer)
+CREATE TABLE schedule_overrides (
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  schedule_entry_id UUID NOT NULL REFERENCES schedule_entries(id) ON DELETE CASCADE,
+  override_date     DATE NOT NULL,
+  is_cancelled      BOOLEAN NOT NULL DEFAULT false,
+  override_hour     INT CHECK (override_hour >= 0 AND override_hour <= 23),
+  override_minute   INT CHECK (override_minute >= 0 AND override_minute <= 59),
+  reason            TEXT,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (schedule_entry_id, override_date)
+);
+
+CREATE INDEX idx_schedule_overrides_date ON schedule_overrides(override_date);
 
 -- Purim selections (seasonal module; one per household)
 CREATE TABLE purim_selections (

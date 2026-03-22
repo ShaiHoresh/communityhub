@@ -4,6 +4,16 @@ import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { ScheduleEntryForm } from "./ScheduleEntryForm";
 import { ScheduleEntryRow } from "./ScheduleEntryRow";
 import { SeedScheduleButton } from "./SeedScheduleButton";
+import {
+  DAY_TYPE_LABELS,
+  SEASON_LABELS,
+  TIME_TYPE_LABELS,
+  ZMAN_LABELS,
+  type DayType,
+  type Season,
+  type TimeType,
+  type ZmanKey,
+} from "@/lib/zmanim";
 
 export const metadata = {
   title: "מנהל לוח זמנים | CommunityHub",
@@ -11,6 +21,22 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+function timeDisplayForExport(entry: {
+  timeType: string;
+  fixedHour: number | null;
+  fixedMinute: number | null;
+  zmanKey: string | null;
+  offsetMinutes: number;
+}): string {
+  if (entry.timeType === "FIXED") {
+    return `${String(entry.fixedHour ?? 0).padStart(2, "0")}:${String(entry.fixedMinute ?? 0).padStart(2, "0")}`;
+  }
+  const zman = entry.zmanKey ? ZMAN_LABELS[entry.zmanKey as ZmanKey] ?? entry.zmanKey : "?";
+  if (entry.timeType === "ZMANIM_BASED") return zman;
+  const sign = entry.offsetMinutes >= 0 ? "+" : "";
+  return `${zman} ${sign}${entry.offsetMinutes} דק׳`;
+}
 
 export default async function AdminSchedulePage() {
   const locations = await getLocations();
@@ -36,9 +62,12 @@ export default async function AdminSchedulePage() {
             מזהה: e.id,
             סוג: typeLabels[e.type] ?? e.type,
             כותרת: e.title,
-            שעה: `${String(e.hour).padStart(2, "0")}:${String(e.minute).padStart(2, "0")}`,
+            ימים: e.dayTypes.map((d: DayType) => DAY_TYPE_LABELS[d]).join(", "),
+            עונה: SEASON_LABELS[e.season as Season],
+            "חישוב שעה": TIME_TYPE_LABELS[e.timeType as TimeType],
+            שעה: timeDisplayForExport(e),
+            עיגול: e.roundTo > 0 ? `${e.roundTo} דק׳` : "ללא",
             מיקום: locationNames[e.locationId] ?? e.locationId,
-            "התאמה עונתית": e.useSeasonalMinchaOffset ? "כן" : "לא",
             "סדר מיון": e.sortOrder,
           }))}
           className="btn-secondary text-sm"
@@ -59,7 +88,7 @@ export default async function AdminSchedulePage() {
         {entries.length === 0 ? (
           <div className="surface-card card-interactive rounded-2xl p-10 text-center">
             <p className="font-medium text-foreground">
-              אין רשומות. ברירת המחדל (שחרית, מנחה, ערבית) תיטען בדף הבית או בלחיצה למטה.
+              אין רשומות. ברירת המחדל (שחרית, מנחה, ערבית) תיטען בלחיצה למטה.
             </p>
             <SeedScheduleButton className="mt-4" />
           </div>
@@ -72,9 +101,15 @@ export default async function AdminSchedulePage() {
         )}
       </section>
 
-      <p className="text-sm text-primary/80">
-        מנחה עם &quot;התאמה עונתית&quot; משתמשת בהזזת 15 דקות לפי עונה (חורף/קיץ).
-      </p>
+      <div className="surface-card rounded-2xl border border-secondary/15 p-5 text-sm leading-relaxed text-primary/80">
+        <p className="font-heading font-semibold text-foreground mb-2">מדריך סוגי שעות:</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li><strong>שעה קבועה</strong> — זמן סטטי (למשל 07:00).</li>
+          <li><strong>לפי זמן הלכתי</strong> — מחושב מהנץ/שקיעה/חצות וכו&apos; (דרך Hebcal).</li>
+          <li><strong>זמן הלכתי + הזזה</strong> — זמן הלכתי ± דקות (למשל &quot;20 דקות לפני השקיעה&quot;).</li>
+          <li><strong>עיגול</strong> — מעגל את התוצאה לכפולה של N דקות (למשל 5 דקות, כך ש-18:13 הופך ל-18:15).</li>
+        </ul>
+      </div>
     </div>
   );
 }

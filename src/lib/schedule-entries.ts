@@ -3,6 +3,8 @@
  * buildDailyScheduleForDate uses these to build the daily events.
  */
 
+import type { DayType, Season, TimeType, ZmanKey } from "@/lib/zmanim";
+
 export type ScheduleEntryType = "shacharit" | "mincha" | "arvit" | "lesson";
 
 export type ScheduleEntryId = string;
@@ -12,10 +14,15 @@ export type ScheduleEntry = {
   type: ScheduleEntryType;
   title: string;
   locationId: string;
-  hour: number; // 0–23
-  minute: number; // 0–59
-  /** If true (mincha only), apply seasonal offset (15-min increments). */
-  useSeasonalMinchaOffset: boolean;
+  dayTypes: DayType[];
+  specificDate: string | null;
+  season: Season;
+  timeType: TimeType;
+  fixedHour: number | null;
+  fixedMinute: number | null;
+  zmanKey: ZmanKey | null;
+  offsetMinutes: number;
+  roundTo: number;
   sortOrder: number;
 };
 
@@ -35,16 +42,10 @@ export async function addScheduleEntry(
   data: Omit<ScheduleEntry, "id" | "sortOrder"> & { sortOrder?: number },
 ): Promise<ScheduleEntry> {
   const current = await dbGetScheduleEntries();
-  const nextOrder = data.sortOrder ?? (current.length ? Math.max(...current.map((e) => e.sortOrder)) + 1 : 0);
-  return dbAddScheduleEntry({
-    type: data.type,
-    title: data.title,
-    locationId: data.locationId,
-    hour: data.hour,
-    minute: data.minute,
-    useSeasonalMinchaOffset: data.useSeasonalMinchaOffset,
-    sortOrder: nextOrder,
-  });
+  const nextOrder =
+    data.sortOrder ??
+    (current.length ? Math.max(...current.map((e) => e.sortOrder)) + 1 : 0);
+  return dbAddScheduleEntry({ ...data, sortOrder: nextOrder });
 }
 
 export async function updateScheduleEntry(
@@ -55,12 +56,16 @@ export async function updateScheduleEntry(
   return true;
 }
 
-export async function deleteScheduleEntry(id: ScheduleEntryId): Promise<boolean> {
+export async function deleteScheduleEntry(
+  id: ScheduleEntryId,
+): Promise<boolean> {
   await dbDeleteScheduleEntry(id);
   return true;
 }
 
-/** Seed default entries when none exist (called from seed or first load). */
-export async function ensureDefaultScheduleEntries(locationId: string): Promise<void> {
+/** Seed default entries when none exist (called from seed). */
+export async function ensureDefaultScheduleEntries(
+  locationId: string,
+): Promise<void> {
   await dbEnsureDefaultScheduleEntries(locationId);
 }
