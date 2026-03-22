@@ -9,22 +9,31 @@ import {
 } from "@/lib/schedule-entries";
 import { getLocations } from "@/lib/locations";
 import { dbEnsureLocations } from "@/lib/db-locations";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
+import {
+  type ActionResult,
+  parseFormString,
+  parseFormInt,
+  revalidateAdminPaths,
+  revalidateAppPaths,
+} from "@/lib/action-utils";
 
-export async function addEntryAction(formData: FormData) {
+export async function addEntryAction(
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
-  const type = formData.get("type") as ScheduleEntryType;
-  const title = (formData.get("title") as string)?.trim();
-  const locationId = formData.get("locationId") as string;
-  const hour = parseInt(formData.get("hour") as string, 10);
-  const minute = parseInt(formData.get("minute") as string, 10);
-  const useSeasonalMinchaOffset = formData.get("useSeasonalMinchaOffset") === "on";
+  const type = parseFormString(formData, "type") as ScheduleEntryType;
+  const title = parseFormString(formData, "title");
+  const locationId = parseFormString(formData, "locationId");
+  const hour = parseFormInt(formData, "hour", -1);
+  const minute = parseFormInt(formData, "minute", -1);
+  const useSeasonalMinchaOffset =
+    formData.get("useSeasonalMinchaOffset") === "on";
 
-  if (!title || !locationId || isNaN(hour) || isNaN(minute)) {
+  if (!title || !locationId || hour < 0 || minute < 0) {
     return { ok: false, error: "נא למלא שדות חובה." };
   }
-  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+  if (hour > 23 || minute > 59) {
     return { ok: false, error: "שעה לא חוקית." };
   }
 
@@ -38,21 +47,25 @@ export async function addEntryAction(formData: FormData) {
     minute,
     useSeasonalMinchaOffset: type === "mincha" && useSeasonalMinchaOffset,
   });
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return { ok: true };
 }
 
-export async function updateEntryAction(entryId: string, formData: FormData) {
+export async function updateEntryAction(
+  entryId: string,
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
-  const type = formData.get("type") as ScheduleEntryType;
-  const title = (formData.get("title") as string)?.trim();
-  const locationId = formData.get("locationId") as string;
-  const hour = parseInt(formData.get("hour") as string, 10);
-  const minute = parseInt(formData.get("minute") as string, 10);
-  const useSeasonalMinchaOffset = formData.get("useSeasonalMinchaOffset") === "on";
+  const type = parseFormString(formData, "type") as ScheduleEntryType;
+  const title = parseFormString(formData, "title");
+  const locationId = parseFormString(formData, "locationId");
+  const hour = parseFormInt(formData, "hour", -1);
+  const minute = parseFormInt(formData, "minute", -1);
+  const useSeasonalMinchaOffset =
+    formData.get("useSeasonalMinchaOffset") === "on";
 
-  if (!title || !locationId || isNaN(hour) || isNaN(minute)) {
+  if (!title || !locationId || hour < 0 || minute < 0) {
     return { ok: false, error: "נא למלא שדות חובה." };
   }
 
@@ -64,27 +77,29 @@ export async function updateEntryAction(entryId: string, formData: FormData) {
     minute,
     useSeasonalMinchaOffset: type === "mincha" && useSeasonalMinchaOffset,
   });
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return updated ? { ok: true } : { ok: false, error: "לא נמצא." };
 }
 
-export async function deleteEntryAction(entryId: string) {
+export async function deleteEntryAction(
+  entryId: string,
+): Promise<ActionResult> {
   await requireAdmin();
   const deleted = await deleteScheduleEntry(entryId);
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return deleted ? { ok: true } : { ok: false, error: "לא נמצא." };
 }
 
-export async function seedDefaultScheduleAction() {
+export async function seedDefaultScheduleAction(): Promise<ActionResult> {
   await requireAdmin();
   const resolved = await getLocations();
   const resolvedMainId = resolved[0]?.id;
   if (!resolvedMainId) return { ok: false, error: "אין מיקומים." };
   await dbEnsureLocations(resolved);
   await ensureDefaultScheduleEntries(resolvedMainId);
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return { ok: true };
 }

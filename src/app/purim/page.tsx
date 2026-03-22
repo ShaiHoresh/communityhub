@@ -45,9 +45,12 @@ export default async function PurimPage() {
   }
 
   const householdId = userId ? await dbGetUserHouseholdId(userId) : null;
-  const previousSelection = householdId ? await getPurimSelectionForHousehold(householdId) : undefined;
-  const households = await dbGetHouseholds();
-  const devSelectionsCount = (await getPurimSelections()).length;
+  const [previousSelection, households, allSelections] = await Promise.all([
+    householdId ? getPurimSelectionForHousehold(householdId) : Promise.resolve(undefined),
+    dbGetHouseholds(),
+    getPurimSelections(),
+  ]);
+  const devSelectionsCount = allSelections.length;
 
   const serializedPrev = previousSelection
     ? {

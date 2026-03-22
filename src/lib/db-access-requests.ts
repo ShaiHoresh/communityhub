@@ -109,7 +109,7 @@ export async function dbGetAccessRequestById(id: string): Promise<DbAccessReques
 export async function dbApproveAccessRequest(
   id: string,
   reviewedBy: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string }> {
   const sb = supabaseAdmin();
   const { error } = await sb
     .from("access_requests")
@@ -121,13 +121,13 @@ export async function dbApproveAccessRequest(
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw error;
-  return { success: true };
+  return { ok: true };
 }
 
 export async function dbRejectAccessRequest(
   id: string,
   reviewedBy: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string }> {
   const sb = supabaseAdmin();
   const { error } = await sb
     .from("access_requests")
@@ -139,6 +139,6 @@ export async function dbRejectAccessRequest(
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw error;
-  return { success: true };
+  return { ok: true };
 }
 

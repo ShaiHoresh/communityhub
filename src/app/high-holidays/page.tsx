@@ -42,9 +42,11 @@ export default async function HighHolidaysPage() {
     );
   }
 
-  const prayers = await dbGetHhPrayers();
   const householdId = userId ? await dbGetUserHouseholdId(userId) : null;
-  const existingReg = householdId ? await getRegistrationForHousehold(householdId) : null;
+  const [prayers, existingReg] = await Promise.all([
+    dbGetHhPrayers(),
+    householdId ? getRegistrationForHousehold(householdId) : Promise.resolve(null),
+  ]);
 
   const serializedPrev = existingReg
     ? {

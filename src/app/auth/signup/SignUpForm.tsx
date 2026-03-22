@@ -23,7 +23,7 @@ export function SignUpForm() {
     formData.set("fullName", fullName);
     const result = await registerAction(formData);
     setLoading(false);
-    if (!result.success) {
+    if (!result.ok) {
       setError(result.error);
       return;
     }

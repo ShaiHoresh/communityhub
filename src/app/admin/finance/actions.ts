@@ -1,42 +1,54 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createProject } from "@/lib/projects";
 import { addTransaction } from "@/lib/transactions";
 import { requireAdmin } from "@/lib/auth-guard";
+import {
+  type ActionResult,
+  parseFormString,
+  parseFormInt,
+  revalidateAdminPaths,
+} from "@/lib/action-utils";
 
-export async function createProjectAction(formData: FormData) {
+export async function createProjectAction(
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
-  const name = (formData.get("name") as string)?.trim();
-  if (!name) return { success: false, error: "נא להזין שם פרויקט." };
+  const name = parseFormString(formData, "name");
+  if (!name) return { ok: false, error: "נא להזין שם פרויקט." };
   await createProject(name);
-  revalidatePath("/admin/finance");
-  return { success: true };
+  revalidateAdminPaths();
+  return { ok: true };
 }
 
-export async function addTransactionAction(formData: FormData) {
+export async function addTransactionAction(
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
-  const projectId = (formData.get("projectId") as string)?.trim();
-  const type = formData.get("type") as "income" | "expense" | null;
-  const amountStr = (formData.get("amount") as string)?.trim();
-  const description = (formData.get("description") as string)?.trim() || "";
-  const dateStr = (formData.get("date") as string)?.trim();
+  const projectId = parseFormString(formData, "projectId");
+  const type = parseFormString(formData, "type");
+  const amountStr = parseFormString(formData, "amount");
+  const description = parseFormString(formData, "description");
+  const dateStr = parseFormString(formData, "date");
 
-  if (!projectId) return { success: false, error: "חסר פרויקט." };
-  if (type !== "income" && type !== "expense") return { success: false, error: "נא לבחור הכנסה או הוצאה." };
+  if (!projectId) return { ok: false, error: "חסר פרויקט." };
+  if (type !== "income" && type !== "expense")
+    return { ok: false, error: "נא לבחור הכנסה או הוצאה." };
   const amountCents = Math.round(parseFloat(amountStr || "0") * 100);
-  if (!Number.isFinite(amountCents) || amountCents <= 0) return { success: false, error: "נא להזין סכום תקין." };
+  if (!Number.isFinite(amountCents) || amountCents <= 0)
+    return { ok: false, error: "נא להזין סכום תקין." };
 
   const date = dateStr ? new Date(dateStr) : new Date();
-  if (Number.isNaN(date.getTime())) return { success: false, error: "תאריך לא תקין." };
+  if (Number.isNaN(date.getTime()))
+    return { ok: false, error: "תאריך לא תקין." };
 
   await addTransaction({
     projectId,
-    type,
+    type: type as "income" | "expense",
     amountCents,
     description,
     date,
   });
-  revalidatePath("/admin/finance");
-  return { success: true };
+  revalidateAdminPaths();
+  return { ok: true };
 }

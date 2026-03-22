@@ -23,41 +23,41 @@ export type RegisterInput = {
 
 export async function registerUser(
   input: RegisterInput
-): Promise<{ success: true; userId: string } | { success: false; error: string }> {
+): Promise<{ ok: true; userId: string } | { ok: false; error: string }> {
   const email = input.email.trim().toLowerCase();
   const fullName = input.fullName.trim();
   if (!email || !fullName) {
-    return { success: false, error: "נא למלא אימייל ושם מלא." };
+    return { ok: false, error: "נא למלא אימייל ושם מלא." };
   }
   if (!input.password || input.password.length < 8) {
-    return { success: false, error: "הסיסמה חייבת להכיל לפחות 8 תווים." };
+    return { ok: false, error: "הסיסמה חייבת להכיל לפחות 8 תווים." };
   }
   const existing = await dbFindUserByEmail(email);
-  if (existing) return { success: false, error: "משתמש עם אימייל זה כבר קיים." };
+  if (existing) return { ok: false, error: "משתמש עם אימייל זה כבר קיים." };
 
   const passwordHash = await hashPassword(input.password);
   const created = await dbCreatePendingUser({ email, fullName, passwordHash });
-  return { success: true, userId: created.id };
+  return { ok: true, userId: created.id };
 }
 
 export async function verifyCredentials(
   email: string,
   password: string
 ): Promise<
-  | { success: true; userId: string; status: UserStatus }
-  | { success: false; error: string }
+  | { ok: true; userId: string; status: UserStatus }
+  | { ok: false; error: string }
 > {
   const user = await dbFindUserByEmail(email);
   if (!user) {
-    return { success: false, error: "אימייל או סיסמה לא נכונים." };
+    return { ok: false, error: "אימייל או סיסמה לא נכונים." };
   }
   if (!user.password_hash) {
-    return { success: false, error: "חשבון זה לא מוגדר להתחברות בסיסמה. פנה להנהלה." };
+    return { ok: false, error: "חשבון זה לא מוגדר להתחברות בסיסמה. פנה להנהלה." };
   }
-  const ok = await verifyPassword(password, user.password_hash);
-  if (!ok) {
-    return { success: false, error: "אימייל או סיסמה לא נכונים." };
+  const match = await verifyPassword(password, user.password_hash);
+  if (!match) {
+    return { ok: false, error: "אימייל או סיסמה לא נכונים." };
   }
   const status = user.status ?? "PENDING";
-  return { success: true, userId: user.id, status };
+  return { ok: true, userId: user.id, status };
 }

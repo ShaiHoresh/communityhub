@@ -20,24 +20,31 @@ type HomeProps = { searchParams: Promise<{ request?: string }> };
 export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: HomeProps) {
-  const session = await getServerSession(authOptions);
+  const [session, locations, params] = await Promise.all([
+    getServerSession(authOptions),
+    getLocations(),
+    searchParams,
+  ]);
+
   const status = session?.user ? (session.user as { status?: string }).status : null;
   const isMember = status === "MEMBER" || status === "ADMIN";
-
-  const locations = await getLocations();
   const mainLocation = locations[0];
   const today = new Date();
-  const params = await searchParams;
   const showRequestSubmitted = params.request === "submitted";
 
-  const schedule = await buildDailyScheduleForDate(today, mainLocation);
+  const [schedule, gmachPreview, highHolidaysEnabled, purimEnabled] =
+    await Promise.all([
+      buildDailyScheduleForDate(today, mainLocation),
+      isMember ? getGmachItems() : Promise.resolve([]),
+      isModuleEnabled("rosh_hashanah"),
+      isModuleEnabled("purim"),
+    ]);
+
   const upcoming = schedule.events
     .filter((e) => e.start.getTime() >= Date.now())
     .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
 
-  const gmachPreview = isMember ? (await getGmachItems()).slice(0, 5) : [];
-  const highHolidaysEnabled = await isModuleEnabled("rosh_hashanah");
-  const purimEnabled = await isModuleEnabled("purim");
+  const gmachSlice = gmachPreview.slice(0, 5);
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -64,7 +71,7 @@ export default async function Home({ searchParams }: HomeProps) {
             schedule={schedule}
             upcoming={upcoming}
             formatTime={formatTime}
-            gmachPreview={gmachPreview}
+            gmachPreview={gmachSlice}
             isAdmin={status === "ADMIN"}
             highHolidaysEnabled={highHolidaysEnabled}
             purimEnabled={purimEnabled}

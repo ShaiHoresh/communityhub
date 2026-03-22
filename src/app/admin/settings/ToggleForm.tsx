@@ -35,7 +35,7 @@ export function ToggleForm({ initialToggles, labels }: Props) {
         שמירה
       </button>
       <div aria-live="polite" aria-atomic="true">
-        {state?.success && (
+        {state?.ok && (
           <p className="text-sm font-medium text-green-700 dark:text-green-400">
             נשמר בהצלחה.
           </p>

@@ -1,9 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
 import { dbUpsertLocation, dbDeleteLocation } from "@/lib/db-locations";
 import type { Location } from "@/lib/locations";
+import {
+  type ActionResult,
+  parseFormString,
+  revalidateAdminPaths,
+  revalidateAppPaths,
+} from "@/lib/action-utils";
 
 const ALLOWED_CATEGORIES = ["Indoor", "Covered", "OpenAir", "Protected"] as const;
 
@@ -11,12 +16,14 @@ function isCategory(v: string): v is Location["spaceCategory"] {
   return (ALLOWED_CATEGORIES as readonly string[]).includes(v);
 }
 
-export async function upsertLocationAction(formData: FormData) {
+export async function upsertLocationAction(
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
-  const id = (formData.get("id") as string | null)?.trim();
-  const name = (formData.get("name") as string | null)?.trim();
-  const capStr = (formData.get("maxCapacity") as string | null)?.trim();
-  const spaceCategoryRaw = (formData.get("spaceCategory") as string | null)?.trim();
+  const id = parseFormString(formData, "id");
+  const name = parseFormString(formData, "name");
+  const capStr = parseFormString(formData, "maxCapacity");
+  const spaceCategoryRaw = parseFormString(formData, "spaceCategory");
 
   if (!id || !name || !capStr || !spaceCategoryRaw) {
     return { ok: false, error: "נא למלא מזהה, שם, קיבולת וסוג מרחב." };
@@ -36,13 +43,14 @@ export async function upsertLocationAction(formData: FormData) {
     return { ok: false, error: err instanceof Error ? err.message : "שגיאה בשמירת מיקום." };
   }
 
-  revalidatePath("/admin/locations");
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return { ok: true };
 }
 
-export async function deleteLocationAction(id: string) {
+export async function deleteLocationAction(
+  id: string,
+): Promise<ActionResult> {
   await requireAdmin();
   try {
     await dbDeleteLocation(id);
@@ -50,8 +58,7 @@ export async function deleteLocationAction(id: string) {
     return { ok: false, error: err instanceof Error ? err.message : "שגיאה במחיקת מיקום." };
   }
 
-  revalidatePath("/admin/locations");
-  revalidatePath("/admin/schedule");
-  revalidatePath("/");
+  revalidateAdminPaths();
+  revalidateAppPaths();
   return { ok: true };
 }

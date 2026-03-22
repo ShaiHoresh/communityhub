@@ -50,9 +50,9 @@ Current problem:
   Action return shapes vary (`{ ok, error }` vs `{ success, error }`). Form parsing is
   manually repeated in 9+ action files. `revalidatePath` is called 3-5 times per action.
 
-[ ] Standardize all actions on one return shape: `{ ok: boolean; error?: string }`.
-[ ] Add `parseFormString(formData, key)` helper (or adopt Zod) to eliminate repeated `.get()` + `.toString().trim()` + validation blocks.
-[ ] Add `revalidateAdminPaths()` and `revalidateAppPaths()` helpers to replace scattered `revalidatePath` calls.
+[x] Standardize all actions on one return shape: `{ ok: boolean; error?: string }`. Created `ActionResult` type in `src/lib/action-utils.ts`.
+[x] Add `parseFormString(formData, key)` and `parseFormInt(formData, key)` helpers in `src/lib/action-utils.ts` to replace repeated `.get()` + `.toString().trim()` blocks.
+[x] Add `revalidateAdminPaths()` and `revalidateAppPaths()` helpers in `src/lib/action-utils.ts` to replace scattered `revalidatePath` calls.
 [x] Add session checks (`getServerSession`) in admin server actions (schedule, finance, locations, settings) as a defense-in-depth layer beyond middleware.
 [x] Convert High Holidays and Purim inline `"use server"` form actions to use `useActionState` with proper error display.
 [x] Reuse `hashPassword` from `auth.ts` in `seed.ts` (currently duplicated).
@@ -81,11 +81,12 @@ Current problem:
   `buildDailyScheduleForDate` calls `getLocationById` per entry (N+1). Several pages
   await independent queries sequentially instead of using `Promise.all`.
 
-[ ] Fix schedule N+1: load all locations once, build a Map, look up per entry.
-[ ] Parallelize home page fetches (`getLocations`, `buildDailyScheduleForDate`, `getGmachItems`, `isModuleEnabled` x2) with `Promise.all`.
-[ ] Parallelize Purim page fetches (`getPurimSelectionForHousehold`, `dbGetHouseholds`, `getPurimSelections`) with `Promise.all`.
+[x] Fix schedule N+1: load all locations once, build a Map, look up per entry. Also removed `dbEnsureLocations` and `ensureDefaultScheduleEntries` from the read path.
+[x] Parallelize home page fetches (`getLocations`, `buildDailyScheduleForDate`, `getGmachItems`, `isModuleEnabled` x2) with `Promise.all`.
+[x] Parallelize Purim page fetches (`getPurimSelectionForHousehold`, `dbGetHouseholds`, `getPurimSelections`) with `Promise.all`.
+[x] Parallelize High Holidays page fetches (`dbGetHhPrayers`, `getRegistrationForHousehold`) with `Promise.all`.
 [x] Remove redundant `if (!session)` checks in `/high-holidays` and `/purim` pages (middleware already protects these routes).
-[ ] Simplify `addHighHolidayRegistration` IIFE into a normal async function body.
+[~] `addHighHolidayRegistration` — already a normal async function; no IIFE to simplify.
 [ ] Consider `unstable_cache` for relatively static data (locations, schedule entries, system toggles).
 
 

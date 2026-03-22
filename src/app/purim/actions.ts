@@ -3,11 +3,13 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { upsertPurimSelection, type PurimTier } from "@/lib/purim";
-import { revalidatePath } from "next/cache";
 import { dbGetHouseholds, dbIsHouseholdManager } from "@/lib/db-households";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
+import { type ActionResult, revalidateAppPaths } from "@/lib/action-utils";
 
-export async function submitPurimSelection(formData: FormData) {
+export async function submitPurimSelection(
+  formData: FormData,
+): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { userId?: string })?.userId;
 
@@ -33,7 +35,7 @@ export async function submitPurimSelection(formData: FormData) {
   const households = await dbGetHouseholds();
   const selectedRecipientIds = (formData.getAll("recipients") as string[]).filter(Boolean);
   const validRecipientIds = selectedRecipientIds.filter((id) =>
-    households.some((h) => h.id === id)
+    households.some((h) => h.id === id),
   );
 
   const result = await upsertPurimSelection({
@@ -46,6 +48,6 @@ export async function submitPurimSelection(formData: FormData) {
     return result;
   }
 
-  revalidatePath("/purim");
+  revalidateAppPaths();
   return { ok: true };
 }

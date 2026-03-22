@@ -32,19 +32,19 @@ export async function createAccessRequest(
 export async function approveAccessRequest(
   id: AccessRequestId,
   reviewedBy: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string }> {
   const existing = await dbGetAccessRequestById(id);
-  if (!existing) return { success: false, error: "בקשה לא נמצאה" };
-  if (existing.status !== "pending") return { success: false, error: "בקשה כבר טופלה" };
+  if (!existing) return { ok: false, error: "בקשה לא נמצאה" };
+  if (existing.status !== "pending") return { ok: false, error: "בקשה כבר טופלה" };
   return dbApproveAccessRequest(id, reviewedBy);
 }
 
 export async function rejectAccessRequest(
   id: AccessRequestId,
   reviewedBy: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string }> {
   const existing = await dbGetAccessRequestById(id);
-  if (!existing) return { success: false, error: "בקשה לא נמצאה" };
-  if (existing.status !== "pending") return { success: false, error: "בקשה כבר טופלה" };
+  if (!existing) return { ok: false, error: "בקשה לא נמצאה" };
+  if (existing.status !== "pending") return { ok: false, error: "בקשה כבר טופלה" };
   return dbRejectAccessRequest(id, reviewedBy);
 }

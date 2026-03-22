@@ -8,7 +8,7 @@ type Props = { projectId: string };
 export function TransactionForm({ projectId }: Props) {
   const [open, setOpen] = useState(false);
   const [state, formAction] = useActionState(
-    async (_prev: { success: boolean; error?: string } | null, formData: FormData) => {
+    async (_prev: { ok: boolean; error?: string } | null, formData: FormData) => {
       return await addTransactionAction(formData);
     },
     null
@@ -84,7 +84,7 @@ export function TransactionForm({ projectId }: Props) {
                 {state.error}
               </p>
             )}
-            {state?.success && (
+            {state?.ok && (
               <p className="text-sm font-medium text-primary">
                 נרשם.{" "}
                 <button

@@ -3,12 +3,18 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { addHighHolidayRegistration, type HighHolidaySlot } from "@/lib/high-holidays";
-import { revalidatePath } from "next/cache";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { dbGetHouseholdById, dbIsHouseholdManager } from "@/lib/db-households";
 import { dbGetHhPrayers } from "@/lib/db-hh-prayers";
+import {
+  type ActionResult,
+  parseFormInt,
+  revalidateAppPaths,
+} from "@/lib/action-utils";
 
-export async function submitHighHolidayRegistration(formData: FormData) {
+export async function submitHighHolidayRegistration(
+  formData: FormData,
+): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { userId?: string })?.userId;
 
@@ -32,8 +38,8 @@ export async function submitHighHolidayRegistration(formData: FormData) {
   const prayers = await dbGetHhPrayers();
   const seats = prayers.map((p) => ({
     prayerId: p.id,
-    menSeats: parseInt((formData.get(`men_${p.id}`) as string) ?? "0", 10) || 0,
-    womenSeats: parseInt((formData.get(`women_${p.id}`) as string) ?? "0", 10) || 0,
+    menSeats: parseFormInt(formData, `men_${p.id}`, 0),
+    womenSeats: parseFormInt(formData, `women_${p.id}`, 0),
   }));
 
   const committees = formData.getAll("committees") as string[];
@@ -55,6 +61,6 @@ export async function submitHighHolidayRegistration(formData: FormData) {
     return result;
   }
 
-  revalidatePath("/high-holidays");
+  revalidateAppPaths();
   return { ok: true };
 }

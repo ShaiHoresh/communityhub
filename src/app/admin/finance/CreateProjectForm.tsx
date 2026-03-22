@@ -5,7 +5,7 @@ import { createProjectAction } from "./actions";
 
 export function CreateProjectForm() {
   const [state, formAction] = useActionState(
-    async (_prev: { success: boolean; error?: string } | null, formData: FormData) => {
+    async (_prev: { ok: boolean; error?: string } | null, formData: FormData) => {
       return await createProjectAction(formData);
     },
     null
@@ -30,7 +30,7 @@ export function CreateProjectForm() {
         הוסף פרויקט
       </button>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.success && <p className="text-sm text-primary">הפרויקט נוסף.</p>}
+      {state?.ok && <p className="text-sm text-primary">הפרויקט נוסף.</p>}
     </form>
   );
 }

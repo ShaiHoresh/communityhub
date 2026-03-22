@@ -5,7 +5,7 @@ import { submitLifeEventAction } from "./actions";
 
 export function LifeEventForm() {
   const [state, formAction] = useActionState(
-    async (_prev: { success: boolean; error?: string } | null, formData: FormData) => {
+    async (_prev: { ok: boolean; error?: string } | null, formData: FormData) => {
       return await submitLifeEventAction(formData);
     },
     null
@@ -70,7 +70,7 @@ export function LifeEventForm() {
             {state.error}
           </p>
         )}
-        {state?.success && (
+        {state?.ok && (
           <p className="text-sm font-medium text-primary">האירוע נרשם בהצלחה.</p>
         )}
       </div>

@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
           credentials.email,
           credentials.password
         );
-        if (!result.success) return null;
+        if (!result.ok) return null;
         return {
           id: result.userId,
           email: credentials.email,

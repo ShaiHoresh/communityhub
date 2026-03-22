@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import {
   approveAccessRequest,
   getAccessRequestById,
@@ -14,14 +13,17 @@ import {
   dbGetHouseholdById,
 } from "@/lib/db-households";
 import { requireAdmin } from "@/lib/auth-guard";
+import { type ActionResult, revalidateAdminPaths } from "@/lib/action-utils";
 
 const REVIEWED_BY = "admin";
 
-export async function approveAccessRequestAction(requestId: string) {
+export async function approveAccessRequestAction(
+  requestId: string,
+): Promise<ActionResult> {
   await requireAdmin();
   const request = await getAccessRequestById(requestId);
   if (!request || request.status !== "pending") {
-    return { success: false, error: "בקשה לא נמצאה או כבר טופלה." };
+    return { ok: false, error: "בקשה לא נמצאה או כבר טופלה." };
   }
 
   if (request.type === "new_household") {
@@ -48,7 +50,6 @@ export async function approveAccessRequestAction(requestId: string) {
       await dbAddHouseholdManager(household.id, user2.id);
     }
   } else {
-    // join_household: householdNameOrId can be household id
     const household = await dbGetHouseholdById(request.householdNameOrId);
     if (household) {
       const user1 = await dbCreateHouseholdUser({
@@ -76,22 +77,25 @@ export async function approveAccessRequestAction(requestId: string) {
   }
 
   await approveAccessRequest(requestId, REVIEWED_BY);
-  revalidatePath("/admin/access-requests");
-  return { success: true };
+  revalidateAdminPaths();
+  return { ok: true };
 }
 
-export async function rejectAccessRequestAction(requestId: string) {
+export async function rejectAccessRequestAction(
+  requestId: string,
+): Promise<ActionResult> {
   await requireAdmin();
   const result = await rejectAccessRequest(requestId, REVIEWED_BY);
-  if (!result.success) return result;
-  revalidatePath("/admin/access-requests");
-  return result;
+  if (!result.ok) return result;
+  revalidateAdminPaths();
+  return { ok: true };
 }
 
-/** Promote a PENDING user (signed up) to MEMBER. */
-export async function approvePendingUserAction(userId: string) {
+export async function approvePendingUserAction(
+  userId: string,
+): Promise<ActionResult> {
   await requireAdmin();
   await dbSetUserStatus(userId, "MEMBER");
-  revalidatePath("/admin/access-requests");
-  return { success: true };
+  revalidateAdminPaths();
+  return { ok: true };
 }

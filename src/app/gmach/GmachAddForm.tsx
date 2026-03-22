@@ -8,7 +8,7 @@ type Props = { categories: GmachCategory[] };
 
 export function GmachAddForm({ categories }: Props) {
   const [state, formAction] = useActionState(
-    async (_prev: { success: boolean; error?: string } | null, formData: FormData) => {
+    async (_prev: { ok: boolean; error?: string } | null, formData: FormData) => {
       return await addGmachItemAction(formData);
     },
     null
@@ -74,7 +74,7 @@ export function GmachAddForm({ categories }: Props) {
             {state.error}
           </p>
         )}
-        {state?.success && (
+        {state?.ok && (
           <p className="text-sm font-medium text-primary">הפריט נוסף.</p>
         )}
       </div>

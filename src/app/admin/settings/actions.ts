@@ -1,13 +1,17 @@
 "use server";
 
 import { setModuleEnabled, type SeasonalModule } from "@/lib/system-toggles";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
+import {
+  type ActionResult,
+  revalidateAdminPaths,
+  revalidateAppPaths,
+} from "@/lib/action-utils";
 
 export async function toggleModuleAction(
-  _prev: { success?: boolean; error?: string } | null,
-  formData: FormData
-): Promise<{ success?: boolean; error?: string } | null> {
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
   const modules = formData.getAll("module") as string[];
   const valid: SeasonalModule[] = ["rosh_hashanah", "purim"];
@@ -15,10 +19,7 @@ export async function toggleModuleAction(
   for (const key of valid) {
     await setModuleEnabled(key, modules.includes(key));
   }
-  revalidatePath("/admin");
-  revalidatePath("/admin/settings");
-  revalidatePath("/");
-  revalidatePath("/purim");
-  revalidatePath("/high-holidays");
-  return { success: true };
+  revalidateAdminPaths();
+  revalidateAppPaths();
+  return { ok: true };
 }

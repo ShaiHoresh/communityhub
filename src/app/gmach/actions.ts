@@ -1,21 +1,26 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { addGmachItem, toggleGmachItemPinned } from "@/lib/gmach";
 import { dbEnsureGmachCategories } from "@/lib/db-gmach";
 import { getGmachCategories } from "@/lib/gmach-categories";
+import {
+  type ActionResult,
+  parseFormString,
+  revalidateAppPaths,
+} from "@/lib/action-utils";
 
-export async function addGmachItemAction(formData: FormData) {
-  const categoryId = (formData.get("categoryId") as string)?.trim();
-  const title = (formData.get("title") as string)?.trim();
-  const description = (formData.get("description") as string)?.trim();
-  const contactInfo = (formData.get("contactInfo") as string)?.trim();
+export async function addGmachItemAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const categoryId = parseFormString(formData, "categoryId");
+  const title = parseFormString(formData, "title");
+  const description = parseFormString(formData, "description");
+  const contactInfo = parseFormString(formData, "contactInfo");
 
   if (!categoryId || !title) {
-    return { success: false, error: "נא לבחור קטגוריה ולהזין כותרת." };
+    return { ok: false, error: "נא לבחור קטגוריה ולהזין כותרת." };
   }
 
-  // Prevent FK violations if categories weren't seeded yet.
   await dbEnsureGmachCategories(getGmachCategories());
 
   await addGmachItem({
@@ -24,14 +29,14 @@ export async function addGmachItemAction(formData: FormData) {
     description: description || undefined,
     contactInfo: contactInfo || undefined,
   });
-  revalidatePath("/gmach");
-  revalidatePath("/");
-  return { success: true };
+  revalidateAppPaths();
+  return { ok: true };
 }
 
-export async function toggleGmachPinAction(itemId: string) {
+export async function toggleGmachPinAction(
+  itemId: string,
+): Promise<ActionResult> {
   await toggleGmachItemPinned(itemId);
-  revalidatePath("/gmach");
-  revalidatePath("/");
-  return { success: true };
+  revalidateAppPaths();
+  return { ok: true };
 }
