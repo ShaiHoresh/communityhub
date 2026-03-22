@@ -16,6 +16,14 @@
 | member2@test.com   | MEMBER  |
 | pending@test.com   | PENDING |
 
+## Migrating an existing database
+
+If you already have data and don't want to reset, run the appropriate migration script in the SQL Editor:
+
+| Script | Purpose |
+|--------|---------|
+| `migration-prayer-engine.sql` | Upgrades `schedule_entries` from hour/minute to the full prayer engine (day types, zmanim, seasons, overrides). |
+
 ## File reference
 
 | File            | Purpose |
@@ -23,5 +31,6 @@
 | `reset-db.sql`  | Full DB reset: drop + grants + schema + RLS. Use for fresh setup or when things get messy. |
 | `schema.sql`    | Canonical table definitions (standalone, no drops/grants). Reference for the current schema. |
 | `rls.sql`       | Row Level Security policies (standalone). Reference for current RLS rules. |
+| `migration-prayer-engine.sql` | Migration: adds prayer engine columns to existing `schedule_entries`, creates `schedule_overrides`. |
 
 > **Seed implementation:** `src/lib/seed.ts`

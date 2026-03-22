@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS hh_prayers CASCADE;
 DROP TABLE IF EXISTS gmach_posts CASCADE;
 DROP TABLE IF EXISTS gmach_categories CASCADE;
 DROP TABLE IF EXISTS life_events CASCADE;
+DROP TABLE IF EXISTS schedule_overrides CASCADE;
 DROP TABLE IF EXISTS schedule_entries CASCADE;
 DROP TABLE IF EXISTS prayers_lessons CASCADE;
 DROP TABLE IF EXISTS transactions CASCADE;
@@ -28,10 +29,11 @@ DROP TABLE IF EXISTS locations CASCADE;
 DROP TABLE IF EXISTS system_toggles CASCADE;
 
 DROP TYPE IF EXISTS user_status CASCADE;
+
 DROP FUNCTION IF EXISTS current_user_status() CASCADE;
 
 -- ============================================================
--- STEP 2: Restore schema permissions (needed if schema was dropped/recreated)
+-- STEP 2: Restore schema permissions
 -- ============================================================
 
 GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
@@ -166,18 +168,40 @@ CREATE TABLE life_events (
 CREATE INDEX idx_life_events_date ON life_events(date);
 
 CREATE TABLE schedule_entries (
-  id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  type                      TEXT NOT NULL,
-  title                     TEXT NOT NULL,
-  location_id               TEXT NOT NULL REFERENCES locations(id),
-  hour                      INT NOT NULL CHECK (hour >= 0 AND hour <= 23),
-  minute                    INT NOT NULL CHECK (minute >= 0 AND minute <= 59),
-  use_seasonal_mincha_offset BOOLEAN NOT NULL DEFAULT false,
-  sort_order                INT NOT NULL DEFAULT 0,
-  created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type              TEXT NOT NULL,
+  title             TEXT NOT NULL,
+  location_id       TEXT NOT NULL REFERENCES locations(id),
+  day_types         TEXT[] NOT NULL DEFAULT '{weekday,shabbat}',
+  specific_date     DATE,
+  season            TEXT NOT NULL DEFAULT 'always'
+                      CHECK (season IN ('always','winter_only','summer_only')),
+  time_type         TEXT NOT NULL DEFAULT 'FIXED'
+                      CHECK (time_type IN ('FIXED','ZMANIM_BASED','DYNAMIC_OFFSET')),
+  fixed_hour        INT CHECK (fixed_hour >= 0 AND fixed_hour <= 23),
+  fixed_minute      INT CHECK (fixed_minute >= 0 AND fixed_minute <= 59),
+  zman_key          TEXT,
+  offset_minutes    INT NOT NULL DEFAULT 0,
+  round_to          INT NOT NULL DEFAULT 0 CHECK (round_to >= 0),
+  sort_order        INT NOT NULL DEFAULT 0,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_schedule_entries_order ON schedule_entries(sort_order);
+
+CREATE TABLE schedule_overrides (
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  schedule_entry_id UUID NOT NULL REFERENCES schedule_entries(id) ON DELETE CASCADE,
+  override_date     DATE NOT NULL,
+  is_cancelled      BOOLEAN NOT NULL DEFAULT false,
+  override_hour     INT CHECK (override_hour >= 0 AND override_hour <= 23),
+  override_minute   INT CHECK (override_minute >= 0 AND override_minute <= 59),
+  reason            TEXT,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (schedule_entry_id, override_date)
+);
+
+CREATE INDEX idx_schedule_overrides_date ON schedule_overrides(override_date);
 
 CREATE TABLE purim_selections (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -248,6 +272,7 @@ ALTER TABLE gmach_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE access_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE life_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE schedule_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE schedule_overrides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purim_selections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purim_selection_recipients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hh_prayers ENABLE ROW LEVEL SECURITY;
@@ -261,7 +286,6 @@ RETURNS user_status AS $$
   SELECT status FROM users WHERE id = auth.uid();
 $$ LANGUAGE sql STABLE SECURITY DEFINER;
 
--- households
 CREATE POLICY households_select_own ON households
   FOR SELECT USING (
     id IN (SELECT household_id FROM users WHERE id = auth.uid() AND household_id IS NOT NULL)
@@ -270,7 +294,6 @@ CREATE POLICY households_select_own ON households
 CREATE POLICY households_all_admin ON households
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- users
 CREATE POLICY users_select_own ON users
   FOR SELECT USING (id = auth.uid());
 CREATE POLICY users_select_members ON users
@@ -281,7 +304,6 @@ CREATE POLICY users_select_members ON users
 CREATE POLICY users_all_admin ON users
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- household_managers
 CREATE POLICY household_managers_select ON household_managers
   FOR SELECT USING (
     household_id IN (SELECT household_id FROM users WHERE id = auth.uid())
@@ -290,27 +312,20 @@ CREATE POLICY household_managers_select ON household_managers
 CREATE POLICY household_managers_admin ON household_managers
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- locations
 CREATE POLICY locations_select ON locations FOR SELECT USING (true);
 CREATE POLICY locations_admin ON locations FOR ALL USING (current_user_status() = 'ADMIN');
 
--- prayers_lessons
 CREATE POLICY prayers_select ON prayers_lessons FOR SELECT USING (true);
 CREATE POLICY prayers_admin ON prayers_lessons FOR ALL USING (current_user_status() = 'ADMIN');
 
--- projects
 CREATE POLICY projects_admin ON projects FOR ALL USING (current_user_status() = 'ADMIN');
-
--- transactions
 CREATE POLICY transactions_admin ON transactions FOR ALL USING (current_user_status() = 'ADMIN');
 
--- gmach_categories
 CREATE POLICY gmach_categories_select ON gmach_categories
   FOR SELECT USING (current_user_status() IN ('MEMBER', 'ADMIN'));
 CREATE POLICY gmach_categories_admin ON gmach_categories
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- gmach_posts
 CREATE POLICY gmach_posts_select ON gmach_posts
   FOR SELECT USING (current_user_status() IN ('MEMBER', 'ADMIN'));
 CREATE POLICY gmach_posts_insert ON gmach_posts
@@ -318,11 +333,9 @@ CREATE POLICY gmach_posts_insert ON gmach_posts
 CREATE POLICY gmach_posts_admin ON gmach_posts
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- access_requests
 CREATE POLICY access_requests_admin ON access_requests
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- life_events
 CREATE POLICY life_events_select ON life_events
   FOR SELECT USING (
     current_user_status() IN ('MEMBER', 'ADMIN')
@@ -333,11 +346,12 @@ CREATE POLICY life_events_insert ON life_events
 CREATE POLICY life_events_admin ON life_events
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- schedule_entries
 CREATE POLICY schedule_entries_select ON schedule_entries FOR SELECT USING (true);
 CREATE POLICY schedule_entries_admin ON schedule_entries FOR ALL USING (current_user_status() = 'ADMIN');
 
--- purim_selections
+CREATE POLICY schedule_overrides_select ON schedule_overrides FOR SELECT USING (true);
+CREATE POLICY schedule_overrides_admin ON schedule_overrides FOR ALL USING (current_user_status() = 'ADMIN');
+
 CREATE POLICY purim_selections_select ON purim_selections
   FOR SELECT USING (
     household_id IN (SELECT household_id FROM users WHERE id = auth.uid())
@@ -346,16 +360,13 @@ CREATE POLICY purim_selections_select ON purim_selections
 CREATE POLICY purim_selections_admin ON purim_selections
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- purim_selection_recipients
 CREATE POLICY purim_recipients_select ON purim_selection_recipients FOR SELECT USING (true);
 CREATE POLICY purim_recipients_admin ON purim_selection_recipients
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- hh_prayers
 CREATE POLICY hh_prayers_select ON hh_prayers FOR SELECT USING (true);
 CREATE POLICY hh_prayers_admin ON hh_prayers FOR ALL USING (current_user_status() = 'ADMIN');
 
--- high_holiday_registrations
 CREATE POLICY hh_registrations_select ON high_holiday_registrations
   FOR SELECT USING (
     household_id IN (SELECT household_id FROM users WHERE id = auth.uid())
@@ -364,15 +375,9 @@ CREATE POLICY hh_registrations_select ON high_holiday_registrations
 CREATE POLICY hh_registrations_admin ON high_holiday_registrations
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- hh_registration_seats
 CREATE POLICY hh_seats_select ON hh_registration_seats FOR SELECT USING (true);
 CREATE POLICY hh_seats_admin ON hh_registration_seats
   FOR ALL USING (current_user_status() = 'ADMIN');
 
--- system_toggles
 CREATE POLICY system_toggles_select ON system_toggles FOR SELECT USING (true);
 CREATE POLICY system_toggles_admin ON system_toggles FOR ALL USING (current_user_status() = 'ADMIN');
-
--- ============================================================
--- Done! Now run /api/seed in dev mode to populate test data.
--- ============================================================

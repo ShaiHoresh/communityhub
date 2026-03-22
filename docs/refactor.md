@@ -101,5 +101,16 @@ Phase R6: Error Handling & Resilience
 Phase R7: Config Hygiene
 
 [x] Resolve Tailwind color duplication: removed duplicate color/font definitions from `tailwind.config.js` (kept only `content`). `globals.css` `@theme inline` is now the single source of truth.
-[x] Simplify seasonal mincha offset to a lookup table (`MINCHA_OFFSET_BY_MONTH`) in `schedule.ts`.
+[x] Simplify seasonal mincha offset to a lookup table (`MINCHA_OFFSET_BY_MONTH`) in `schedule.ts`. (Superseded by Prayer Engine overhaul — now uses Zmanim-based calculation.)
 [x] Unify `ScheduleEntryType` and `PrayerType`: `PrayerType` is now an alias for `ScheduleEntryType`, eliminating the `as PrayerType` cast.
+
+
+Prayer Engine Overhaul (post-R7)
+
+[x] Create `src/lib/zmanim.ts` — Hebcal API integration, `calculatePrayerTime()`, day-type/season helpers.
+[x] Update `schedule_entries` schema: replace `hour/minute/use_seasonal_mincha_offset` with `day_types[]`, `season`, `time_type` (FIXED/ZMANIM_BASED/DYNAMIC_OFFSET), `fixed_hour/minute`, `zman_key`, `offset_minutes`, `round_to`.
+[x] Create `schedule_overrides` table for per-entry, per-date cancellations or reschedules.
+[x] Overhaul `buildDailyScheduleForDate()` to filter by day type + season, check overrides, resolve time via `calculatePrayerTime()`.
+[x] Overhaul admin Schedule Manager UI: day-type checkboxes, time-type selector, zman dropdown, offset input, rounding field.
+[x] Migration script: `scripts/migration-prayer-engine.sql`.
+[x] Updated `reset-db.sql` with full new schema.

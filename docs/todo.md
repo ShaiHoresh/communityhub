@@ -1,94 +1,106 @@
-Implementation Roadmap (TODO List)
+# CommunityHub — Implementation Status
 
-Phase 1: Foundation & RTL Setup
-[x] Initialize Next.js project with Tailwind CSS RTL support.
+All major phases are **complete**. This document tracks what has been built and what remains.
 
-[x] Setup households and users tables with foreign key relationships.
+---
 
-[x] Implement Multi-Manager logic (Spouses can both manage one Household).
+## Completed Phases
 
-[x] Build "Request Access" flow with Admin approval dashboard.
+### Phase 1: Foundation & RTL Setup ✅
+- [x] Next.js project with Tailwind CSS RTL support
+- [x] Households and users tables with FK relationships
+- [x] Multi-Manager logic (both spouses manage one household)
+- [x] "Request Access" flow with Admin approval dashboard
+- [x] Authentication: Email/Password (bcrypt hashing, NextAuth.js JWT sessions)
+- [x] Pending State UI: "Waiting for Admin Approval" screen
+- [x] Sign-out flow
+- [x] Password Reset placeholder (forgot-password page)
 
-[x] Authentication: Email/Password registration and sign-in (with password hashing and secure session management).
+### Phase 1b: Database & Supabase ✅
+- [x] Schema design: households, users, locations, schedule_entries, projects, gmach, etc.
+- [x] Row Level Security (RLS) policies by role (GUEST, PENDING, MEMBER, ADMIN)
+- [x] Development seed script (`/api/seed` → admin, member, pending test users)
+- [x] DATABASE.md documentation
+- [x] Full Supabase migration (all tables: users, gmach, life-events, projects, transactions, purim, high-holidays, schedule-entries, locations)
 
-[x] Pending State UI: Dedicated "Waiting for Admin Approval" screen for signed-in users in PENDING state (no access to member areas until promoted).
+### Phase 2: Prayer & Schedule Engine ✅
+- [x] Locations table (name, max capacity, space category)
+- [x] Hebcal Zmanim API integration with daily server-side caching
+- [x] Three time calculation modes: FIXED, ZMANIM_BASED, DYNAMIC_OFFSET
+- [x] Day-type applicability: weekday, shabbat, holiday, specific_date
+- [x] Seasonal rules: always, winter_only, summer_only
+- [x] Rounding logic (round to nearest N minutes)
+- [x] Manual overrides table (cancel or reschedule per date)
+- [x] "24-Hour Dashboard" on the homepage with next-up highlight
 
-[x] Sign-out: Implement sign-out flow and clear session.
+### Phase 3: Directory, Gmach & Life Events ✅
+- [x] Directory with tag filtering and privacy toggles
+- [x] Gmach Board with category color-coding and committee priority pinning
+- [x] Life Events registry (births/yahrzeits)
 
-[x] Password Reset: Implement forgot-password / password-reset flow (e.g. email link or provider flow).
+### Phase 4: Financial & Project Architecture ✅
+- [x] Projects table for financial tracking
+- [x] Admin interface for income/expense logging per project
+- [x] Payment gateway placeholder (architecture ready)
 
-Phase 1b: Database Setup (prioritized for early User Role testing: Admin, Member, Pending)
-[x] Database Schema Design: Define and implement tables for `households`, `users` (with roles and pending status), `locations`, `prayers/lessons`, `projects`, and `gmach_posts`. Ensure foreign key relationships (e.g. `users.household_id`).
+### Phase 4b: Admin Dashboard (Control Tower) ✅
+- [x] Sidebar-based admin layout
+- [x] Overview KPIs (members, pending, projects, seasonal modules)
+- [x] User Queue (approve/reject pending users)
+- [x] Schedule Manager with full CRUD (day types, time modes, zmanim, rounding)
+- [x] Location Manager (CRUD with capacity and space category)
+- [x] Finance Hub (projects, transactions, ledger)
+- [x] High Holidays Manager (prayer list, registration report)
+- [x] Purim Recipient Aggregator report
+- [x] System Toggles (Rosh Hashanah, Purim modules)
 
-[x] Security & Roles (RLS): If using Supabase, implement Row Level Security (RLS) policies by role (`ADMIN`, `MEMBER`, `PENDING`, `GUEST`). Define who can see what (e.g. only Members see Directory; only Admins see Finance Hub).
+### Phase 5: Seasonal Modules ✅
+- [x] High Holidays: per-household seat registration with per-prayer men/women sections
+- [x] Purim: tiered selection (full/20/5) with household recipient checklist
+- [x] Recipient Aggregator admin report
 
-[x] Development Seed Script: Create `seed.sql` or `seed.ts` that populates: one Admin user; one Member household with two users (Managers); one Pending user; sample prayer times; one sample project. Script must allow switching between users for immediate permission testing.
+### Phase 6: PWA & Polish ✅
+- [x] next-pwa configuration (manifest, icons, offline caching)
+- [x] PWA installability (Chrome)
+- [x] Hebrew translation audit for all UI components
+- [x] Excel export for all admin tables
 
-[x] Database Documentation: Add `docs/DATABASE.md` (or `DATABASE.md` in project root) describing table structures and relationships.
+### Refactoring (R1–R7) ✅
+- [x] **R1**: Household model cleanup — re-keyed registrations from user_id to household_id
+- [x] **R2**: DB layer type safety — typed rows, unwrap helpers, deduplicated types
+- [x] **R3**: Server action standardization — ActionResult type, parseForm helpers, safeAction wrapper
+- [x] **R4**: Shared UI components — FormFeedback, FilterTabs, BackLink, CSS utility classes
+- [x] **R5**: Performance — N+1 fix, Promise.all parallelization across 4 pages
+- [x] **R6**: Error handling — error.tsx, global-error.tsx, safeAction try/catch
+- [x] **R7**: Config hygiene — Tailwind single source of truth, unified PrayerType
 
-Supabase rollout (replace in-memory stores):
-[x] Create Supabase project + run `scripts/schema.sql` and `scripts/rls.sql` in SQL Editor.
-[x] Add Supabase env vars to `.env` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
-[x] Implement server helpers (`src/lib/supabase-admin.ts`).
-[x] Migrate: `users` (auth + pending queue), `access_requests`, and approval-created `households/household_managers` to Supabase.
-[x] Replace `/api/seed` to seed Supabase (admin/member/pending).
-[x] Migrate: `gmach` (gmach_posts + categories) to Supabase so homepage updates are live.
-[x] Migrate: `life-events`, `projects/transactions`, `purim`, `high-holidays`, `schedule-entries`, `directory` to Supabase.
-[x] Migrate: `locations` off hardcoded list (use Supabase `locations` table everywhere).
+### Accessibility ✅
+- [x] Semantic HTML structure (headings, landmarks, labels)
+- [x] Keyboard navigation for all interactive elements
+- [x] WCAG AA color contrast
+- [x] ARIA attributes and live regions for feedback
 
-Phase 2: The Prayer & Schedule Engine
-[x] Create locations table (Name, Max Capacity).
+---
 
-[x] Build Hebcal API integration with daily server-side caching.
+## Remaining / Future Work
 
-[x] Implement the Seasonal Shift Logic for Shabbat Mincha (15-min increments).
+### Performance
+- [ ] Consider `unstable_cache` for relatively static data (locations, schedule entries, system toggles)
 
-[x] Create the "24-Hour Dashboard" for the landing page.
+### Prayer Engine Enhancements
+- [ ] Holiday detection via Hebcal Calendar API (auto-filter entries with `day_types = holiday`)
+- [ ] Admin UI for managing schedule_overrides (currently table exists, CRUD actions ready, UI not built)
+- [ ] Weekly/monthly schedule view (currently only "24-hour" dashboard)
 
-Phase 3: Directory, Gmach & Life Events
-[x] Build the Directory with Tag filtering and privacy toggles.
+### Features
+- [ ] Hebrew date display (Gregorian ↔ Hebrew calendar conversion)
+- [ ] Yahrzeit notification system (email/push when upcoming)
+- [ ] Payment gateway integration (iCount / Morning API)
+- [ ] User profile editing (name, phone, directory tags, privacy toggles)
+- [ ] Admin location capacity monitoring for High Holidays (overbooking prevention)
 
-[x] Build the Gmach Board: Implement category-based color coding and Committee priority pinning.
-
-[x] Implement Life Events Registry: Form for Births/Yahrzeits; logic for calculating upcoming dates.
-
-Phase 4: Financial & Project Architecture
-[x] Build the projects table for financial tracking.
-
-[x] Create an Admin interface to log Expenses and Income per project.
-
-[x] Prepare the "Payment Gateway" placeholder (ready for external API integration).
-
-Phase 4b: Admin Dashboard UI/UX (Control Tower)
-[x] Admin layout: Sidebar-based navigation with main content area (all Admin routes).
-
-[x] Admin Overview: KPI stats (Total Members, Pending Requests, Active Projects balance, Seasonal Modules state).
-
-[x] User Queue tab: List of PENDING users with Approve and Reject buttons.
-
-[x] Schedule Manager tab: Calendar/list view to CRUD prayers and lessons (including Shabbat Mincha logic support).
-
-[x] Finance Hub tab: Project creation, income/expense logging, and General Ledger view.
-
-[x] System Toggles: Settings page with switches to enable/disable Rosh Hashanah and Purim modules.
-
-Phase 5: Seasonal Modules
-[x] High Holidays: Build seat registration with real-time capacity checks.
-
-[x] Purim: Build tiered selection UI with specific validation (Max 5 or Max 20).
-
-[x] Build the "Recipient Aggregator" report for Admin.
-
-Accessibility:
-[x] Semantic structure: Audit pages for proper headings, landmarks (header/nav/main/footer), and descriptive labels.
-[x] Keyboard navigation: Ensure all interactive elements (buttons, tabs, cards, forms) are reachable and operable via keyboard only.
-[x] Color & contrast: Verify color contrast for text and controls meets WCAG AA; adjust palette or add outlines as needed.
-[x] ARIA & feedback: Add ARIA attributes and live regions where appropriate so errors and status changes are announced clearly.
-
-Phase 6: PWA & Polish
-[x] Configure next-pwa for manifest, icons, and offline caching.
-[x] Add metadata/manifest icons and ensure installability (Chrome).
-
-[x] Final Hebrew translation/string audit for all UI components.
-
-[x] Export to Excel functionality for all Admin tables.
+### Infrastructure
+- [ ] Update `reset-db.sql` automatically when schema.sql changes (currently manual)
+- [ ] CI/CD pipeline
+- [ ] Production deployment (Vercel + Supabase production project)
+- [ ] Rate limiting for auth endpoints

@@ -1,67 +1,112 @@
-# Database
+# Database Schema
 
-This document describes the database schema and relationships used by CommunityHub. The app currently uses **in-memory stores** (see `src/lib/*.ts`); when you switch to **Supabase**, run `scripts/schema.sql` and `scripts/rls.sql` in the SQL Editor.
+CommunityHub uses **Supabase (PostgreSQL)** with Row Level Security.
 
----
-
-## Tables and relationships
-
-### Core
-
-| Table | Description | Key relationships |
-|-------|-------------|-------------------|
-| **households** | Family unit (billing, registration). | – |
-| **users** | Account: name, email, password_hash, **status** (PENDING \| MEMBER \| ADMIN), **household_id** → households.id. | users.household_id → households.id |
-| **household_managers** | Which users can manage which household (multi-manager). | (household_id, user_id) → households, users |
-
-### Schedule and locations
-
-| Table | Description | Key relationships |
-|-------|-------------|-------------------|
-| **locations** | Venue name and max capacity. | – |
-| **prayers_lessons** | Schedule events (title, type, start_time, event_date, seasonal_offset for Shabbat Mincha). | location_id → locations.id |
-
-### Finance and Gmach
-
-| Table | Description | Key relationships |
-|-------|-------------|-------------------|
-| **projects** | Finance project (e.g. Building Fund, Kiddush). | – |
-| **gmach_categories** | Category id, label, color. | – |
-| **gmach_posts** | Board item (category, title, description, is_pinned_by_committee). | category_id → gmach_categories.id |
-
-### Requests and life events
-
-| Table | Description | Key relationships |
-|-------|-------------|-------------------|
-| **access_requests** | Request to join or create a household (requester details, status: pending \| approved \| rejected). | – |
-| **life_events** | Births and yahrzeits (type, name, date). | household_id → households.id (optional) |
+**Setup:** Run `scripts/reset-db.sql` in the Supabase SQL Editor, then seed via `/api/seed` in dev mode.
 
 ---
 
-## Roles and visibility (RLS summary)
+## Tables
 
-When using Supabase, Row Level Security enforces:
+### Core (Identity & Household)
 
-- **GUEST (not signed in):** Can read **locations** and **prayers_lessons** (next prayers on landing).
-- **PENDING:** Can read/update only **own user** row.
-- **MEMBER:** Can read directory-relevant **users**, **households** (own), **gmach_posts**, **life_events**; can insert/update own **life_events** and **gmach_posts** as per policies.
-- **ADMIN:** Full access to all tables (User Queue, Schedule Manager, Finance Hub, System Toggles).
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **households** | Family unit for billing and registration | `id`, `name` |
+| **users** | User accounts | `id`, `full_name`, `email`, `password_hash`, `status` (PENDING/MEMBER/ADMIN), `household_id` → households |
+| **household_managers** | Which users can act for a household | `(household_id, user_id)` — composite PK |
 
-See `scripts/rls.sql` for the exact policies.
+### Schedule & Locations
+
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **locations** | Venues with capacity | `id` (TEXT PK), `name`, `max_capacity`, `space_category` |
+| **schedule_entries** | Prayer/lesson rules (templates) | `type`, `title`, `location_id`, `day_types[]`, `season`, `time_type`, `fixed_hour/minute`, `zman_key`, `offset_minutes`, `round_to` |
+| **schedule_overrides** | Per-entry, per-date overrides | `schedule_entry_id`, `override_date`, `is_cancelled`, `override_hour/minute`, `reason` |
+| **prayers_lessons** | Legacy event instances (not actively used) | `location_id`, `start_time`, `event_date` |
+
+### Finance
+
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **projects** | Finance projects (e.g., "Building Fund") | `id`, `name` |
+| **transactions** | Income/expense ledger | `project_id`, `type` (income/expense), `amount_cents`, `date` |
+
+### Community
+
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **gmach_categories** | Category reference | `id` (TEXT PK), `label`, `color` |
+| **gmach_posts** | Community board items | `category_id`, `title`, `description`, `is_pinned_by_committee` |
+| **access_requests** | Household join/create requests | `type`, `requester_name/email`, `status` (pending/approved/rejected) |
+| **life_events** | Births and yahrzeits | `type`, `name`, `date`, `household_id` |
+
+### Seasonal Modules
+
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **purim_selections** | Per-household tier choice | `household_id` (UNIQUE), `tier` (full/twenty/five) |
+| **purim_selection_recipients** | Which households a family chose | `selection_id`, `household_id` |
+| **hh_prayers** | Admin-defined prayer list for High Holidays | `name`, `sort_order` |
+| **high_holiday_registrations** | Per-household registration | `household_id` (UNIQUE), `committee_interest`, `prep_slot` |
+| **hh_registration_seats** | Per-prayer seat allocation | `registration_id`, `prayer_id`, `men_seats`, `women_seats` |
+
+### System
+
+| Table | Description | Key columns |
+|-------|-------------|-------------|
+| **system_toggles** | Feature flags | `key` (TEXT PK), `enabled` |
 
 ---
 
-## Seed (development)
+## Schedule Entry Fields (Prayer Engine)
 
-To test roles locally without Supabase:
+The `schedule_entries` table is the core of the prayer scheduling engine. Each row is a **rule** that defines when and how a prayer occurs.
 
-1. Run the app: `npm run dev`.
-2. Open **GET /api/seed** once (e.g. http://localhost:3000/api/seed).
-3. Sign in at `/auth/signin` with:
-   - **admin@test.com** (ADMIN)
-   - **member1@test.com** or **member2@test.com** (MEMBER, same household)
-   - **pending@test.com** (PENDING)
+### Applicability
 
-Password for all: **Test1234!**
+| Column | Type | Values |
+|--------|------|--------|
+| `day_types` | TEXT[] | `weekday`, `shabbat`, `holiday`, `specific_date` |
+| `specific_date` | DATE | Used only when `specific_date` is in `day_types` |
+| `season` | TEXT | `always`, `winter_only`, `summer_only` |
 
-Seed implementation: `src/lib/seed.ts`.
+### Time Calculation
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `time_type` | TEXT | `FIXED`, `ZMANIM_BASED`, `DYNAMIC_OFFSET` |
+| `fixed_hour` / `fixed_minute` | INT | For FIXED mode |
+| `zman_key` | TEXT | Hebcal zman key (e.g., `sunset`, `sunrise`) |
+| `offset_minutes` | INT | ± minutes from zman (DYNAMIC_OFFSET mode) |
+| `round_to` | INT | Round result to nearest N minutes (0 = no rounding) |
+
+---
+
+## RLS Summary
+
+| Access level | Tables |
+|-------------|--------|
+| **Public read** | locations, schedule_entries, schedule_overrides, hh_prayers, system_toggles |
+| **Member read** | users (MEMBER/ADMIN rows), households (own), gmach_posts, life_events (own household) |
+| **Household-scoped** | purim_selections, high_holiday_registrations (own household or ADMIN) |
+| **Admin full CRUD** | All tables |
+
+Helper function: `current_user_status()` — returns the calling user's status enum for RLS policy evaluation.
+
+---
+
+## Seed (Development)
+
+Run `npm run dev` then open `/api/seed` (dev mode only).
+
+| Email | Role | Password |
+|-------|------|----------|
+| admin@test.com | ADMIN | Test1234! |
+| member1@test.com | MEMBER | Test1234! |
+| member2@test.com | MEMBER | Test1234! |
+| pending@test.com | PENDING | Test1234! |
+
+Members 1 & 2 share a household ("משפחת ישראלי") and are both managers.
+
+Seed implementation: `src/lib/seed.ts`

@@ -1,133 +1,222 @@
-CommunityHub Product Requirements Document (PRD)
-1. Executive Summary
-CommunityHub is a comprehensive management platform (Web/PWA) for a Synagogue/Community Center. It serves three primary purposes:
+# CommunityHub — Product Requirements Document (PRD)
 
-Utility: Real-time prayer/lesson schedules.
+## 1. Executive Summary
 
-Community: Member directory, life events (Yahrzeits), and a peer-to-peer Gmach (community help).
+CommunityHub is a comprehensive management platform (Web/PWA) for a Synagogue or Community Center, built with **Next.js 16**, **Supabase (PostgreSQL)**, and **Tailwind CSS**. Primary language is Hebrew (RTL).
 
-Logistics & Finance: Project-based financial tracking, holiday seat registration, and seasonal community projects (Purim).
+It serves three pillars:
 
-2. System Architecture & Permissions
-2.1 The Household vs. User Model
-Household (Core Entity): The primary unit for billing, seat registration, and gifts. Contains a family name, address, and total balance.
+| Pillar | Capabilities |
+|--------|-------------|
+| **Utility** | Dynamic prayer/lesson scheduling with Zmanim (Hebcal) integration, seasonal rules, and admin overrides. |
+| **Community** | Household-based member directory, life events (births/yahrzeits), and a Gmach (peer-to-peer help) board. |
+| **Logistics & Finance** | Project-based financial tracking, High Holiday seat registration, and Purim Mishloach Manot management. |
 
-User (Account Entity): Multiple users (e.g., spouses, adult children) can be linked to a single household_id.
+---
 
-Intra-Family Roles:
+## 2. Data Model
 
-Household Manager: Full authority to register seats, pay dues, and update family data (Births/Deaths).
+### 2.1 Household vs. User
 
-Household Member: View-only access to household details.
+The **Household** is the core entity for billing, registration, and family identity. The **User** is the account entity.
 
-Global Roles:
+```
+Household (family)
+├── User A  (adult, manager)   ← can register seats, choose Purim package
+├── User B  (adult, manager)   ← same authority as User A
+└── User C  (child, member)    ← view-only
+```
 
-Guest: Unauthenticated visitors are allowed on the site. They see only: (1) the next prayers (upcoming schedule), (2) a brief welcome note, and (3) Sign-in / Sign-up buttons. No Directory, Gmach, or member content. After signing up they enter the PENDING state until Admin approval to become a Member.
+- `users.household_id` → FK to `households.id`. Each user belongs to one household.
+- `household_managers` — many-to-many table defining which users can act on behalf of a household.
+- Seasonal registrations (High Holidays, Purim) are keyed on `household_id`, not `user_id`. Either manager can submit/update; the registration belongs to the household.
 
-Member: Access to Directory, Gmach, and Registration.
+### 2.2 Global Roles (The Gatekeeper)
 
-Admin: Full system control, financial management, and user approval.
+| Role | Access |
+|------|--------|
+| **Guest** | Unauthenticated. Sees only the next upcoming prayer and sign-in/sign-up buttons. |
+| **Pending** | Authenticated but not yet approved. Sees a "Waiting for Admin Approval" screen. Cannot access member areas. |
+| **Member** | Full access to Directory, Gmach, Life Events, and seasonal registration (if enabled). |
+| **Admin** | Everything a Member can do, plus the Admin Control Tower (user approval, schedule management, finance, system toggles). |
 
-2.2 Authentication & Sign-in Flow (The "Gatekeeper")
+### 2.3 Authentication
 
-Unified Auth: Registration includes creating credentials (Email + Password). There is no separate "request access" without an account; users register with email/password and are then placed in a pending state until approved.
+- **NextAuth.js** with Credentials provider and JWT sessions.
+- Registration creates an account with email + bcrypt-hashed password → user enters `PENDING` state.
+- Admin approves via the User Queue → user promoted to `MEMBER` and assigned to a household.
+- Middleware enforces role-based route protection. Server actions include defense-in-depth `requireAdmin()` checks.
 
-The "Pending" State: A newly registered user is in a `PENDING` state. They can sign in with their credentials but will only see a dedicated "Waiting for Admin Approval" screen. No access to Directory, Gmach, Schedule, or other member areas until an Admin promotes them to `MEMBER` (e.g. by approving their access request or changing their status).
+### 2.4 Row Level Security (Supabase RLS)
 
-Security (Technical Stack): Authentication must use password hashing (e.g. bcrypt or the provider’s built-in secure hashing) and secure session management (HTTP-only cookies, CSRF protection, and short-lived or refreshable sessions as per the chosen auth provider).
+Every table has RLS enabled. Key policies:
 
-3. Core Functional Modules
-3.1 Hybrid Prayer & Lesson Engine
-Logic: A mix of fixed times and sun-based (Zmanim) times via Hebcal API.
+| Scope | Rule |
+|-------|------|
+| Public read | `locations`, `schedule_entries`, `schedule_overrides`, `hh_prayers`, `system_toggles` |
+| Member read | `users` (MEMBER/ADMIN rows), `households` (own), `gmach_posts`, `life_events` (own household) |
+| Household-scoped | `purim_selections`, `high_holiday_registrations` — only own household or ADMIN |
+| Admin-only write | All tables allow full CRUD for ADMIN role |
 
-Caching Requirement: API data must be cached server-side once daily to prevent redundant calls and ensure speed.
+---
 
-Complex Shabbat Mincha Logic:
+## 3. The Prayer Scheduling Engine
 
-Winter: Set to Candle Lighting time.
+### 3.1 Architecture
 
-Summer: Default to 18:00.
+The engine is rule-based: each `schedule_entries` row is a **template/rule** that defines *when* and *how* a prayer occurs. The system evaluates all rules against a given date to produce a concrete daily schedule.
 
-Transition: When sunset occurs earlier than the 18:00 threshold, the system must automatically shift the time earlier in 15-minute increments.
+```
+schedule_entries (rules)
+    ↓ filtered by day_type + season + overrides
+    ↓ time resolved via calculatePrayerTime()
+PrayerEvent[] (concrete schedule for homepage)
+```
 
-Location Tracking: Every event must be assigned a location_id (e.g., Main Sanctuary, Library).
+### 3.2 Applicability Rules (When)
 
-3.2 Member Directory & Life Events
-Directory: Searchable list of Households. Filters for Tags (e.g., Rabbi, Doctor, Volunteer).
+| Field | Values | Purpose |
+|-------|--------|---------|
+| `day_types` | `weekday`, `shabbat`, `holiday`, `specific_date` | Which day types this rule applies to (array, multi-select) |
+| `specific_date` | DATE | For one-off events (used when `specific_date` is in `day_types`) |
+| `season` | `always`, `winter_only`, `summer_only` | Seasonal filtering. Winter = Nov–Mar, Summer = Apr–Oct |
 
-Privacy: Members can toggle visibility for their specific phone/address.
+### 3.3 Time Calculation (How)
 
-Life Events (The Registry): Users can add/update Births, Weddings, and Yahrzeits (Anniversaries of death). The system calculates upcoming Yahrzeits (Hebrew/Gregorian) and notifies the Household Manager.
+Three modes via `time_type`:
 
-3.3 The Gmach (Community Help) Board
-Function: A board for posting "Help Needed," "Help Offered," or "Items for Loan."
+| Mode | Fields used | Example |
+|------|-------------|---------|
+| **FIXED** | `fixed_hour`, `fixed_minute` | Shacharit at 08:00 |
+| **ZMANIM_BASED** | `zman_key` | Prayer at sunset (exact time from Hebcal) |
+| **DYNAMIC_OFFSET** | `zman_key` + `offset_minutes` | 20 minutes before sunset (`sunset` + `-20`) |
 
-UI: Color-coded or distinct shapes based on category.
+**Rounding:** Optional `round_to` field (e.g., 5 minutes) ensures prayers don't start at awkward times like 18:13 → rounds to 18:15.
 
-Priority: Admin/Committee posts are pinned to the top or highlighted with a "Priority" badge.
+**Supported Zmanim** (from Hebcal API):
+`sunrise`, `sunset`, `chatzot`, `alotHaShachar`, `misheyakir`, `minchaGedola`, `minchaKetana`, `plagHaMincha`, `tzeit7083deg`
 
-3.4 Project-Based Finance
-Projects: Admin creates projects (e.g., "Building Fund," "Kiddush").
+### 3.4 Manual Overrides
 
-Ledger: Income (Donations) and Expenses are tagged to specific projects.
+The `schedule_overrides` table allows per-entry, per-date overrides:
+- **Cancel** a prayer for a specific date (e.g., fast day, community event).
+- **Reschedule** to a different time for a specific date.
+- Each override has an optional `reason` text.
 
-Integration: Architecture must support future API integration with external invoicing (e.g., Morning/iCount).
+### 3.5 Zmanim Integration
 
-4. Seasonal Modules (Admin Toggled)
-High Holiday Seats: Family-based registration. System monitors location capacity and prevents overbooking.
+- Fetched from `https://www.hebcal.com/zmanim` per day, cached in-memory.
+- Location configurable via env vars: `ZMANIM_LATITUDE`, `ZMANIM_LONGITUDE`, `ZMANIM_TZID` (defaults to Jerusalem).
+- Times are parsed directly from the ISO string (timezone-safe, no `Date.getHours()` dependency).
+- If the API is unavailable, FIXED entries still render; ZMANIM/OFFSET entries are gracefully skipped.
 
-Purim (Mishloach Manot):
+---
 
-Tiers: "Full Community" (Fixed Price A), "20 Families" (Fixed Price B), "5 Families" (Fixed Price C).
+## 4. Core Modules
 
-Interface: Checkbox list of all community households.
+### 4.1 Member Directory
 
-Reporting: Admin generates a "Recipient List" showing every family who chose to give to them.
+- Searchable list of households with tag filtering (e.g., Rabbi, Doctor, Volunteer).
+- Privacy toggles per user: `show_phone_in_dir`, `show_email_in_dir`.
 
-Accessibility Requirements:
-- The UI must be fully usable via keyboard only (Tab navigation, Enter/Space activation) across all key flows: authentication, High Holiday registration, Purim selection, and admin management screens.
-- Use semantic HTML and appropriate ARIA roles/labels so assistive technologies can understand layout (headers, navigation, main content) and form controls.
-- Maintain sufficient color contrast for text and interactive elements (at least WCAG AA), including focus/hover states.
-- Provide visible focus outlines and clear error/success feedback (e.g., inline validation messages and status banners) for all critical actions.
+### 4.2 Gmach (Community Help) Board
 
-5. Screen Specifications
-Guest Landing (unauthenticated): Next prayers only, a brief welcome note, and Sign-in / Sign-up buttons. No Directory, Gmach, or member-only content.
+- Category-based posts (color-coded). Categories: tools, meals, rides, furniture, clothing, other.
+- Admin/Committee can pin posts with a "Priority" badge.
+- Members can add posts; only Admin can delete.
 
-Member Landing (authenticated Members): Full dashboard (e.g. 24-hour "Next Up" schedule, highlights, links to Directory, Gmach, Life Events, etc.).
+### 4.3 Life Events
 
-Landing Page (summary): For guests: next prayers + welcome + Sign-in/Sign-up. For members: full community dashboard. For PENDING: dedicated "Waiting for Admin Approval" screen.
+- Members can record births and yahrzeits (anniversaries of death).
+- Linked to household via `household_id`.
 
-Detailed Schedule: Weekly/Monthly view with date navigation and location/teacher details.
+### 4.4 Project-Based Finance
 
-Gmach Board: Filterable grid of community requests/offers.
+- Admin creates projects (e.g., "Building Fund", "Kiddush").
+- Income/expense ledger per project, with amounts stored in cents.
+- Admin-only access. Architecture supports future payment gateway integration.
 
-Pending State Screen: Shown only to signed-in users in `PENDING` status; displays a clear "Waiting for Admin Approval" message with optional sign-out.
+---
 
-Admin Command Center: User approval queue, Finance/Project dashboard, and Module toggles (see Section 6).
+## 5. Seasonal Modules (Admin-Toggled)
 
-6. Admin Interface (The "Control Tower")
+Enabled/disabled via `system_toggles` table. When disabled, the corresponding UI is hidden.
 
-Layout: A sidebar-based navigation with a main content area. The sidebar is visible on all Admin routes and provides quick access to overview and management sections.
+### 5.1 High Holiday Seat Registration
 
-Overview Stats (KPIs): A dashboard or top summary showing key metrics: Total Members, Pending Requests count, Active Projects balance (or total balance), and the current state of Seasonal Modules (e.g. Rosh Hashanah On/Off, Purim On/Off).
+- **Per-household** registration (manager submits for the family).
+- Admin defines prayers via `hh_prayers` table (e.g., "Kol Nidrei", "Musaf").
+- Per-prayer seat allocation: separate counts for men's section (`men_seats`) and women's section (`women_seats`).
+- Committee interest and prep-slot fields.
 
-Management Tabs:
+### 5.2 Purim (Mishloach Manot)
 
-User Queue: A list of users in `PENDING` state with 'Approve' and 'Reject' actions. Approving promotes the user to `MEMBER` (and optionally associates them with a household). Rejecting keeps or marks them as rejected and they remain on the "Waiting for Admin Approval" experience when signed in.
+- **Per-household** selection of a tier: "Full Community", "20 Families", or "5 Families".
+- Household manager selects recipient households from a checklist.
+- Admin generates a "Recipient Aggregator" report showing who chose to give to each family.
 
-Schedule Manager: A calendar and/or list view to Create, Read, Update, and Delete prayers and lessons. Must support the Shabbat Mincha seasonal logic (e.g. 15-minute increments, winter/summer rules) and assignment to locations.
+---
 
-Finance Hub: Project creation, income and expense logging per project, and a "General Ledger" view that aggregates transactions by project and over time.
+## 6. Admin Control Tower
 
-System Toggles: A simple Settings page with switches to enable/disable the Rosh Hashanah (High Holidays) module and the Purim module. When disabled, the corresponding registration or selection UIs are hidden or disabled for members.
+Sidebar-based navigation with the following sections:
 
-7. Technical Specifications
-Frontend: Next.js (RTL support is priority #1).
+| Section | Features |
+|---------|----------|
+| **Overview** | KPI stats: total members, pending requests, active projects, seasonal module status |
+| **User Queue** | List of PENDING users with Approve/Reject actions. Approving creates household + user linkage |
+| **Schedule Manager** | Full CRUD for prayer rules: day types, time modes (fixed/zmanim/offset), rounding, season. Edit + delete inline |
+| **Locations** | Manage venues: name, capacity, space category (Indoor/Covered/OpenAir/Protected) |
+| **Finance Hub** | Project management, income/expense logging, general ledger |
+| **High Holidays** | Manage prayer list, view registrations per household |
+| **Purim Report** | Recipient aggregation report |
+| **Settings** | Toggle seasonal modules (Rosh Hashanah, Purim) |
 
-Backend: Supabase/Firebase for Real-time Auth and Database.
+All admin tables support **Excel export** via the `xlsx` library.
 
-Auth & Security: Password hashing (e.g. bcrypt or provider default) and secure session management (HTTP-only cookies, CSRF protection, refresh/session strategy as per provider).
+---
 
-PWA: Service workers for "Offline First" access to the prayer schedule.
+## 7. Technical Stack
 
-Language: Primary UI is Hebrew. Code/Documentation is English.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router, Server Actions, Turbopack) |
+| Database | Supabase (PostgreSQL) with Row Level Security |
+| Auth | NextAuth.js (Credentials provider, JWT sessions, bcrypt) |
+| Styling | Tailwind CSS v4 (`@theme inline` in globals.css) |
+| PWA | next-pwa (service worker, offline schedule access) |
+| Zmanim | Hebcal REST API with server-side caching |
+| Language | Hebrew UI (RTL). Code and documentation in English |
+
+### 7.1 Code Architecture
+
+```
+src/
+├── app/                    # Next.js App Router pages + server actions
+│   ├── admin/              # Admin Control Tower (schedule, finance, locations, etc.)
+│   ├── auth/               # Sign-in, sign-up, forgot-password
+│   ├── api/seed/           # Development seed endpoint
+│   └── (public pages)      # directory, gmach, life-events, high-holidays, purim
+├── components/             # Shared UI: FormFeedback, FilterTabs, BackLink, SignOutButton, etc.
+└── lib/                    # Business logic
+    ├── zmanim.ts           # Hebcal API + calculatePrayerTime()
+    ├── schedule.ts         # buildDailyScheduleForDate() — the engine
+    ├── schedule-entries.ts # ScheduleEntry type + service layer
+    ├── db-*.ts             # Supabase DB access (typed rows + unwrap helpers)
+    ├── action-utils.ts     # ActionResult type, safeAction(), form helpers
+    └── auth-guard.ts       # requireAdmin() / requireMember()
+```
+
+### 7.2 Error Handling
+
+- `src/app/error.tsx` — route-level error boundary (Hebrew UI, "try again" + "home" buttons).
+- `src/app/global-error.tsx` — root-level fallback (inline styles, no CSS dependency).
+- All server actions wrapped in `safeAction()` — catches exceptions and returns `{ ok: false, error }`.
+
+### 7.3 Accessibility
+
+- Semantic HTML with ARIA roles/labels.
+- Full keyboard navigation (Tab, Enter/Space).
+- WCAG AA color contrast.
+- Visible focus outlines and inline error/success feedback.
+- Skip-to-content link.
