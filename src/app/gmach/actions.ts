@@ -7,36 +7,41 @@ import {
   type ActionResult,
   parseFormString,
   revalidateAppPaths,
+  safeAction,
 } from "@/lib/action-utils";
 
 export async function addGmachItemAction(
   formData: FormData,
 ): Promise<ActionResult> {
-  const categoryId = parseFormString(formData, "categoryId");
-  const title = parseFormString(formData, "title");
-  const description = parseFormString(formData, "description");
-  const contactInfo = parseFormString(formData, "contactInfo");
+  return safeAction(async () => {
+    const categoryId = parseFormString(formData, "categoryId");
+    const title = parseFormString(formData, "title");
+    const description = parseFormString(formData, "description");
+    const contactInfo = parseFormString(formData, "contactInfo");
 
-  if (!categoryId || !title) {
-    return { ok: false, error: "נא לבחור קטגוריה ולהזין כותרת." };
-  }
+    if (!categoryId || !title) {
+      return { ok: false, error: "נא לבחור קטגוריה ולהזין כותרת." };
+    }
 
-  await dbEnsureGmachCategories(getGmachCategories());
+    await dbEnsureGmachCategories(getGmachCategories());
 
-  await addGmachItem({
-    categoryId,
-    title,
-    description: description || undefined,
-    contactInfo: contactInfo || undefined,
+    await addGmachItem({
+      categoryId,
+      title,
+      description: description || undefined,
+      contactInfo: contactInfo || undefined,
+    });
+    revalidateAppPaths();
+    return { ok: true };
   });
-  revalidateAppPaths();
-  return { ok: true };
 }
 
 export async function toggleGmachPinAction(
   itemId: string,
 ): Promise<ActionResult> {
-  await toggleGmachItemPinned(itemId);
-  revalidateAppPaths();
-  return { ok: true };
+  return safeAction(async () => {
+    await toggleGmachItemPinned(itemId);
+    revalidateAppPaths();
+    return { ok: true };
+  });
 }

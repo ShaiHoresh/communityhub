@@ -3,9 +3,10 @@ import { getLocations } from "@/lib/locations";
 import {
   getScheduleEntries,
   type ScheduleEntry,
+  type ScheduleEntryType,
 } from "@/lib/schedule-entries";
 
-export type PrayerType = "shacharit" | "mincha" | "arvit" | "lesson";
+export type PrayerType = ScheduleEntryType;
 
 export type PrayerEvent = {
   id: string;
@@ -20,18 +21,15 @@ export type DailySchedule = {
   events: PrayerEvent[];
 };
 
+// Month index → mincha offset in minutes (winter=-15, shoulder=0, summer=+15)
+const MINCHA_OFFSET_BY_MONTH: Record<number, number> = {
+  0: -15, 1: -15, 11: -15,  // Dec–Feb: winter
+  2: 0, 3: 0, 8: 0, 9: 0,  // Mar–Apr, Sep–Oct: shoulder
+  4: 15, 5: 15, 6: 15, 7: 15, 10: 15,  // May–Aug, Nov: summer
+};
+
 export function getSeasonalShabbatMinchaOffsetMinutes(date: Date): number {
-  const month = date.getMonth();
-
-  if (month === 11 || month <= 1) {
-    return -15;
-  }
-
-  if (month === 2 || month === 3 || month === 8 || month === 9) {
-    return 0;
-  }
-
-  return 15;
+  return MINCHA_OFFSET_BY_MONTH[date.getMonth()] ?? 0;
 }
 
 export async function buildDailyScheduleForDate(
@@ -61,7 +59,7 @@ export async function buildDailyScheduleForDate(
     return {
       id: entry.id,
       title: entry.title,
-      type: entry.type as PrayerType,
+      type: entry.type,
       start,
       location,
     };

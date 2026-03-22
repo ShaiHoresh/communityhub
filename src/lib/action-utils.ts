@@ -35,3 +35,16 @@ export function revalidateAppPaths() {
     revalidatePath(p);
   }
 }
+
+export async function safeAction(
+  fn: () => Promise<ActionResult>,
+): Promise<ActionResult> {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error("Server action error:", err);
+    const message =
+      err instanceof Error ? err.message : "אירעה שגיאה בלתי צפויה.";
+    return { ok: false, error: message };
+  }
+}

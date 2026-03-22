@@ -92,14 +92,14 @@ Current problem:
 
 Phase R6: Error Handling & Resilience
 
-[ ] Add `src/app/error.tsx` for route-level error fallback.
-[ ] Add `src/app/global-error.tsx` for root-level error fallback.
-[ ] Wrap server actions in `try/catch` and return structured errors instead of letting exceptions propagate.
+[x] Add `src/app/error.tsx` for route-level error fallback (Hebrew UI, "try again" + "home" buttons).
+[x] Add `src/app/global-error.tsx` for root-level error fallback (inline styles, no CSS dependency).
+[x] Wrap all 10 server action files in `safeAction()` try/catch wrapper via `src/lib/action-utils.ts`. Uncaught exceptions now return `{ ok: false, error: message }` instead of propagating.
 [x] Add auth guard to `/api/seed` in development (e.g. secret header or query param).
 
 
 Phase R7: Config Hygiene
 
-[ ] Resolve Tailwind color duplication (`tailwind.config.js` vs `globals.css` `@theme inline`) — use one source of truth.
-[ ] Simplify seasonal mincha offset to a lookup table in `schedule.ts`.
-[ ] Unify `ScheduleEntryType` and `PrayerType` into a single union to eliminate the type cast in `schedule.ts`.
+[x] Resolve Tailwind color duplication: removed duplicate color/font definitions from `tailwind.config.js` (kept only `content`). `globals.css` `@theme inline` is now the single source of truth.
+[x] Simplify seasonal mincha offset to a lookup table (`MINCHA_OFFSET_BY_MONTH`) in `schedule.ts`.
+[x] Unify `ScheduleEntryType` and `PrayerType`: `PrayerType` is now an alias for `ScheduleEntryType`, eliminating the `as PrayerType` cast.
