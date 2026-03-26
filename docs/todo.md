@@ -102,34 +102,34 @@
 ## Phase 8: Content Modules
 
 ### 8a: Mazal Tov Board
-- [ ] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
-- [ ] RLS: MEMBER+ read, ADMIN write.
-- [ ] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
+- [x] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
+- [x] RLS: MEMBER+ read, ADMIN write.
+- [x] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
 - [ ] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
-- [ ] Schema + migration script.
+- [x] Schema + migration script.
 
 ### 8b: D'var Torah (Weekly Torah Insight)
-- [ ] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
-- [ ] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
-- [ ] Admin UI: CRUD form in Content Manager.
+- [x] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
+- [x] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
+- [x] Admin UI: CRUD form in Content Manager.
 - [ ] Homepage: Collapsible card showing the most recent D'var Torah (Member view).
 - [ ] Page: `/dvar-torah` archive page listing past entries (Member access).
-- [ ] Schema + migration script.
+- [x] Schema + migration script.
 
 ### 8c: Community Announcements
-- [ ] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
-- [ ] RLS: Public read, ADMIN write.
-- [ ] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
+- [x] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
+- [x] RLS: Public read, ADMIN write.
+- [x] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
 - [ ] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
 - [ ] Auto-hide expired announcements from homepage; keep in archive.
-- [ ] Schema + migration script.
+- [x] Schema + migration script.
 
 ### 8d: "Meet the Family" Spotlight
-- [ ] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
-- [ ] RLS: MEMBER+ read, ADMIN write.
-- [ ] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
+- [x] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
+- [x] RLS: MEMBER+ read, ADMIN write.
+- [x] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
 - [ ] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
-- [ ] Schema + migration script.
+- [x] Schema + migration script.
 
 ---
 
