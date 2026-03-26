@@ -99,36 +99,36 @@
 
 ---
 
-## Phase 8: Content Modules
+## Phase 8: Content Modules ✅
 
 ### 8a: Mazal Tov Board
 - [x] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
 - [x] RLS: MEMBER+ read, ADMIN write.
 - [x] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
-- [ ] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
+- [x] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
 - [x] Schema + migration script.
 
 ### 8b: D'var Torah (Weekly Torah Insight)
 - [x] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
 - [x] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
 - [x] Admin UI: CRUD form in Content Manager.
-- [ ] Homepage: Collapsible card showing the most recent D'var Torah (Member view).
-- [ ] Page: `/dvar-torah` archive page listing past entries (Member access).
+- [x] Homepage: Collapsible card showing the most recent D'var Torah (Member view); teaser for guests.
+- [x] Page: `/dvar-torah` archive page listing past entries (Member access).
 - [x] Schema + migration script.
 
 ### 8c: Community Announcements
 - [x] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
 - [x] RLS: Public read, ADMIN write.
 - [x] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
-- [ ] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
-- [ ] Auto-hide expired announcements from homepage; keep in archive.
+- [x] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
+- [x] Auto-hide expired announcements from homepage; keep in archive.
 - [x] Schema + migration script.
 
 ### 8d: "Meet the Family" Spotlight
 - [x] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
 - [x] RLS: MEMBER+ read, ADMIN write.
 - [x] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
-- [ ] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
+- [x] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
 - [x] Schema + migration script.
 
 ---

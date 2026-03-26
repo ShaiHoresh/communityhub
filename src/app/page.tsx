@@ -4,14 +4,15 @@ import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getGmachItems } from "@/lib/gmach";
 import { isModuleEnabled } from "@/lib/system-toggles";
 import { authOptions } from "@/lib/auth-config";
+import { dbGetActiveAnnouncements } from "@/lib/db-announcements";
+import { dbGetLatestDvarTorah } from "@/lib/db-dvar-torah";
+import { dbGetMazalTovRecent } from "@/lib/db-mazal-tov";
+import { dbGetActiveSpotlight } from "@/lib/db-spotlight";
 import { HomeGuest } from "@/app/HomeGuest";
 import { HomeMember } from "@/app/HomeMember";
 
 function formatTime(d: Date) {
-  return d.toLocaleTimeString("he-IL", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
 }
 
 type HomeProps = { searchParams: Promise<{ request?: string }> };
@@ -31,13 +32,25 @@ export default async function Home({ searchParams }: HomeProps) {
   const today = new Date();
   const showRequestSubmitted = params.request === "submitted";
 
-  const [schedule, gmachPreview, highHolidaysEnabled, purimEnabled] =
-    await Promise.all([
-      buildDailyScheduleForDate(today, mainLocation),
-      isMember ? getGmachItems() : Promise.resolve([]),
-      isModuleEnabled("rosh_hashanah"),
-      isModuleEnabled("purim"),
-    ]);
+  const [
+    schedule,
+    gmachPreview,
+    highHolidaysEnabled,
+    purimEnabled,
+    announcements,
+    dvarTorah,
+    mazalTovEntries,
+    spotlight,
+  ] = await Promise.all([
+    buildDailyScheduleForDate(today, mainLocation),
+    isMember ? getGmachItems() : Promise.resolve([]),
+    isModuleEnabled("rosh_hashanah"),
+    isModuleEnabled("purim"),
+    dbGetActiveAnnouncements(),
+    dbGetLatestDvarTorah(),
+    isMember ? dbGetMazalTovRecent(30) : Promise.resolve([]),
+    isMember ? dbGetActiveSpotlight() : Promise.resolve(null),
+  ]);
 
   const upcoming = schedule.events
     .filter((e) => e.start.getTime() >= Date.now())
@@ -78,11 +91,17 @@ export default async function Home({ searchParams }: HomeProps) {
             isAdmin={status === "ADMIN"}
             highHolidaysEnabled={highHolidaysEnabled}
             purimEnabled={purimEnabled}
+            announcements={announcements}
+            dvarTorah={dvarTorah}
+            mazalTovEntries={mazalTovEntries}
+            spotlight={spotlight}
           />
         ) : (
           <HomeGuest
             upcoming={upcoming}
             formatTime={formatTime}
+            announcements={announcements}
+            dvarTorah={dvarTorah}
           />
         )}
       </div>

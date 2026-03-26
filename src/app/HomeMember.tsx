@@ -1,22 +1,37 @@
 import Link from "next/link";
 import type { DailySchedule, PrayerEvent } from "@/lib/schedule";
 import type { GmachItem } from "@/lib/gmach";
+import type { DbAnnouncement } from "@/lib/db-announcements";
+import type { DbDvarTorah } from "@/lib/db-dvar-torah";
+import type { DbMazalTov } from "@/lib/db-mazal-tov";
+import type { DbSpotlight } from "@/lib/db-spotlight";
 import { getGmachCategoryById } from "@/lib/gmach";
+import { MAZAL_TOV_EVENT_LABELS } from "@/lib/db-mazal-tov";
 import { SignOutButton } from "@/components/SignOutButton";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
+
+const EVENT_EMOJIS: Record<DbMazalTov["eventType"], string> = {
+  birth: "👶",
+  bar_mitzvah: "📖",
+  bat_mitzvah: "📖",
+  wedding: "💍",
+  anniversary: "💑",
+  other: "🎊",
+};
 
 type Props = {
   schedule: DailySchedule;
   upcoming: PrayerEvent | undefined;
   formatTime: (d: Date) => string;
-  /** Gmach items to show on homepage (members only, max 5). */
   gmachPreview: GmachItem[];
-  /** True if current user is ADMIN (sees admin links). */
   isAdmin: boolean;
-  /** Seasonal modules toggles for contextual UI. */
   highHolidaysEnabled: boolean;
   purimEnabled: boolean;
+  announcements: DbAnnouncement[];
+  dvarTorah: DbDvarTorah | null;
+  mazalTovEntries: DbMazalTov[];
+  spotlight: DbSpotlight | null;
 };
 
 export function HomeMember({
@@ -27,13 +42,40 @@ export function HomeMember({
   isAdmin,
   highHolidaysEnabled,
   purimEnabled,
+  announcements,
+  dvarTorah,
+  mazalTovEntries,
+  spotlight,
 }: Props) {
   return (
     <>
+      {/* ── Community announcements ── */}
+      {announcements.length > 0 && (
+        <section className="space-y-3" aria-label="מודעות קהילה">
+          {announcements.map((ann) => (
+            <div
+              key={ann.id}
+              className={`rounded-2xl px-5 py-4 shadow-sm ${
+                ann.isPinned
+                  ? "border border-accent/20 bg-accent/10"
+                  : "border border-secondary/20 bg-white"
+              }`}
+            >
+              {ann.isPinned && (
+                <p className="mb-1 text-xs font-bold text-accent">📌 הודעה חשובה</p>
+              )}
+              <p className="font-heading font-semibold text-foreground">{ann.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-primary/80">{ann.body}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* ── Seasonal banner ── */}
       {(highHolidaysEnabled || purimEnabled) && (
         <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 px-5 py-4">
           <div className="space-y-1">
-            <p className="text-sm font-heading font-semibold text-foreground">
+            <p className="font-heading text-sm font-semibold text-foreground">
               עונת חגים פעילה במערכת
             </p>
             <p className="text-xs text-primary/80">
@@ -59,6 +101,45 @@ export function HomeMember({
         </section>
       )}
 
+      {/* ── Mazal Tov ── */}
+      {mazalTovEntries.length > 0 && (
+        <section className="surface-card overflow-hidden p-0">
+          <div className="border-b border-amber-200/60 bg-gradient-to-l from-amber-50 to-yellow-50/60 px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="font-heading text-lg font-bold text-foreground">
+                  🎉 מזל טוב!
+                </h2>
+                <p className="mt-0.5 text-xs text-amber-800/75">
+                  שמחות הקהילה ב-30 הימים האחרונים
+                </p>
+              </div>
+            </div>
+          </div>
+          <ul className="divide-y divide-secondary/10 px-5 py-2">
+            {mazalTovEntries.slice(0, 5).map((item) => (
+              <li key={item.id} className="flex items-center gap-4 py-3">
+                <span className="text-2xl" aria-hidden="true">
+                  {EVENT_EMOJIS[item.eventType]}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-heading font-semibold text-foreground">{item.name}</p>
+                  <p className="text-xs text-primary/65">
+                    {MAZAL_TOV_EVENT_LABELS[item.eventType]}
+                    {" · "}
+                    {item.date.toLocaleDateString("he-IL")}
+                  </p>
+                  {item.message && (
+                    <p className="mt-0.5 text-sm italic text-primary/75">{item.message}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ── 24h schedule ── */}
       <section className="surface-card overflow-hidden p-0">
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
           <p className="text-xs font-bold uppercase tracking-wider text-primary/90">
@@ -101,6 +182,76 @@ export function HomeMember({
         </div>
       </section>
 
+      {/* ── D'var Torah (collapsible) ── */}
+      {dvarTorah && (
+        <section className="surface-card overflow-hidden p-0">
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-secondary/10 bg-secondary/5 px-6 py-4 transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 [&::-webkit-details-marker]:hidden">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-primary/70">
+                  דבר תורה שבועי
+                </p>
+                <h2 className="mt-0.5 font-heading text-lg font-bold text-foreground">
+                  {dvarTorah.title}
+                </h2>
+                {(dvarTorah.parasha || dvarTorah.author) && (
+                  <p className="text-xs text-primary/60">
+                    {dvarTorah.parasha ? `פרשת ${dvarTorah.parasha}` : ""}
+                    {dvarTorah.parasha && dvarTorah.author ? " · " : ""}
+                    {dvarTorah.author}
+                  </p>
+                )}
+              </div>
+              <span
+                className="shrink-0 text-lg text-primary/50 transition-transform duration-200 group-open:rotate-180"
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </summary>
+            <div className="p-6 sm:p-8">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                {dvarTorah.body}
+              </p>
+              <Link
+                href="/dvar-torah"
+                className="mt-5 inline-block text-sm font-semibold text-primary underline transition hover:text-primary/80"
+              >
+                לארכיון דברי התורה →
+              </Link>
+            </div>
+          </details>
+        </section>
+      )}
+
+      {/* ── Meet the Family Spotlight ── */}
+      {spotlight && (
+        <section className="surface-card overflow-hidden p-0">
+          <div className="border-b border-secondary/10 bg-gradient-to-l from-primary/5 to-secondary/5 px-6 py-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-primary/70">
+              משפחת החודש
+            </p>
+          </div>
+          <div className="flex flex-wrap items-start gap-6 p-6 sm:flex-nowrap sm:p-8">
+            {spotlight.photoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={spotlight.photoUrl}
+                alt={spotlight.householdName ?? "משפחת החודש"}
+                className="h-24 w-24 shrink-0 rounded-2xl object-cover shadow"
+              />
+            )}
+            <div>
+              <h2 className="font-heading text-xl font-bold text-foreground">
+                {spotlight.householdName}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-primary/85">{spotlight.bio}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Quick nav cards ── */}
       <section className="grid gap-5 sm:grid-cols-2">
         <Link
           href="/directory"
@@ -126,6 +277,7 @@ export function HomeMember({
         </Link>
       </section>
 
+      {/* ── Gmach preview ── */}
       <section className="surface-card overflow-hidden p-0">
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -143,9 +295,12 @@ export function HomeMember({
         <div className="p-5 sm:p-6">
           {gmachPreview.length === 0 ? (
             <p className="text-center text-primary/85">
-              אין עדכונים כרגע. עיין ב{" "}
-              <Link href="/gmach" className="font-semibold text-primary underline hover:text-primary/80">
-                לוח המלא
+              אין עדכונים כרגע.{" "}
+              <Link
+                href="/gmach"
+                className="font-semibold text-primary underline hover:text-primary/80"
+              >
+                עבור ללוח המלא
               </Link>{" "}
               להוספת פריטים.
             </p>
@@ -172,13 +327,9 @@ export function HomeMember({
                         {category?.label ?? item.categoryId}
                       </span>
                     </div>
-                    <p className="font-heading font-semibold text-foreground">
-                      {item.title}
-                    </p>
+                    <p className="font-heading font-semibold text-foreground">{item.title}</p>
                     {item.description && (
-                      <p className="text-sm text-primary/85 line-clamp-2">
-                        {item.description}
-                      </p>
+                      <p className="text-sm text-primary/85 line-clamp-2">{item.description}</p>
                     )}
                   </li>
                 );
@@ -188,11 +339,10 @@ export function HomeMember({
         </div>
       </section>
 
+      {/* ── Footer actions ── */}
       <section className="mt-auto flex flex-wrap items-center justify-between gap-6 border-t border-secondary/15 pt-10">
         <div className="space-y-1">
-          <p className="font-heading font-semibold text-foreground">
-            כניסה למערכת
-          </p>
+          <p className="font-heading font-semibold text-foreground">כניסה למערכת</p>
           <p className="text-sm leading-relaxed text-primary/80">
             {isAdmin
               ? "בקשת גישה למשק בית, מסך מנהל, והתנתקות."
