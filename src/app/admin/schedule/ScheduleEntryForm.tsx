@@ -84,11 +84,13 @@ export function ScheduleEntryForm({ locations }: Props) {
 
       {/* Row 2: Day Types + Season */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <fieldset>
-          <legend className="mb-2 text-sm font-semibold text-foreground">ימים</legend>
-          <div className="flex flex-wrap gap-3">
-            {DAY_TYPES.map((dt) => (
-              <label key={dt} className="flex items-center gap-1.5 text-sm">
+        <fieldset className="rounded-xl border border-secondary/30 p-4">
+          <legend className="px-1 text-sm font-semibold text-foreground">ימים</legend>
+
+          {/* Regular weekdays */}
+          <div className="mt-1 space-y-1.5">
+            {(["weekday", "holiday", "specific_date"] as const).map((dt) => (
+              <label key={dt} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   name="dayTypes"
@@ -100,6 +102,63 @@ export function ScheduleEntryForm({ locations }: Props) {
                 {DAY_TYPE_LABELS[dt]}
               </label>
             ))}
+          </div>
+
+          {/* Shabbat group */}
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-amber-700">
+              חלון שבת – ערב שישי עד מוצאי שבת
+            </p>
+            <div className="space-y-2">
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="dayTypes"
+                  value="erev_shabbat"
+                  checked={dayTypes.includes("erev_shabbat")}
+                  onChange={() => toggleDayType("erev_shabbat")}
+                  className="checkbox-base mt-0.5"
+                />
+                <span>
+                  <span className="font-medium">ערב שבת</span>
+                  <span className="block text-xs text-primary/60">
+                    תפילות ביום שישי: קבלת שבת, מנחה ערב שבת, ערבית שבת
+                  </span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="dayTypes"
+                  value="shabbat"
+                  checked={dayTypes.includes("shabbat")}
+                  onChange={() => toggleDayType("shabbat")}
+                  className="checkbox-base mt-0.5"
+                />
+                <span>
+                  <span className="font-medium">שבת</span>
+                  <span className="block text-xs text-primary/60">
+                    תפילות ביום שבת: שחרית, מוסף, מנחה שבת
+                  </span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="dayTypes"
+                  value="motzei_shabbat"
+                  checked={dayTypes.includes("motzei_shabbat")}
+                  onChange={() => toggleDayType("motzei_shabbat")}
+                  className="checkbox-base mt-0.5"
+                />
+                <span>
+                  <span className="font-medium">מוצאי שבת</span>
+                  <span className="block text-xs text-primary/60">
+                    תפילות במוצאי שבת: הבדלה, ערבית מוצ&quot;ש
+                  </span>
+                </span>
+              </label>
+            </div>
           </div>
         </fieldset>
         <div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatBiDate } from "@/lib/hebrew-date";
 import type { DailySchedule, PrayerEvent } from "@/lib/schedule";
 import type { GmachItem } from "@/lib/gmach";
 import type { DbAnnouncement } from "@/lib/db-announcements";
@@ -127,7 +128,7 @@ export function HomeMember({
                   <p className="text-xs text-primary/65">
                     {MAZAL_TOV_EVENT_LABELS[item.eventType]}
                     {" · "}
-                    {item.date.toLocaleDateString("he-IL")}
+                    {formatBiDate(item.date)}
                   </p>
                   {item.message && (
                     <p className="mt-0.5 text-sm italic text-primary/75">{item.message}</p>

@@ -53,15 +53,5 @@ export async function fetchShabbatTimes(): Promise<ShabbatTimes> {
   }
 }
 
-/** Returns the current Hebrew date as a formatted string using the built-in Intl API. */
-export function getHebrewDateString(): string {
-  try {
-    return new Intl.DateTimeFormat("he-u-ca-hebrew", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    }).format(new Date());
-  } catch {
-    return "";
-  }
-}
+/** Returns the current Hebrew date as a formatted string ("יום חמישי, ח בניסן"). */
+export { formatHebrewDate as getHebrewDateString } from "@/lib/hebrew-date";

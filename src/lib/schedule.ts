@@ -8,9 +8,10 @@ import {
 import { dbGetOverridesForDate } from "@/lib/db-schedule-entries";
 import {
   fetchZmanim,
-  getDayType,
+  getApplicableDayTypes,
   isSeasonApplicable,
   calculatePrayerTime,
+  type DayType,
   type ZmanimData,
 } from "@/lib/zmanim";
 
@@ -22,6 +23,8 @@ export type PrayerEvent = {
   type: PrayerType;
   start: Date;
   location: Location;
+  /** The DayType tags this entry was defined with — used for visual grouping. */
+  dayTypes: DayType[];
 };
 
 export type DailySchedule = {
@@ -55,7 +58,7 @@ export async function buildDailyScheduleForDate(
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
   const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
-  const dayType = getDayType(baseDate);
+  const applicableTypes = getApplicableDayTypes(baseDate);
 
   const events: PrayerEvent[] = [];
 
@@ -63,7 +66,7 @@ export async function buildDailyScheduleForDate(
     // ── Applicability checks ──
     if (!isSeasonApplicable(entry.season, baseDate)) continue;
 
-    const matchesDay = entry.dayTypes.includes(dayType);
+    const matchesDay = entry.dayTypes.some((dt) => applicableTypes.includes(dt));
     const matchesSpecific =
       entry.dayTypes.includes("specific_date") &&
       entry.specificDate === dateStr;
@@ -106,6 +109,7 @@ export async function buildDailyScheduleForDate(
       type: entry.type,
       start,
       location: locationMap.get(entry.locationId) ?? mainLocation,
+      dayTypes: entry.dayTypes,
     });
   }
 

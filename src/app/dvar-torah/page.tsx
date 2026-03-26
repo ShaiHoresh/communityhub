@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth-config";
 import { dbGetAllDvarTorah } from "@/lib/db-dvar-torah";
 import { BackLink } from "@/components/BackLink";
 import { PageHeading } from "@/components/PageHeading";
+import { formatBiDate } from "@/lib/hebrew-date";
 
 export const metadata = {
   title: "ארכיון דבר תורה | CommunityHub",
@@ -49,11 +50,7 @@ export default async function DvarTorahArchivePage() {
                     </h2>
                     <p className="mt-0.5 text-xs text-primary/60">
                       {entry.author && `${entry.author} · `}
-                      {entry.date.toLocaleDateString("he-IL", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatBiDate(entry.date)}
                     </p>
                   </div>
                   <span

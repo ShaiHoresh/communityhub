@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderAuthButtons } from "./HeaderAuthButtons";
-import { fetchShabbatTimes, getHebrewDateString } from "@/lib/shabbat-times";
+import { fetchShabbatTimes } from "@/lib/shabbat-times";
+import { formatHebrewDate, formatGregorianDate } from "@/lib/hebrew-date";
 
 /**
  * Sticky global nav bar rendered once in the root layout.
@@ -17,7 +18,9 @@ export async function GlobalHeader() {
     parashaTitle: null,
   }));
 
-  const hebrewDate = getHebrewDateString();
+  const now = new Date();
+  const hebrewDate = formatHebrewDate(now);
+  const gregorianDate = formatGregorianDate(now);
   const hasShabbatInfo = !!(shabbatTimes.candleLighting || shabbatTimes.havdalah);
 
   return (
@@ -28,8 +31,13 @@ export async function GlobalHeader() {
       {/* ── Calendar info bar ── */}
       <div className="border-b border-secondary/8 bg-primary/4 px-6 sm:px-12">
         <div className="mx-auto flex h-8 max-w-6xl items-center justify-between gap-4 text-xs">
-          {/* Hebrew date — right side in RTL */}
-          <span className="shrink-0 font-medium text-foreground/75">{hebrewDate}</span>
+          {/* Date — right side in RTL: Hebrew + Gregorian */}
+          <span className="shrink-0 font-medium text-foreground/75">
+            {hebrewDate}
+            {gregorianDate && (
+              <span className="mr-2 text-primary/45 font-normal">{gregorianDate}</span>
+            )}
+          </span>
 
           {/* Shabbat/holiday times — left side in RTL */}
           {hasShabbatInfo && (
