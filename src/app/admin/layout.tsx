@@ -25,6 +25,7 @@ const navGroups = [
       { href: "/admin/mazal-tov", label: "מזל טוב" },
       { href: "/admin/dvar-torah", label: "דבר תורה" },
       { href: "/admin/spotlight", label: "משפחת החודש" },
+      { href: "/admin/contact", label: "צור קשר" },
     ],
   },
   {

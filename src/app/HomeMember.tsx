@@ -358,6 +358,9 @@ export function HomeMember({
               מסך אישורי מנהל
             </a>
           )}
+          <a href="/contact" className="btn-secondary">
+            צור קשר
+          </a>
           <SignOutButton />
         </div>
       </section>

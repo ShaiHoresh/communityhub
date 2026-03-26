@@ -135,13 +135,13 @@
 
 ## Phase 9: New Pages
 
-### 9a: Contact Us
-- [ ] DB: Create `contact_messages` table (`id`, `user_id` nullable, `name`, `email`, `subject`, `message`, `created_at`).
-- [ ] RLS: MEMBER+ insert, ADMIN read all.
-- [ ] Page: `/contact` with a contact form (name, email, subject, message). Auto-fill name/email if signed in.
-- [ ] Server action to submit the form.
-- [ ] Admin UI: View contact messages in Admin Control Tower (list with subject, date, read/unread status).
-- [ ] Schema + migration script.
+### 9a: Contact Us ✅
+- [x] DB: Create `contact_messages` table (`id`, `user_id` nullable, `name`, `email`, `subject`, `message`, `created_at`).
+- [x] RLS: Public insert (anyone — guest, pending, member — can submit), ADMIN read all.
+- [x] Page: `/contact` with a contact form (name, email, subject, message). Auto-fill name/email if signed in.
+- [x] Server action to submit the form.
+- [x] Admin UI: View contact messages in Admin Control Tower (list with subject, date, read/unread status).
+- [x] Schema + migration script.
 
 ### 9b: Gallery (FUTURE — Architecture Only)
 - [ ] **Do not implement now.** Design the table structure for future use:

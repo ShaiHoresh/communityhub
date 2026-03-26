@@ -114,6 +114,9 @@ export function HomeGuest({ upcoming, formatTime, announcements, dvarTorah }: Pr
           <a href="/auth/signup" className="btn-nav-primary">
             הרשמה
           </a>
+          <a href="/contact" className="btn-nav-secondary">
+            צור קשר
+          </a>
         </div>
       </section>
     </>
