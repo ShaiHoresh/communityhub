@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Heebo, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import "./globals.css";
 
 const heebo = Heebo({
@@ -41,7 +42,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           דלג לתוכן המרכזי
         </a>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <GlobalHeader />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

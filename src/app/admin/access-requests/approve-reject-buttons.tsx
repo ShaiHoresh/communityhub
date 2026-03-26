@@ -34,7 +34,7 @@ export function ApproveRejectButtons({ requestId }: Props) {
         type="button"
         onClick={handleReject}
         disabled={isPending}
-        className="btn-secondary py-2 px-4 text-sm"
+        className="btn-danger py-2 px-4 text-sm"
       >
         דחייה
       </button>

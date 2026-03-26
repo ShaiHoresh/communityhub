@@ -1,7 +1,5 @@
 # CommunityHub — Implementation Status
 
-All major phases are **complete**. This document tracks what has been built and what remains.
-
 ---
 
 ## Completed Phases
@@ -21,7 +19,7 @@ All major phases are **complete**. This document tracks what has been built and 
 - [x] Row Level Security (RLS) policies by role (GUEST, PENDING, MEMBER, ADMIN)
 - [x] Development seed script (`/api/seed` → admin, member, pending test users)
 - [x] DATABASE.md documentation
-- [x] Full Supabase migration (all tables: users, gmach, life-events, projects, transactions, purim, high-holidays, schedule-entries, locations)
+- [x] Full Supabase migration (all tables)
 
 ### Phase 2: Prayer & Schedule Engine ✅
 - [x] Locations table (name, max capacity, space category)
@@ -82,14 +80,84 @@ All major phases are **complete**. This document tracks what has been built and 
 
 ---
 
-## Remaining / Future Work
+## Phase 7: Design & Layout Unification ✅
 
-### Performance
-- [ ] Consider `unstable_cache` for relatively static data (locations, schedule entries, system toggles)
+### 7a: Global Header ✅
+- [x] Create a `GlobalHeader` component: community logo (`logo.png`) + site title, consistent across all pages.
+- [x] Integrate `GlobalHeader` into the root layout (`layout.tsx`) so every page inherits it.
+- [x] RTL-aware: logo on the right, navigation/auth actions on the left.
+- [x] Responsive: compact on mobile, full on desktop.
+
+### 7b: Action Consistency ✅
+- [x] Audit all pages for primary action placement — ensure Save/Submit/Add buttons appear in a consistent position (top-right for RTL).
+- [x] Ensure all Back links use the shared `BackLink` component uniformly.
+- [x] Ensure all destructive actions use `btn-danger` styling with confirmation dialogs.
+
+### 7c: Landing Page Banner Fix ✅
+- [x] Reduce the hero banner height to ~200–250px (currently too tall / dominating the viewport).
+- [x] Keep content: community name, tagline, subtle brand gradient. Remove any full-screen hero behavior.
+
+---
+
+## Phase 8: Content Modules
+
+### 8a: Mazal Tov Board
+- [ ] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
+- [ ] RLS: MEMBER+ read, ADMIN write.
+- [ ] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
+- [ ] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
+- [ ] Schema + migration script.
+
+### 8b: D'var Torah (Weekly Torah Insight)
+- [ ] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
+- [ ] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
+- [ ] Admin UI: CRUD form in Content Manager.
+- [ ] Homepage: Collapsible card showing the most recent D'var Torah (Member view).
+- [ ] Page: `/dvar-torah` archive page listing past entries (Member access).
+- [ ] Schema + migration script.
+
+### 8c: Community Announcements
+- [ ] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
+- [ ] RLS: Public read, ADMIN write.
+- [ ] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
+- [ ] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
+- [ ] Auto-hide expired announcements from homepage; keep in archive.
+- [ ] Schema + migration script.
+
+### 8d: "Meet the Family" Spotlight
+- [ ] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
+- [ ] RLS: MEMBER+ read, ADMIN write.
+- [ ] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
+- [ ] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
+- [ ] Schema + migration script.
+
+---
+
+## Phase 9: New Pages
+
+### 9a: Contact Us
+- [ ] DB: Create `contact_messages` table (`id`, `user_id` nullable, `name`, `email`, `subject`, `message`, `created_at`).
+- [ ] RLS: MEMBER+ insert, ADMIN read all.
+- [ ] Page: `/contact` with a contact form (name, email, subject, message). Auto-fill name/email if signed in.
+- [ ] Server action to submit the form.
+- [ ] Admin UI: View contact messages in Admin Control Tower (list with subject, date, read/unread status).
+- [ ] Schema + migration script.
+
+### 9b: Gallery (FUTURE — Architecture Only)
+- [ ] **Do not implement now.** Design the table structure for future use:
+  - `gallery_albums` table (`id`, `title`, `event_date`, `description`, `created_at`).
+  - `gallery_photos` table (`id`, `album_id` → FK, `storage_path`, `caption`, `sort_order`).
+  - Supabase Storage bucket: `gallery`.
+- [ ] RLS plan: MEMBER+ read, ADMIN write.
+- [ ] Document in DATABASE.md as a planned table (not yet created).
+
+---
+
+## Remaining / Ongoing
 
 ### Prayer Engine Enhancements
 - [ ] Holiday detection via Hebcal Calendar API (auto-filter entries with `day_types = holiday`)
-- [ ] Admin UI for managing schedule_overrides (currently table exists, CRUD actions ready, UI not built)
+- [ ] Admin UI for managing schedule_overrides (table exists, CRUD actions ready, UI not built)
 - [ ] Weekly/monthly schedule view (currently only "24-hour" dashboard)
 
 ### Features
@@ -99,8 +167,10 @@ All major phases are **complete**. This document tracks what has been built and 
 - [ ] User profile editing (name, phone, directory tags, privacy toggles)
 - [ ] Admin location capacity monitoring for High Holidays (overbooking prevention)
 
+### Performance
+- [ ] Consider `unstable_cache` for relatively static data (locations, schedule entries, system toggles)
+
 ### Infrastructure
-- [ ] Update `reset-db.sql` automatically when schema.sql changes (currently manual)
 - [ ] CI/CD pipeline
 - [ ] Production deployment (Vercel + Supabase production project)
 - [ ] Rate limiting for auth endpoints

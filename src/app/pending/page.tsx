@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { BrandHeader } from "@/components/BrandHeader";
+import { PageHeading } from "@/components/PageHeading";
 import { authOptions } from "@/lib/auth-config";
 import { SignOutButton } from "@/components/SignOutButton";
 
@@ -21,23 +20,21 @@ export default async function PendingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <BrandHeader
+    <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
+      <PageHeading
         title="ממתין לאישור"
         subtitle="חשבונך נוצר בהצלחה ומועבר לאישור הנהלת הקהילה. לאחר האישור תוכל לגשת למדריך הקהילה, לוח הגמ״ח ואירועי החיים."
       />
-      <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
-        <div className="surface-card card-interactive space-y-6 p-10 text-center sm:p-12">
-          <p className="font-heading text-xl font-bold text-foreground">
-            חשבונך ממתין לאישור מנהל
-          </p>
-          <p className="text-sm leading-relaxed text-primary/85">
-            הנהלת הקהילה תבדוק את הבקשה בהקדם. עם האישור תקבל גישה מלאה לאזור
-            האישי. במקרה של שאלות ניתן לפנות להנהלה.
-          </p>
-          <SignOutButton />
-        </div>
-      </main>
-    </div>
+      <div className="surface-card card-interactive space-y-6 p-10 text-center sm:p-12">
+        <p className="font-heading text-xl font-bold text-foreground">
+          חשבונך ממתין לאישור מנהל
+        </p>
+        <p className="text-sm leading-relaxed text-primary/85">
+          הנהלת הקהילה תבדוק את הבקשה בהקדם. עם האישור תקבל גישה מלאה לאזור
+          האישי. במקרה של שאלות ניתן לפנות להנהלה.
+        </p>
+        <SignOutButton />
+      </div>
+    </main>
   );
 }

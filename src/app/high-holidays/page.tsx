@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { BackLink } from "@/components/BackLink";
+import { PageHeading } from "@/components/PageHeading";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
 import { getRegistrationForHousehold } from "@/lib/high-holidays";
@@ -21,19 +22,17 @@ export default async function HighHolidaysPage() {
 
   if (!enabled) {
     return (
-      <div className="min-h-screen bg-background font-sans">
-        <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
-          <BackLink />
-          <div className="surface-card p-8 text-center">
-            <p className="text-lg font-medium text-foreground">
-              רישום לימים נוראים כרגע סגור.
-            </p>
-            <p className="mt-2 text-sm text-primary/80">
-              כאשר ההרשמה תיפתח, יופיע כאן טופס הרישום למשפחה.
-            </p>
-          </div>
-        </main>
-      </div>
+      <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
+        <BackLink />
+        <div className="surface-card p-8 text-center">
+          <p className="text-lg font-medium text-foreground">
+            רישום לימים נוראים כרגע סגור.
+          </p>
+          <p className="mt-2 text-sm text-primary/80">
+            כאשר ההרשמה תיפתח, יופיע כאן טופס הרישום למשפחה.
+          </p>
+        </div>
+      </main>
     );
   }
 
@@ -53,24 +52,17 @@ export default async function HighHolidaysPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 text-right">
-        <BackLink />
-        <div className="mb-8">
-          <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-            רישום מקומות לימים נוראים
-          </h1>
-          <p className="mt-2 text-sm leading-relaxed text-primary/80">
-            מלאו מספר מקומות לכל תפילה (עזרת גברים / עזרת נשים), סמנו ועדות
-            והצטרפות למשמרות הכנת בית הכנסת.
-          </p>
-        </div>
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 text-right">
+      <BackLink />
+      <PageHeading
+        title="רישום מקומות לימים נוראים"
+        subtitle="מלאו מספר מקומות לכל תפילה (עזרת גברים / עזרת נשים), סמנו ועדות והצטרפות למשמרות הכנת בית הכנסת."
+      />
 
-        <HighHolidaysForm
-          prayers={prayers.map((p) => ({ id: p.id, name: p.name }))}
-          previousReg={serializedPrev}
-        />
-      </main>
-    </div>
+      <HighHolidaysForm
+        prayers={prayers.map((p) => ({ id: p.id, name: p.name }))}
+        previousReg={serializedPrev}
+      />
+    </main>
   );
 }

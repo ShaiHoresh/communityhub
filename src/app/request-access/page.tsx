@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandHeader } from "@/components/BrandHeader";
+import { PageHeading } from "@/components/PageHeading";
 import { BackLink } from "@/components/BackLink";
 import { requestAccessAction } from "./actions";
 
@@ -15,13 +15,12 @@ export default async function RequestAccessPage({ searchParams }: Props) {
   const errorMsg = params.error ? decodeURIComponent(params.error) : null;
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <BrandHeader
-        title="בקשת גישה למערכת"
-        subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
-      />
-      <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
+    <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
         <BackLink />
+        <PageHeading
+          title="בקשת גישה למערכת"
+          subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
+        />
 
         <div className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         {errorMsg && (
@@ -164,7 +163,6 @@ export default async function RequestAccessPage({ searchParams }: Props) {
           </div>
         </form>
         </div>
-      </main>
-    </div>
+    </main>
   );
 }

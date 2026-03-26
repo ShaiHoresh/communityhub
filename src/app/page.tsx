@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth";
-import { BrandHeader } from "@/components/BrandHeader";
 import { getLocations } from "@/lib/locations";
 import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getGmachItems } from "@/lib/gmach";
@@ -47,19 +46,23 @@ export default async function Home({ searchParams }: HomeProps) {
   const gmachSlice = gmachPreview.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <BrandHeader
-        title="קהילת בית הכנסת / מרכז קהילתי"
-        subtitle={
-          isMember
+    <main
+      id="main-content"
+      className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl flex-col px-6 text-right sm:px-12"
+    >
+      {/* Hero banner — compact ~220px */}
+      <section className="flex flex-col justify-center gap-3 rounded-b-3xl bg-gradient-to-l from-primary/10 via-secondary/5 to-background px-2 py-10 sm:py-12">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          קהילת בית הכנסת / מרכז קהילתי
+        </h1>
+        <p className="max-w-xl text-sm leading-relaxed text-primary/85">
+          {isMember
             ? "לוח תפילות ושיעורים בזמן אמת, חיבור בין משפחות הקהילה, וריכוז תהליכים קהילתיים (חגים, תרומות ומיזמים) במקום אחד."
-            : "ברוכים הבאים. צפו בתפילה הבאה והצטרפו לקהילה."
-        }
-      />
-      <main
-        id="main-content"
-        className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-5xl flex-col gap-12 px-6 py-12 text-right sm:px-12"
-      >
+            : "ברוכים הבאים. צפו בתפילה הבאה והצטרפו לקהילה."}
+        </p>
+      </section>
+
+      <div className="flex flex-col gap-12 py-12">
         {showRequestSubmitted && (
           <div className="rounded-2xl border border-primary/25 bg-primary/10 px-5 py-4 text-sm font-medium text-primary shadow-sm">
             הבקשה נשלחה בהצלחה. הנהלת הקהילה תטפל בה בהקדם.
@@ -82,7 +85,7 @@ export default async function Home({ searchParams }: HomeProps) {
             formatTime={formatTime}
           />
         )}
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

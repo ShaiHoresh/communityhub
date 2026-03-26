@@ -22,20 +22,21 @@ export default async function PurimPage() {
 
   if (!enabled) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-        <main id="main-content" className="mx-auto max-w-xl px-6 py-16 text-right">
-          <BackLink />
-          <div className="surface-card rounded-3xl p-10 text-center">
-            <p className="text-lg font-heading font-bold text-foreground">
-              🎉 מערכת משלוחי המנות כרגע סגורה.
-            </p>
-            <p className="mt-2 text-sm text-primary/80">
-              כשפורים יתקרב והמודול ייפתח, תוכלו לבחור כאן את החבילה המתאימה
-              למשפחה שלכם.
-            </p>
-          </div>
-        </main>
-      </div>
+      <main
+        id="main-content"
+        className="mx-auto max-w-xl px-6 py-16 text-right"
+      >
+        <BackLink />
+        <div className="surface-card rounded-3xl p-10 text-center">
+          <p className="text-lg font-heading font-bold text-foreground">
+            🎉 מערכת משלוחי המנות כרגע סגורה.
+          </p>
+          <p className="mt-2 text-sm text-primary/80">
+            כשפורים יתקרב והמודול ייפתח, תוכלו לבחור כאן את החבילה המתאימה
+            למשפחה שלכם.
+          </p>
+        </div>
+      </main>
     );
   }
 
@@ -56,32 +57,33 @@ export default async function PurimPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 via-fuchsia-50 to-amber-100 font-sans">
-      <main id="main-content" className="mx-auto max-w-3xl px-6 py-12 text-right sm:py-16">
-        <BackLink />
-        <header className="mb-8 text-center">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-700">
-            פורים שמח 🎭🎁
-          </p>
-          <h1 className="font-heading text-3xl font-extrabold text-foreground sm:text-4xl">
-            בחירת חבילת משלוחי מנות
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-primary/80">
-            בחרו חבילה שמתאימה למשפחה –{" "}
-            <strong>כל הקהילה</strong>,{" "}
-            <strong>20 משפחות</strong> או <strong>5 משפחות</strong> – ולאחר מכן
-            סמנו למי תרצו לשלוח (בחבילות 5/20).
-          </p>
-        </header>
+    <main
+      id="main-content"
+      className="mx-auto max-w-3xl px-6 py-12 text-right sm:py-16"
+    >
+      <BackLink />
+      <header className="mb-8 text-center">
+        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-700">
+          פורים שמח 🎭🎁
+        </p>
+        <h1 className="font-heading text-3xl font-extrabold text-foreground sm:text-4xl">
+          בחירת חבילת משלוחי מנות
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-primary/80">
+          בחרו חבילה שמתאימה למשפחה –{" "}
+          <strong>כל הקהילה</strong>,{" "}
+          <strong>20 משפחות</strong> או <strong>5 משפחות</strong> – ולאחר מכן
+          סמנו למי תרצו לשלוח (בחבילות 5/20).
+        </p>
+      </header>
 
-        <PurimForm households={households} previousSelection={serializedPrev} />
+      <PurimForm households={households} previousSelection={serializedPrev} />
 
-        {devSelectionsCount > 0 && (
-          <section className="mt-4 text-[11px] text-primary/50">
-            <p>נתון פיתוח: נשמרו {devSelectionsCount} בחירות פורים.</p>
-          </section>
-        )}
-      </main>
-    </div>
+      {devSelectionsCount > 0 && (
+        <section className="mt-4 text-[11px] text-primary/50">
+          <p>נתון פיתוח: נשמרו {devSelectionsCount} בחירות פורים.</p>
+        </section>
+      )}
+    </main>
   );
 }
