@@ -152,9 +152,6 @@ export function HomeMember({
           )}
         </div>
         <div className="p-5 sm:p-6">
-          <p className="mb-5 text-xs leading-relaxed text-primary/70">
-            תצוגה ניסיונית של מנוע הזמנים. הערכים ניתנים להתאמה לפי מנהג הקהילה.
-          </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {schedule.events.map((event) => (
               <div
@@ -252,7 +249,7 @@ export function HomeMember({
       )}
 
       {/* ── Quick nav cards ── */}
-      <section className="grid gap-5 sm:grid-cols-2">
+      <section className="grid gap-5 sm:grid-cols-3">
         <Link
           href="/directory"
           className="card-interactive surface-card block p-6 transition-all"
@@ -273,6 +270,17 @@ export function HomeMember({
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-primary/80">
             קטגוריות צבעוניות ועדיפות ועדה
+          </p>
+        </Link>
+        <Link
+          href="/schedule"
+          className="card-interactive surface-card block p-6 transition-all"
+        >
+          <h3 className="font-heading text-lg font-bold text-foreground">
+            לוח זמנים שבועי
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-primary/80">
+            תפילות ושיעורים לשבוע הנוכחי
           </p>
         </Link>
       </section>

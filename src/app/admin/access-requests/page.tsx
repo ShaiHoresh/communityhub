@@ -77,11 +77,7 @@ export default async function AdminAccessRequestsPage() {
             </ul>
           ) : (
             <div className="surface-card card-interactive p-8 text-center">
-              <p className="font-medium text-foreground">אין משתמשים ממתינים.</p>
-              <p className="mt-2 text-sm leading-relaxed text-primary/80">
-                אם הרצת Supabase, המשתמשים נשמרים בבסיס נתונים. אם אתה עדיין במצב זיכרון, להצגת משתמש בדיקה (pending@test.com) הרץ בדפדפן:{" "}
-                <a href="/api/seed" className="font-mono text-primary underline" target="_blank" rel="noopener noreferrer">/api/seed</a>
-              </p>
+              <p className="font-medium text-foreground">אין משתמשים ממתינים לאישור.</p>
             </div>
           )}
         </section>

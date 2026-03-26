@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { BackLink } from "@/components/BackLink";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
-import { getPurimSelectionForHousehold, getPurimSelections } from "@/lib/purim";
+import { getPurimSelectionForHousehold } from "@/lib/purim";
 import { dbGetHouseholds } from "@/lib/db-households";
 import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { PurimForm } from "./PurimForm";
@@ -41,13 +41,10 @@ export default async function PurimPage() {
   }
 
   const householdId = userId ? await dbGetUserHouseholdId(userId) : null;
-  const [previousSelection, households, allSelections] = await Promise.all([
+  const [previousSelection, households] = await Promise.all([
     householdId ? getPurimSelectionForHousehold(householdId) : Promise.resolve(undefined),
     dbGetHouseholds(),
-    getPurimSelections(),
   ]);
-  const devSelectionsCount = allSelections.length;
-
   const serializedPrev = previousSelection
     ? {
         tier: previousSelection.tier,
@@ -78,12 +75,6 @@ export default async function PurimPage() {
       </header>
 
       <PurimForm households={households} previousSelection={serializedPrev} />
-
-      {devSelectionsCount > 0 && (
-        <section className="mt-4 text-[11px] text-primary/50">
-          <p>נתון פיתוח: נשמרו {devSelectionsCount} בחירות פורים.</p>
-        </section>
-      )}
     </main>
   );
 }

@@ -43,7 +43,7 @@ export default function AdminLayout({
     <div className="mx-auto flex max-w-6xl gap-8 px-6 py-6 text-right">
       <aside className="w-52 shrink-0">
         <nav
-          className="surface-card sticky top-20 rounded-2xl p-4"
+          className="surface-card sticky top-24 rounded-2xl p-4"
           aria-label="ניווט מנהל"
         >
           <ul className="space-y-0.5">

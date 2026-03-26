@@ -17,13 +17,13 @@ export function HeaderAuthButtons() {
   if (session?.user) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-foreground/90">
+        <span className="hidden text-sm font-medium text-foreground/90 sm:block">
           {session.user.name ?? session.user.email}
         </span>
-        <Link
-          href="/"
-          className="btn-nav-secondary text-xs py-1.5 px-3"
-        >
+        <Link href="/profile" className="btn-nav-secondary py-1.5 px-3 text-xs">
+          פרופיל
+        </Link>
+        <Link href="/" className="btn-nav-secondary py-1.5 px-3 text-xs">
           דף הבית
         </Link>
       </div>

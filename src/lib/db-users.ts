@@ -10,6 +10,28 @@ export type DbUserRow = {
   status: UserStatus;
 };
 
+type FullProfileRow = {
+  id: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  status: UserStatus;
+  household_id: string | null;
+  show_phone_in_dir: boolean | null;
+  show_email_in_dir: boolean | null;
+};
+
+export type DbUserProfile = {
+  id: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  status: UserStatus;
+  householdId: string | null;
+  showPhoneInDirectory: boolean;
+  showEmailInDirectory: boolean;
+};
+
 interface PendingUserRow {
   id: string;
   full_name: string;
@@ -133,6 +155,56 @@ export async function dbUpsertUser(input: {
       .single(),
   );
   return { id: data.id };
+}
+
+export async function dbGetUserById(id: string): Promise<DbUserProfile | null> {
+  const sb = supabaseAdmin();
+  const data = unwrapMaybe<FullProfileRow>(
+    await sb
+      .from("users")
+      .select("id, full_name, email, phone, status, household_id, show_phone_in_dir, show_email_in_dir")
+      .eq("id", id)
+      .maybeSingle(),
+  );
+  if (!data) return null;
+  return {
+    id: data.id,
+    fullName: data.full_name,
+    email: data.email ?? undefined,
+    phone: data.phone ?? undefined,
+    status: data.status,
+    householdId: data.household_id,
+    showPhoneInDirectory: data.show_phone_in_dir ?? true,
+    showEmailInDirectory: data.show_email_in_dir ?? true,
+  };
+}
+
+export async function dbUpdateUserProfile(
+  id: string,
+  input: {
+    fullName?: string;
+    phone?: string;
+    showPhoneInDir?: boolean;
+    showEmailInDir?: boolean;
+  },
+): Promise<void> {
+  const sb = supabaseAdmin();
+  const update: Record<string, unknown> = {};
+  if (input.fullName !== undefined) update.full_name = input.fullName;
+  if (input.phone !== undefined) update.phone = input.phone || null;
+  if (input.showPhoneInDir !== undefined) update.show_phone_in_dir = input.showPhoneInDir;
+  if (input.showEmailInDir !== undefined) update.show_email_in_dir = input.showEmailInDir;
+  const { error } = await sb.from("users").update(update).eq("id", id);
+  if (error) throw error;
+}
+
+export async function dbUpdateUserPassword(id: string, passwordHash: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("users")
+    .update({ password_hash: passwordHash })
+    .eq("id", id);
+  if (error) throw error;
 }
 
 export async function dbGetActiveMembersCount(): Promise<number> {

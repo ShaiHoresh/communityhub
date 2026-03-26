@@ -68,6 +68,12 @@ export function HomeGuest({ upcoming, formatTime, announcements, dvarTorah }: Pr
               אין אירועים מתוכננים ב־24 השעות הקרובות.
             </p>
           )}
+          <a
+            href="/schedule"
+            className="mt-4 inline-block text-sm font-semibold text-primary underline transition hover:text-primary/80"
+          >
+            לוח זמנים שבועי →
+          </a>
         </div>
       </section>
 
