@@ -7,7 +7,7 @@ import { ApproveRejectButtons } from "./approve-reject-buttons";
 import { PendingUserRow } from "./PendingUserRow";
 
 export const metadata = {
-  title: "אישורי גישה | CommunityHub",
+  title: "אישורי גישה | ����� �����",
   description: "מסך אישור בקשות גישה למערכת",
 };
 

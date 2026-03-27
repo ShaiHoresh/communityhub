@@ -8,7 +8,7 @@ import { ChangePasswordForm } from "./ChangePasswordForm";
 import { BackLink } from "@/components/BackLink";
 
 export const metadata = {
-  title: "הפרופיל שלי | CommunityHub",
+  title: "הפרופיל שלי | ����� �����",
   description: "ניהול פרטים אישיים והגדרות פרטיות",
 };
 

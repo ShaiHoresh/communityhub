@@ -10,8 +10,8 @@ import { GmachAddForm } from "./GmachAddForm";
 import { GmachPinButton } from "./GmachPinButton";
 
 export const metadata = {
-  title: "גמ״ח | CommunityHub",
-  description: "לוח גמ״ח לפי קטגוריות עם סימון עדיפות ועדה",
+  title: "לוח מודעות | קהילת באורך",
+  description: "לוח מודעות לפי קטגוריות עם סימון עדיפות ועדה",
 };
 
 type PageProps = { searchParams: Promise<{ category?: string }> };
@@ -34,7 +34,7 @@ export default async function GmachPage({ searchParams }: PageProps) {
     <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
       <BackLink />
       <PageHeading
-        title="לוח גמ״ח"
+        title="לוח מודעות"
         subtitle="פריטים לפי קטגוריות. פריטים מסומני עדיפות ועדה מופיעים בראש הרשימה."
       />
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 
 export const metadata = {
-  title: "שכחת סיסמה | CommunityHub",
+  title: "שכחת סיסמה | ����� �����",
   description: "איפוס סיסמה",
 };
 

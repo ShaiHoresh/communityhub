@@ -6,7 +6,7 @@ import {
 import { ToggleForm } from "./ToggleForm";
 
 export const metadata = {
-  title: "הגדרות מערכת | CommunityHub",
+  title: "הגדרות מערכת | ����� �����",
   description: "הפעלה/כיבוי מודולים עונתיים",
 };
 

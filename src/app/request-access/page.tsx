@@ -4,7 +4,7 @@ import { BackLink } from "@/components/BackLink";
 import { requestAccessAction } from "./actions";
 
 export const metadata = {
-  title: "בקשת גישה | CommunityHub",
+  title: "בקשת גישה | ����� �����",
   description: "בקשת הצטרפות למשק בית או פתיחת משק בית חדש",
 };
 

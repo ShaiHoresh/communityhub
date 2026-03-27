@@ -171,8 +171,6 @@ export function HomeMember({
                 <div className="flex items-center gap-2 text-sm text-primary/85">
                   <LocationIcon className="h-4 w-4 shrink-0 text-primary/60" />
                   <span>{event.location.name}</span>
-                  <span className="text-primary/60">·</span>
-                  <span>עד {event.location.maxCapacity.toLocaleString("he-IL")} מקומות</span>
                 </div>
               </div>
             ))}
@@ -256,7 +254,7 @@ export function HomeMember({
           className="card-interactive surface-card block p-6 transition-all"
         >
           <h3 className="font-heading text-lg font-bold text-foreground">
-            משפחות הקהילה
+            דף קשר קהילתי
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-primary/80">
             מדריך קהילה עם סינון תגיות ופרטיות
@@ -267,7 +265,7 @@ export function HomeMember({
           className="card-interactive surface-card block p-6 transition-all"
         >
           <h3 className="font-heading text-lg font-bold text-foreground">
-            לוח גמ״ח
+            לוח מודעות
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-primary/80">
             קטגוריות צבעוניות ועדיפות ועדה
@@ -291,7 +289,7 @@ export function HomeMember({
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-heading text-lg font-bold text-foreground">
-              לוח גמ״ח – עדכונים
+              לוח מודעות – עדכונים
             </h2>
             <Link
               href="/gmach"

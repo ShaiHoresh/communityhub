@@ -57,7 +57,7 @@ export async function GlobalHeader() {
         <Link
           href="/"
           className="flex items-center gap-2.5 rounded-lg transition-opacity hover:opacity-85 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
-          aria-label="CommunityHub – דף הבית"
+          aria-label="קהילת באורך – דף הבית"
         >
           <Image
             src="/logo.jpg"
@@ -68,7 +68,7 @@ export async function GlobalHeader() {
             priority
           />
           <span className="hidden font-heading text-sm font-bold tracking-tight text-foreground sm:block">
-            CommunityHub
+            קהילת באורך
           </span>
         </Link>
 

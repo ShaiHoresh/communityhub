@@ -59,9 +59,6 @@ export function HomeGuest({ upcoming, formatTime, announcements, dvarTorah }: Pr
                   {upcoming.location.name}
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-primary/80">
-                קיבולת מקסימלית {upcoming.location.maxCapacity.toLocaleString("he-IL")} מקומות
-              </p>
             </div>
           ) : (
             <p className="text-base font-medium text-foreground/90">

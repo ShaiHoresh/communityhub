@@ -16,7 +16,7 @@ import {
 } from "@/lib/zmanim";
 
 export const metadata = {
-  title: "מנהל לוח זמנים | CommunityHub",
+  title: "מנהל לוח זמנים | ����� �����",
   description: "ניהול תפילות ושיעורים",
 };
 

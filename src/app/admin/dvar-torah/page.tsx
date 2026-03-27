@@ -1,8 +1,8 @@
-import { dbGetAllDvarTorah } from "@/lib/db-dvar-torah";
+﻿import { dbGetAllDvarTorah } from "@/lib/db-dvar-torah";
 import { DvarTorahForm } from "./DvarTorahForm";
 import { DvarTorahRow } from "./DvarTorahRow";
 
-export const metadata = { title: "דבר תורה | ניהול CommunityHub" };
+export const metadata = { title: "דבר תורה | קהילת באורך" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminDvarTorahPage() {

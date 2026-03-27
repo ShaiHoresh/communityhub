@@ -22,7 +22,7 @@ function formatDate(d: Date) {
 }
 
 export const metadata = {
-  title: "כספים | CommunityHub",
+  title: "כספים | ����� �����",
   description: "ניהול פרויקטים, הכנסות והוצאות",
 };
 

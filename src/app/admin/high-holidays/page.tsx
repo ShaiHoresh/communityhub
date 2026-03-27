@@ -6,7 +6,7 @@ import { HhPrayerForm } from "./HhPrayerForm";
 import { HhPrayerRow } from "./HhPrayerRow";
 
 export const metadata = {
-  title: "ימים נוראים – ניהול | CommunityHub",
+  title: "ימים נוראים – ניהול | ����� �����",
   description: "ניהול תפילות ורישומי מקומות לימים נוראים",
 };
 

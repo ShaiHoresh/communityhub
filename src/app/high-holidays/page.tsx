@@ -9,7 +9,7 @@ import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { HighHolidaysForm } from "./HighHolidaysForm";
 
 export const metadata = {
-  title: "רישום מקומות - ימים נוראים | CommunityHub",
+  title: "רישום מקומות - ימים נוראים | ����� �����",
   description: "רישום משפחתי למקומות בראש השנה ויום כיפור כולל התנדבות לוועדות והכנת בית הכנסת.",
 };
 

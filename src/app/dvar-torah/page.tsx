@@ -7,7 +7,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { formatBiDate } from "@/lib/hebrew-date";
 
 export const metadata = {
-  title: "ארכיון דבר תורה | CommunityHub",
+  title: "ארכיון דבר תורה | ����� �����",
   description: "כל דברי התורה שפורסמו בקהילה",
 };
 

@@ -6,7 +6,7 @@ import { getAllToggles, getModuleLabel } from "@/lib/system-toggles";
 import { dbGetActiveMembersCount, dbGetPendingUsers } from "@/lib/db-users";
 
 export const metadata = {
-  title: "סקירת מנהל | CommunityHub",
+  title: "סקירת מנהל | ����� �����",
   description: "סטטיסטיקות וקישורים מהירים",
 };
 

@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CommunityHub",
-  description: "CommunityHub – פלטפורמה לבית כנסת וקהילה",
+  title: "קהילת באורך",
+  description: "קהילת באורך – ירושלים | פלטפורמת ניהול קהילתי",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [{ url: "/icon-512.png", type: "image/png" }],

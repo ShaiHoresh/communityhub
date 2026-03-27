@@ -4,7 +4,7 @@ import { LocationForm } from "./LocationForm";
 import { LocationRow } from "./LocationRow";
 
 export const metadata = {
-  title: "מיקומים | CommunityHub",
+  title: "מיקומים | ����� �����",
   description: "ניהול מיקומים וקיבולת",
 };
 

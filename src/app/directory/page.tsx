@@ -8,7 +8,7 @@ import {
 } from "@/lib/directory";
 
 export const metadata = {
-  title: "משפחות הקהילה | CommunityHub",
+  title: "דף קשר קהילתי | קהילת באורך",
   description: "ספר טלפונים קהילתי עם סינון לפי תגיות",
 };
 
@@ -27,7 +27,7 @@ export default async function DirectoryPage({ searchParams }: PageProps) {
     <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 text-right">
       <BackLink />
       <PageHeading
-        title="משפחות הקהילה"
+        title="דף קשר קהילתי"
         subtitle="ספר טלפונים קהילתי, סינון לפי תגיות (רב, רופא, מתנדב). פרטי התצוגה לפי הגדרות הפרטיות של כל משפחה."
       />
 
@@ -47,7 +47,7 @@ export default async function DirectoryPage({ searchParams }: PageProps) {
           <p className="font-medium text-foreground">
             {filterTag
               ? `אין רשומות עם התגית "${getDirectoryTagLabel(filterTag)}".`
-              : "אין עדיין רשומות במדריך. לאחר אישור בקשות גישה יופיעו כאן משפחות הקהילה."}
+              : "אין עדיין רשומות במדריך. לאחר אישור בקשות גישה יופיעו כאן דף קשר קהילתי."}
           </p>
         </div>
       ) : (

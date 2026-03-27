@@ -12,7 +12,7 @@ function formatDate(d: Date) {
 }
 
 export const metadata = {
-  title: "אירועי חיים | CommunityHub",
+  title: "אירועי חיים | ����� �����",
   description: "רישום ימי הולדת ואזכרות, תצוגת אירועים קרובים",
 };
 

@@ -1,7 +1,7 @@
-import { dbGetAllContactMessages } from "@/lib/db-contact";
+﻿import { dbGetAllContactMessages } from "@/lib/db-contact";
 import { ContactMessageRow } from "./ContactMessageRow";
 
-export const metadata = { title: "צור קשר | ניהול CommunityHub" };
+export const metadata = { title: "צור קשר | קהילת באורך" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminContactPage() {

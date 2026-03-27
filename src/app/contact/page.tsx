@@ -4,7 +4,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { ContactForm } from "./ContactForm";
 
 export const metadata = {
-  title: "צור קשר | CommunityHub",
+  title: "צור קשר | ����� �����",
   description: "שלחו הודעה להנהלת הקהילה",
 };
 

@@ -1,7 +1,7 @@
 {
-  "name": "CommunityHub",
-  "short_name": "CommunityHub",
-  "description": "CommunityHub – Synagogue & Community Center platform",
+  "name": "קהילת באורך",
+  "short_name": "באורך",
+  "description": "קהילת באורך – ירושלים | פלטפורמת ניהול קהילתי",
   "lang": "he",
   "dir": "rtl",
   "start_url": "/",

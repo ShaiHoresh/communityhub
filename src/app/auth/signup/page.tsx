@@ -3,7 +3,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { SignUpForm } from "./SignUpForm";
 
 export const metadata = {
-  title: "הרשמה | CommunityHub",
+  title: "הרשמה | ����� �����",
   description: "יצירת חשבון חדש",
 };
 

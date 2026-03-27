@@ -1,8 +1,8 @@
-import { dbGetAllAnnouncements } from "@/lib/db-announcements";
+﻿import { dbGetAllAnnouncements } from "@/lib/db-announcements";
 import { AnnouncementForm } from "./AnnouncementForm";
 import { AnnouncementRow } from "./AnnouncementRow";
 
-export const metadata = { title: "מודעות | ניהול CommunityHub" };
+export const metadata = { title: "מודעות | קהילת באורך" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminAnnouncementsPage() {

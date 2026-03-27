@@ -1,9 +1,9 @@
-import { dbGetAllSpotlights } from "@/lib/db-spotlight";
+﻿import { dbGetAllSpotlights } from "@/lib/db-spotlight";
 import { dbGetHouseholds } from "@/lib/db-households";
 import { SpotlightForm } from "./SpotlightForm";
 import { SpotlightRow } from "./SpotlightRow";
 
-export const metadata = { title: "משפחת החודש | ניהול CommunityHub" };
+export const metadata = { title: "משפחת החודש | קהילת באורך" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminSpotlightPage() {

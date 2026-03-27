@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth-config";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export const metadata = {
-  title: "ממתין לאישור | CommunityHub",
+  title: "ממתין לאישור | ����� �����",
   description: "חשבונך ממתין לאישור הנהלת הקהילה",
 };
 

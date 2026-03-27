@@ -4,7 +4,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { SignInForm } from "./SignInForm";
 
 export const metadata = {
-  title: "התחברות | CommunityHub",
+  title: "התחברות | ����� �����",
   description: "התחברות לחשבון",
 };
 

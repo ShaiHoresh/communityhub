@@ -8,7 +8,7 @@ import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { PurimForm } from "./PurimForm";
 
 export const metadata = {
-  title: "פורים – משלוח מנות | CommunityHub",
+  title: "פורים – משלוח מנות | ����� �����",
   description:
     "בחירת חבילת משלוחי מנות (כל הקהילה / 20 משפחות / 5 משפחות) עם ממשק צבעוני ושמח.",
 };

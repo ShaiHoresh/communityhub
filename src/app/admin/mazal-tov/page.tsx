@@ -1,8 +1,8 @@
-import { dbGetAllMazalTov } from "@/lib/db-mazal-tov";
+﻿import { dbGetAllMazalTov } from "@/lib/db-mazal-tov";
 import { MazalTovForm } from "./MazalTovForm";
 import { MazalTovRow } from "./MazalTovRow";
 
-export const metadata = { title: "מזל טוב | ניהול CommunityHub" };
+export const metadata = { title: "מזל טוב | קהילת באורך" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminMazalTovPage() {

@@ -7,7 +7,7 @@ import { formatBiDate, formatHebrewDateShort } from "@/lib/hebrew-date";
 import type { PrayerEvent } from "@/lib/schedule";
 
 export const metadata = {
-  title: "לוח זמנים שבועי | CommunityHub",
+  title: "לוח זמנים שבועי | ����� �����",
   description: "תפילות ושיעורים לשבוע הנוכחי",
 };
 
