@@ -1,4 +1,4 @@
-import { buildDailyScheduleForDate } from "@/lib/schedule";
+﻿import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getLocations } from "@/lib/locations";
 import { BackLink } from "@/components/BackLink";
 import { ClockIcon } from "@/components/icons/ClockIcon";
@@ -7,7 +7,7 @@ import { formatBiDate, formatHebrewDateShort } from "@/lib/hebrew-date";
 import type { PrayerEvent } from "@/lib/schedule";
 
 export const metadata = {
-  title: "לוח זמנים שבועי | ����� �����",
+  title: "לוח זמנים שבועי | קהילת באורך",
   description: "תפילות ושיעורים לשבוע הנוכחי",
 };
 

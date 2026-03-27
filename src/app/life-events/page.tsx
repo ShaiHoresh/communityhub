@@ -1,4 +1,4 @@
-import { PageHeading } from "@/components/PageHeading";
+﻿import { PageHeading } from "@/components/PageHeading";
 import { BackLink } from "@/components/BackLink";
 import { getUpcomingLifeEvents } from "@/lib/life-events";
 import { LifeEventForm } from "./LifeEventForm";
@@ -12,7 +12,7 @@ function formatDate(d: Date) {
 }
 
 export const metadata = {
-  title: "אירועי חיים | ����� �����",
+  title: "אירועי חיים | קהילת באורך",
   description: "רישום ימי הולדת ואזכרות, תצוגת אירועים קרובים",
 };
 

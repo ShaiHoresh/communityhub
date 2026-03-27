@@ -1,9 +1,9 @@
-import { getPurimRecipientReport, getPurimSelections } from "@/lib/purim";
+﻿import { getPurimRecipientReport, getPurimSelections } from "@/lib/purim";
 import { dbGetHouseholds } from "@/lib/db-households";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 
 export const metadata = {
-  title: "דוח פורים | ����� �����",
+  title: "דוח פורים | קהילת באורך",
   description: "דוח מקבלי משלוחי מנות לפי בחירות משפחות",
 };
 

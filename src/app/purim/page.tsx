@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { BackLink } from "@/components/BackLink";
 import { authOptions } from "@/lib/auth-config";
 import { isModuleEnabled } from "@/lib/system-toggles";
@@ -8,7 +8,7 @@ import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { PurimForm } from "./PurimForm";
 
 export const metadata = {
-  title: "פורים – משלוח מנות | ����� �����",
+  title: "פורים – משלוח מנות | קהילת באורך",
   description:
     "בחירת חבילת משלוחי מנות (כל הקהילה / 20 משפחות / 5 משפחות) עם ממשק צבעוני ושמח.",
 };

@@ -1,4 +1,4 @@
-import { getProjects } from "@/lib/projects";
+﻿import { getProjects } from "@/lib/projects";
 import {
   getTransactionsByProject,
   getBalanceForProject,
@@ -22,7 +22,7 @@ function formatDate(d: Date) {
 }
 
 export const metadata = {
-  title: "כספים | ����� �����",
+  title: "כספים | קהילת באורך",
   description: "ניהול פרויקטים, הכנסות והוצאות",
 };
 

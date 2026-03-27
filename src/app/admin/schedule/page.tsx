@@ -1,4 +1,4 @@
-import { getLocations } from "@/lib/locations";
+﻿import { getLocations } from "@/lib/locations";
 import { getScheduleEntries } from "@/lib/schedule-entries";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { ScheduleEntryForm } from "./ScheduleEntryForm";
@@ -16,7 +16,7 @@ import {
 } from "@/lib/zmanim";
 
 export const metadata = {
-  title: "מנהל לוח זמנים | ����� �����",
+  title: "מנהל לוח זמנים | קהילת באורך",
   description: "ניהול תפילות ושיעורים",
 };
 

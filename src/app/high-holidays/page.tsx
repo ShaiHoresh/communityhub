@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { BackLink } from "@/components/BackLink";
 import { PageHeading } from "@/components/PageHeading";
 import { authOptions } from "@/lib/auth-config";
@@ -9,7 +9,7 @@ import { dbGetUserHouseholdId } from "@/lib/db-users";
 import { HighHolidaysForm } from "./HighHolidaysForm";
 
 export const metadata = {
-  title: "רישום מקומות - ימים נוראים | ����� �����",
+  title: "רישום מקומות - ימים נוראים | קהילת באורך",
   description: "רישום משפחתי למקומות בראש השנה ויום כיפור כולל התנדבות לוועדות והכנת בית הכנסת.",
 };
 

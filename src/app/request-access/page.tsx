@@ -1,10 +1,10 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 import { BackLink } from "@/components/BackLink";
 import { requestAccessAction } from "./actions";
 
 export const metadata = {
-  title: "בקשת גישה | ����� �����",
+  title: "בקשת גישה | קהילת באורך",
   description: "בקשת הצטרפות למשק בית או פתיחת משק בית חדש",
 };
 

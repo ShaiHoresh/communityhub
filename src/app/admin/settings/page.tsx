@@ -1,4 +1,4 @@
-import {
+﻿import {
   getAllToggles,
   getModuleLabel,
   type SeasonalModule,
@@ -6,7 +6,7 @@ import {
 import { ToggleForm } from "./ToggleForm";
 
 export const metadata = {
-  title: "הגדרות מערכת | ����� �����",
+  title: "הגדרות מערכת | קהילת באורך",
   description: "הפעלה/כיבוי מודולים עונתיים",
 };
 

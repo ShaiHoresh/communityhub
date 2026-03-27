@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { getProjects } from "@/lib/projects";
 import { getTotalBalanceCents } from "@/lib/transactions";
@@ -6,7 +6,7 @@ import { getAllToggles, getModuleLabel } from "@/lib/system-toggles";
 import { dbGetActiveMembersCount, dbGetPendingUsers } from "@/lib/db-users";
 
 export const metadata = {
-  title: "סקירת מנהל | ����� �����",
+  title: "סקירת מנהל | קהילת באורך",
   description: "סטטיסטיקות וקישורים מהירים",
 };
 

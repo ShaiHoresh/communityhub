@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth-config";
 import { dbGetAllDvarTorah } from "@/lib/db-dvar-torah";
@@ -7,7 +7,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { formatBiDate } from "@/lib/hebrew-date";
 
 export const metadata = {
-  title: "ארכיון דבר תורה | ����� �����",
+  title: "ארכיון דבר תורה | קהילת באורך",
   description: "כל דברי התורה שפורסמו בקהילה",
 };
 

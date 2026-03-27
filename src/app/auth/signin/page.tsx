@@ -1,10 +1,10 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Suspense } from "react";
 import { PageHeading } from "@/components/PageHeading";
 import { SignInForm } from "./SignInForm";
 
 export const metadata = {
-  title: "התחברות | ����� �����",
+  title: "התחברות | קהילת באורך",
   description: "התחברות לחשבון",
 };
 

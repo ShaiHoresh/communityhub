@@ -1,10 +1,10 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { PageHeading } from "@/components/PageHeading";
 import { ContactForm } from "./ContactForm";
 
 export const metadata = {
-  title: "צור קשר | ����� �����",
+  title: "צור קשר | קהילת באורך",
   description: "שלחו הודעה להנהלת הקהילה",
 };
 

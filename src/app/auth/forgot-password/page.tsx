@@ -1,8 +1,8 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 
 export const metadata = {
-  title: "שכחת סיסמה | ����� �����",
+  title: "שכחת סיסמה | קהילת באורך",
   description: "איפוס סיסמה",
 };
 

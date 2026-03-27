@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { dbGetHhPrayers } from "@/lib/db-hh-prayers";
 import { getHighHolidayRegistrations } from "@/lib/high-holidays";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
@@ -6,7 +6,7 @@ import { HhPrayerForm } from "./HhPrayerForm";
 import { HhPrayerRow } from "./HhPrayerRow";
 
 export const metadata = {
-  title: "ימים נוראים – ניהול | ����� �����",
+  title: "ימים נוראים – ניהול | קהילת באורך",
   description: "ניהול תפילות ורישומי מקומות לימים נוראים",
 };
 

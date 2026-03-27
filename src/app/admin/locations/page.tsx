@@ -1,10 +1,10 @@
-import { getLocations } from "@/lib/locations";
+﻿import { getLocations } from "@/lib/locations";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { LocationForm } from "./LocationForm";
 import { LocationRow } from "./LocationRow";
 
 export const metadata = {
-  title: "מיקומים | ����� �����",
+  title: "מיקומים | קהילת באורך",
   description: "ניהול מיקומים וקיבולת",
 };
 

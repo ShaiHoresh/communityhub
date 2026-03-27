@@ -1,11 +1,11 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { PageHeading } from "@/components/PageHeading";
 import { authOptions } from "@/lib/auth-config";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export const metadata = {
-  title: "ממתין לאישור | ����� �����",
+  title: "ממתין לאישור | קהילת באורך",
   description: "חשבונך ממתין לאישור הנהלת הקהילה",
 };
 

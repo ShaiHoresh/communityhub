@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { dbGetUserById } from "@/lib/db-users";
@@ -8,7 +8,7 @@ import { ChangePasswordForm } from "./ChangePasswordForm";
 import { BackLink } from "@/components/BackLink";
 
 export const metadata = {
-  title: "הפרופיל שלי | ����� �����",
+  title: "הפרופיל שלי | קהילת באורך",
   description: "ניהול פרטים אישיים והגדרות פרטיות",
 };
 

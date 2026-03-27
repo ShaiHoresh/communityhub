@@ -1,9 +1,9 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 import { SignUpForm } from "./SignUpForm";
 
 export const metadata = {
-  title: "הרשמה | ����� �����",
+  title: "הרשמה | קהילת באורך",
   description: "יצירת חשבון חדש",
 };
 

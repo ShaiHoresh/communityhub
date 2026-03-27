@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { dbGetPendingUsers } from "@/lib/db-users";
 import { dbGetHouseholds } from "@/lib/db-households";
@@ -7,7 +7,7 @@ import { ApproveRejectButtons } from "./approve-reject-buttons";
 import { PendingUserRow } from "./PendingUserRow";
 
 export const metadata = {
-  title: "אישורי גישה | ����� �����",
+  title: "אישורי גישה | קהילת באורך",
   description: "מסך אישור בקשות גישה למערכת",
 };
 
