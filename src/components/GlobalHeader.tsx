@@ -25,23 +25,23 @@ export async function GlobalHeader() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-secondary/10 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80"
+      className="sticky top-0 z-50 border-b border-secondary/10 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:bg-slate-900/90 dark:supports-[backdrop-filter]:bg-slate-900/80 dark:border-slate-700/50"
       role="banner"
     >
       {/* ── Calendar info bar ── */}
-      <div className="border-b border-secondary/8 bg-primary/4 px-6 sm:px-12">
+      <div className="border-b border-secondary/8 bg-primary/4 px-6 sm:px-12 dark:bg-slate-800/40 dark:border-slate-700/40">
         <div className="mx-auto flex h-8 max-w-6xl items-center justify-between gap-4 text-xs">
-          {/* Date — right side in RTL: Hebrew + Gregorian */}
-          <span className="shrink-0 font-medium text-foreground/75">
+          {/* Date — right side in RTL: Hebrew always shown, Gregorian hidden on xs */}
+          <span className="shrink-0 font-medium text-foreground/80">
             {hebrewDate}
             {gregorianDate && (
-              <span className="mr-2 text-primary/45 font-normal">{gregorianDate}</span>
+              <span className="mr-2 hidden font-normal text-foreground/50 sm:inline">{gregorianDate}</span>
             )}
           </span>
 
-          {/* Shabbat/holiday times — left side in RTL */}
+          {/* Shabbat/holiday times — left side in RTL, hidden on xs */}
           {hasShabbatInfo && (
-            <span className="truncate text-primary/65">
+            <span className="hidden truncate text-foreground/65 sm:block">
               {shabbatTimes.candleLighting && `כניסת שבת: ${shabbatTimes.candleLighting}`}
               {shabbatTimes.candleLighting && shabbatTimes.havdalah && " \u00b7 "}
               {shabbatTimes.havdalah && `יציאת שבת: ${shabbatTimes.havdalah}`}

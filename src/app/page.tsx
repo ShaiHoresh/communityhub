@@ -1,4 +1,4 @@
-﻿import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import { getLocations } from "@/lib/locations";
 import { buildDailyScheduleForDate } from "@/lib/schedule";
 import { getGmachItems } from "@/lib/gmach";
@@ -64,7 +64,7 @@ export default async function Home({ searchParams }: HomeProps) {
       className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl flex-col px-6 text-right sm:px-12"
     >
       {/* Hero banner — compact ~220px */}
-      <section className="flex flex-col justify-center gap-3 rounded-b-3xl bg-gradient-to-l from-primary/10 via-secondary/5 to-background px-2 py-10 sm:py-12">
+      <section className="flex flex-col justify-center gap-3 rounded-b-3xl bg-gradient-to-l from-primary/10 via-secondary/5 to-background px-2 py-10 sm:py-12 dark:from-violet-900/20 dark:via-slate-800/20 dark:to-transparent">
         <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           קהילת באורך – ירושלים
         </h1>

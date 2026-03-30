@@ -22,8 +22,8 @@ export function HomeGuest({ upcoming, formatTime, announcements, dvarTorah }: Pr
               key={ann.id}
               className={`rounded-2xl px-5 py-4 shadow-sm ${
                 ann.isPinned
-                  ? "border border-accent/20 bg-accent/10"
-                  : "border border-secondary/20 bg-white"
+                  ? "border border-accent/20 bg-accent/10 dark:bg-violet-900/20 dark:border-violet-500/30"
+                  : "border border-secondary/20 bg-white dark:bg-slate-800 dark:border-slate-700"
               }`}
             >
               {ann.isPinned && (

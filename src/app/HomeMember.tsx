@@ -58,8 +58,8 @@ export function HomeMember({
               key={ann.id}
               className={`rounded-2xl px-5 py-4 shadow-sm ${
                 ann.isPinned
-                  ? "border border-accent/20 bg-accent/10"
-                  : "border border-secondary/20 bg-white"
+                  ? "border border-accent/20 bg-accent/10 dark:bg-violet-900/20 dark:border-violet-500/30"
+                  : "border border-secondary/20 bg-white dark:bg-slate-800 dark:border-slate-700"
               }`}
             >
               {ann.isPinned && (
@@ -74,7 +74,7 @@ export function HomeMember({
 
       {/* ── Seasonal banner ── */}
       {(highHolidaysEnabled || purimEnabled) && (
-        <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 px-5 py-4">
+        <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 px-5 py-4 dark:from-violet-900/20 dark:via-slate-800 dark:to-slate-800 dark:border-violet-700/30">
           <div className="space-y-1">
             <p className="font-heading text-sm font-semibold text-foreground">
               עונת חגים פעילה במערכת
@@ -105,13 +105,13 @@ export function HomeMember({
       {/* ── Mazal Tov ── */}
       {mazalTovEntries.length > 0 && (
         <section className="surface-card overflow-hidden p-0">
-          <div className="border-b border-amber-200/60 bg-gradient-to-l from-amber-50 to-yellow-50/60 px-6 py-4">
+          <div className="border-b border-amber-200/60 bg-gradient-to-l from-amber-50 to-yellow-50/60 px-6 py-4 dark:from-amber-900/20 dark:to-yellow-900/10 dark:border-amber-800/30">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="font-heading text-lg font-bold text-foreground">
                   🎉 מזל טוב!
                 </h2>
-                <p className="mt-0.5 text-xs text-amber-800/75">
+                <p className="mt-0.5 text-xs text-amber-800/75 dark:text-amber-200/70">
                   שמחות הקהילה ב-30 הימים האחרונים
                 </p>
               </div>
@@ -347,29 +347,51 @@ export function HomeMember({
       </section>
 
       {/* ── Footer actions ── */}
-      <section className="mt-auto flex flex-wrap items-center justify-between gap-6 border-t border-secondary/15 pt-10">
-        <div className="space-y-1">
-          <p className="font-heading font-semibold text-foreground">כניסה למערכת</p>
-          <p className="text-sm leading-relaxed text-primary/80">
-            {isAdmin
-              ? "בקשת גישה למשק בית, מסך מנהל, והתנתקות."
-              : "בקשת גישה למשק בית והתנתקות."}
-          </p>
-        </div>
+      <section className="mt-auto space-y-4 border-t border-secondary/15 pt-10 dark:border-slate-700/40">
+        <p className="font-heading font-semibold text-foreground">פעולות מהירות</p>
+
+        {/* Row 1: primary actions */}
         <div className="flex flex-wrap gap-3">
           <a href="/request-access" className="btn-primary">
             בקשת גישה למשק בית
           </a>
-          {isAdmin && (
-            <a href="/admin/access-requests" className="btn-secondary">
-              מסך אישורי מנהל
-            </a>
-          )}
           <a href="/contact" className="btn-secondary">
             צור קשר
           </a>
           <SignOutButton />
         </div>
+
+        {/* Row 2: admin section — always visible on desktop, tap-to-reveal on mobile */}
+        {isAdmin && (
+          <>
+            {/* Mobile: collapsible */}
+            <details className="sm:hidden">
+              <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-full border-2 border-secondary/60 px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:bg-secondary/10 [&::-webkit-details-marker]:hidden">
+                <span>⚙️</span>
+                <span>אפשרויות מנהל</span>
+                <span className="text-xs text-foreground/50">▾</span>
+              </summary>
+              <div className="mt-3 flex flex-wrap gap-3 pr-1">
+                <a href="/admin/access-requests" className="btn-secondary">
+                  מסך אישורי מנהל
+                </a>
+                <a href="/admin" className="btn-secondary">
+                  מסך ניהול
+                </a>
+              </div>
+            </details>
+
+            {/* Desktop: always visible */}
+            <div className="hidden sm:flex flex-wrap gap-3">
+              <a href="/admin/access-requests" className="btn-secondary">
+                מסך אישורי מנהל
+              </a>
+              <a href="/admin" className="btn-secondary">
+                מסך ניהול
+              </a>
+            </div>
+          </>
+        )}
       </section>
     </>
   );
