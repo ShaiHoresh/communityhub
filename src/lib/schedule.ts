@@ -40,10 +40,13 @@ export type DailySchedule = {
  * 3. Filters entries by day-type, season, and specific-date applicability.
  * 4. Applies overrides (cancellations or time changes).
  * 5. Resolves each entry's time via calculatePrayerTime().
+ *
+ * @param isHoliday - when true, entries tagged with dayType "holiday" are also included.
  */
 export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
+  isHoliday = false,
 ): Promise<DailySchedule> {
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
@@ -58,7 +61,8 @@ export async function buildDailyScheduleForDate(
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
   const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
-  const applicableTypes = getApplicableDayTypes(baseDate);
+  const baseTypes = getApplicableDayTypes(baseDate);
+  const applicableTypes: DayType[] = isHoliday ? [...baseTypes, "holiday"] : baseTypes;
 
   const events: PrayerEvent[] = [];
 
