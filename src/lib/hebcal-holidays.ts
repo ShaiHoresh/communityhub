@@ -15,6 +15,12 @@ export type HolidayInfo = {
    * false = minor / erev / chol hamoed
    */
   isYomTov: boolean;
+  /**
+   * true = this is an "erev" (eve) event, e.g. "ערב פסח", "ערב ראש השנה".
+   * These days are treated as "ערב חג" in the schedule and prayers tagged
+   * erev_chag will be shown. The FOLLOWING day is the actual Yom Tov.
+   */
+  isErev: boolean;
 };
 
 type HebcalItem = {
@@ -58,12 +64,17 @@ export async function fetchHolidaysForRange(
       const dateStr = item.date.slice(0, 10);
 
       // Keep the first entry OR upgrade to a yomtov entry if a better one appears
+      const isErev = item.subcat === "erev";
+      const isYomTov = item.yomtov === true;
+
       const existing = result.get(dateStr);
-      if (!existing || (!existing.isYomTov && item.yomtov)) {
+      // Prefer yomtov entries over non-yomtov; erev subcat always wins for erev days
+      if (!existing || (!existing.isYomTov && isYomTov)) {
         result.set(dateStr, {
           date: dateStr,
           title: item.title,
-          isYomTov: item.yomtov === true,
+          isYomTov,
+          isErev,
         });
       }
     }

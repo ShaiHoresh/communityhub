@@ -41,12 +41,16 @@ export type DailySchedule = {
  * 4. Applies overrides (cancellations or time changes).
  * 5. Resolves each entry's time via calculatePrayerTime().
  *
- * @param isHoliday - when true, entries tagged with dayType "holiday" are also included.
+ * @param options.isHoliday  - show only "holiday"-tagged entries (no weekday entries)
+ * @param options.isErevChag - show only "erev_chag"-tagged entries (no weekday entries)
+ *
+ * When neither flag is set, getApplicableDayTypes() determines what shows
+ * (weekday, erev_shabbat, shabbat, motzei_shabbat).
  */
 export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
-  isHoliday = false,
+  options: { isHoliday?: boolean; isErevChag?: boolean } = {},
 ): Promise<DailySchedule> {
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
@@ -61,8 +65,12 @@ export async function buildDailyScheduleForDate(
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
   const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
-  const baseTypes = getApplicableDayTypes(baseDate);
-  const applicableTypes: DayType[] = isHoliday ? [...baseTypes, "holiday"] : baseTypes;
+  // Holiday / erev-chag days are exclusive: weekday prayers do not bleed through.
+  const applicableTypes: DayType[] = options.isHoliday
+    ? ["holiday"]
+    : options.isErevChag
+      ? ["erev_chag"]
+      : getApplicableDayTypes(baseDate);
 
   const events: PrayerEvent[] = [];
 
