@@ -8,7 +8,6 @@ import {
 import { dbSetUserStatus } from "@/lib/db-users";
 import {
   dbAddHouseholdManager,
-  dbAssignUserToHousehold,
   dbCreateHousehold,
   dbCreateHouseholdUser,
   dbGetHouseholdById,
@@ -102,14 +101,10 @@ export async function rejectAccessRequestAction(
 
 export async function approvePendingUserAction(
   userId: string,
-  householdId?: string,
 ): Promise<ActionResult> {
   return safeAction(async () => {
     await requireAdmin();
     await dbSetUserStatus(userId, "MEMBER");
-    if (householdId) {
-      await dbAssignUserToHousehold(userId, householdId);
-    }
     revalidateAdminPaths();
     return { ok: true };
   });

@@ -41,46 +41,15 @@ export const ZMAN_LABELS: Record<ZmanKey, string> = {
 
 // ── Day-type / season enums ────────────────────────────────────────────
 
-export const DAY_TYPES = [
-  "weekday",
-  "erev_shabbat",
-  "shabbat",
-  "motzei_shabbat",
-  "erev_chag",
-  "holiday",
-  "specific_date",
-] as const;
+export const DAY_TYPES = ["weekday", "shabbat", "holiday", "specific_date"] as const;
 export type DayType = (typeof DAY_TYPES)[number];
 
 export const DAY_TYPE_LABELS: Record<DayType, string> = {
-  weekday: "חול (א–ה)",
-  erev_shabbat: "ערב שבת (ליל שישי)",
-  shabbat: "שבת (כל יום השבת)",
-  motzei_shabbat: "מוצאי שבת",
-  erev_chag: "ערב חג",
-  holiday: "יום טוב / חג",
+  weekday: "חול",
+  shabbat: "שבת",
+  holiday: "חג",
   specific_date: "תאריך מסוים",
 };
-
-/**
- * Returns the applicable DayType values for a given date.
- *
- * Design principle: Shabbat and holiday days are EXCLUSIVE —
- * weekday entries do NOT bleed into Shabbat, erev Shabbat, or holidays.
- * Each special period uses only prayers explicitly defined for it.
- *
- *   Fri  → ["erev_shabbat"]          (no weekday: admin must define Fri prayers as erev_shabbat)
- *   Sat  → ["shabbat", "motzei_shabbat"]
- *   else → ["weekday"]
- *
- * Holidays / erev-chag are injected by buildDailyScheduleForDate via its options param.
- */
-export function getApplicableDayTypes(date: Date): DayType[] {
-  const day = date.getDay(); // 0=Sun … 5=Fri, 6=Sat
-  if (day === 6) return ["shabbat", "motzei_shabbat"];
-  if (day === 5) return ["erev_shabbat"];
-  return ["weekday"];
-}
 
 export const SEASONS = ["always", "winter_only", "summer_only"] as const;
 export type Season = (typeof SEASONS)[number];

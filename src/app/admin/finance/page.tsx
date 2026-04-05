@@ -22,7 +22,7 @@ function formatDate(d: Date) {
 }
 
 export const metadata = {
-  title: "כספים | קהילת באורך",
+  title: "כספים | CommunityHub",
   description: "ניהול פרויקטים, הכנסות והוצאות",
 };
 

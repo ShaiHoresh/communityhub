@@ -3,7 +3,7 @@ import { dbGetHouseholds } from "@/lib/db-households";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 
 export const metadata = {
-  title: "דוח פורים | קהילת באורך",
+  title: "דוח פורים | CommunityHub",
   description: "דוח מקבלי משלוחי מנות לפי בחירות משפחות",
 };
 

@@ -1,13 +1,12 @@
 ﻿import Link from "next/link";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { dbGetPendingUsers } from "@/lib/db-users";
-import { dbGetHouseholds } from "@/lib/db-households";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { ApproveRejectButtons } from "./approve-reject-buttons";
 import { PendingUserRow } from "./PendingUserRow";
 
 export const metadata = {
-  title: "אישורי גישה | קהילת באורך",
+  title: "אישורי גישה | CommunityHub",
   description: "מסך אישור בקשות גישה למערכת",
 };
 
@@ -15,11 +14,8 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminAccessRequestsPage() {
-  const [pending, pendingUsers, households] = await Promise.all([
-    getPendingAccessRequests(),
-    dbGetPendingUsers(),
-    dbGetHouseholds(),
-  ]);
+  const pending = await getPendingAccessRequests();
+  const pendingUsers = await dbGetPendingUsers();
 
   return (
     <div className="space-y-10">
@@ -71,13 +67,16 @@ export default async function AdminAccessRequestsPage() {
                   userId={u.id}
                   fullName={u.fullName}
                   email={u.email}
-                  households={households}
                 />
               ))}
             </ul>
           ) : (
             <div className="surface-card card-interactive p-8 text-center">
-              <p className="font-medium text-foreground">אין משתמשים ממתינים לאישור.</p>
+              <p className="font-medium text-foreground">אין משתמשים ממתינים.</p>
+              <p className="mt-2 text-sm leading-relaxed text-primary/80">
+                אם הרצת Supabase, המשתמשים נשמרים בבסיס נתונים. אם אתה עדיין במצב זיכרון, להצגת משתמש בדיקה (pending@test.com) הרץ בדפדפן:{" "}
+                <a href="/api/seed" className="font-mono text-primary underline" target="_blank" rel="noopener noreferrer">/api/seed</a>
+              </p>
             </div>
           )}
         </section>

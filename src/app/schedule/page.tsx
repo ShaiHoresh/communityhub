@@ -5,7 +5,7 @@ import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
 import { formatBiDate, formatHebrewDateShort } from "@/lib/hebrew-date";
 import { fetchHolidaysForRange, type HolidayInfo } from "@/lib/hebcal-holidays";
-import type { PrayerEvent } from "@/lib/schedule";
+import type { PrayerEvent, ScheduleOptions } from "@/lib/schedule";
 
 export const metadata = {
   title: "לוח זמנים שבועי | קהילת באורך",
@@ -66,12 +66,14 @@ function dateKey(d: Date): string {
 
 /**
  * The schedule renders as an ordered sequence of groups:
- *   "days"    → grid of plain weekday DayCards
+ *   "days"    → grid of DayCards (weekday / Hol HaMoed / Rosh Chodesh / Fast Day)
  *   "shabbat" → unified Friday-evening → Saturday-night block
  *   "holiday" → unified ערב-חג → יום-טוב block (or single-day if only one is in window)
  */
+type DayCardEntry = { schedule: DailySchedule; holidayInfo?: HolidayInfo };
+
 type RenderGroup =
-  | { kind: "days"; schedules: DailySchedule[] }
+  | { kind: "days"; entries: DayCardEntry[] }
   | {
       kind: "shabbat";
       friday?: DailySchedule;
@@ -95,8 +97,9 @@ type RenderGroup =
  * Rules:
  *  - Friday+Saturday → ShabbatBlock (Friday absorbed even if it's also erev-chag)
  *  - Saturday-only (window starts on Shabbat) → ShabbatBlock without Friday column
- *  - "Erev" Hebcal event → paired with following day (if in window) → HolidayBlock
- *  - Standalone holiday (no preceding erev in window) → HolidayBlock (yomtov column only)
+ *  - Erev Yom Tov (non-Hol-HaMoed) → paired with following Yom Tov → HolidayBlock
+ *  - Standalone Yom Tov (non-Hol-HaMoed) → HolidayBlock (yomtov column only)
+ *  - Hol HaMoed weekdays, Rosh Chodesh, Fast Days → DayCard with badge
  *  - Everything else → pooled into DayCard grids
  */
 function buildRenderGroups(
@@ -106,12 +109,12 @@ function buildRenderGroups(
 ): RenderGroup[] {
   const schedMap = new Map(schedules.map((s) => [dateKey(s.date), s]));
   const groups: RenderGroup[] = [];
-  let pendingDays: DailySchedule[] = [];
+  let pendingDays: DayCardEntry[] = [];
   const consumed = new Set<string>();
 
   const flush = () => {
     if (pendingDays.length > 0) {
-      groups.push({ kind: "days", schedules: [...pendingDays] });
+      groups.push({ kind: "days", entries: [...pendingDays] });
       pendingDays = [];
     }
   };
@@ -157,16 +160,20 @@ function buildRenderGroups(
       continue;
     }
 
-    // ── Erev Chag: pair with following holiday if available ──
-    if (holidayInfo?.isErev) {
+    // ── Erev Chag (NOT within Hol HaMoed): pair with following Yom Tov → HolidayBlock ──
+    if (holidayInfo?.isErev && !holidayInfo.isHolHaMoed) {
       flush();
       const nextD = dates[i + 1];
       const nextKey = nextD ? dateKey(nextD) : null;
       const nextSched = nextKey ? schedMap.get(nextKey) : undefined;
       const nextInfo = nextKey ? holidays.get(nextKey) : undefined;
 
-      // Pair only when the next day is a non-erev holiday
-      if (nextD && nextSched && nextInfo && !nextInfo.isErev && !consumed.has(nextKey!)) {
+      // Pair only when the next day is a non-erev, non-Hol-HaMoed holiday
+      if (
+        nextD && nextSched && nextInfo &&
+        !nextInfo.isErev && !nextInfo.isHolHaMoed &&
+        !consumed.has(nextKey!)
+      ) {
         consumed.add(nextKey!);
         groups.push({
           kind: "holiday",
@@ -176,21 +183,22 @@ function buildRenderGroups(
           yomtovInfo: nextInfo,
         });
       } else {
-        // Erev without a following holiday in the window
+        // Erev without a following Yom Tov in the window
         groups.push({ kind: "holiday", erev: sched, erevInfo: holidayInfo });
       }
       continue;
     }
 
-    // ── Standalone holiday (no erev predecessor in window) ──
-    if (holidayInfo && !holidayInfo.isErev) {
+    // ── Standalone Yom Tov (not Hol HaMoed, not erev) → HolidayBlock ──
+    if (holidayInfo && !holidayInfo.isErev && !holidayInfo.isHolHaMoed && holidayInfo.isYomTov) {
       flush();
       groups.push({ kind: "holiday", yomtov: sched, yomtovInfo: holidayInfo });
       continue;
     }
 
-    // ── Regular weekday ──
-    pendingDays.push(sched);
+    // ── Everything else (weekday, Hol HaMoed, Rosh Chodesh, Fast Day, erev_chag_sheni)
+    //    stays as a DayCard; special info is forwarded for badge rendering.
+    pendingDays.push({ schedule: sched, holidayInfo: holidayInfo });
   }
 
   flush();
@@ -226,15 +234,77 @@ function EmptyDay() {
   return <p className="py-3 text-center text-xs text-foreground/35">אין אירועים מוגדרים</p>;
 }
 
-/** Plain weekday card */
-function DayCard({ date, events, today }: { date: Date; events: PrayerEvent[]; today: boolean }) {
+/**
+ * Visual badges shown on DayCard headers for special day states.
+ * Hol HaMoed, Rosh Chodesh, Fast Days and Erev Chag Sheni all get
+ * a colored pill rather than a full HolidayBlock.
+ */
+function DayStateBadges({ info }: { info: HolidayInfo }) {
+  const badges: { label: string; cls: string }[] = [];
+
+  if (info.isHolHaMoed && info.isErevChagSheni) {
+    badges.push({ label: info.title || "הושנא רבא / ערב חג שני", cls: "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300" });
+  } else if (info.isHolHaMoed) {
+    badges.push({ label: "חול המועד", cls: "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300" });
+  } else if (info.isErev) {
+    badges.push({ label: "ערב חג שני", cls: "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300" });
+  }
+
+  if (info.isRoshChodesh) {
+    badges.push({ label: "ראש חודש", cls: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300" });
+  }
+
+  if (info.isFastDay) {
+    badges.push({ label: "יום תענית", cls: "bg-slate-200 text-slate-700 dark:bg-slate-700/50 dark:text-slate-300" });
+  }
+
+  if (badges.length === 0) return null;
   return (
-    <div className={`surface-card overflow-hidden rounded-2xl ${today ? "ring-2 ring-primary/40" : ""}`}>
+    <div className="mt-1 flex flex-wrap gap-1">
+      {badges.map((b) => (
+        <span key={b.label} className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${b.cls}`}>
+          {b.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Weekday card — also used for Hol HaMoed, Rosh Chodesh, Fast Days */
+function DayCard({
+  date,
+  events,
+  today,
+  holidayInfo,
+}: {
+  date: Date;
+  events: PrayerEvent[];
+  today: boolean;
+  holidayInfo?: HolidayInfo;
+}) {
+  const isHolHaMoed = holidayInfo?.isHolHaMoed ?? false;
+  const isFastDay   = holidayInfo?.isFastDay   ?? false;
+
+  // Ring color: teal for Hol HaMoed, slate for fast, primary for today
+  const ringCls = today
+    ? "ring-2 ring-primary/40"
+    : isHolHaMoed
+      ? "ring-1 ring-teal-300/50 dark:ring-teal-600/40"
+      : isFastDay
+        ? "ring-1 ring-slate-300/60 dark:ring-slate-600/40"
+        : "";
+
+  return (
+    <div className={`surface-card overflow-hidden rounded-2xl ${ringCls}`}>
       <div
         className={`border-b px-4 py-3 ${
           today
             ? "border-primary/20 bg-primary/10 dark:bg-primary/15"
-            : "border-secondary/10 bg-secondary/5 dark:bg-white/5"
+            : isHolHaMoed
+              ? "border-teal-200/60 bg-teal-50/50 dark:bg-teal-900/10 dark:border-teal-800/20"
+              : isFastDay
+                ? "border-slate-200/60 bg-slate-50/60 dark:bg-slate-800/20 dark:border-slate-700/20"
+                : "border-secondary/10 bg-secondary/5 dark:bg-white/5"
         }`}
       >
         <p className={`font-heading text-sm font-bold ${today ? "text-primary dark:text-violet-300" : "text-foreground"}`}>
@@ -246,6 +316,7 @@ function DayCard({ date, events, today }: { date: Date; events: PrayerEvent[]; t
           )}
         </p>
         <p className="text-xs text-foreground/50">{formatBiDate(date)}</p>
+        {holidayInfo && <DayStateBadges info={holidayInfo} />}
       </div>
       <div className="p-3">
         {events.length === 0 ? <EmptyDay /> : (
@@ -560,15 +631,33 @@ export default async function SchedulePage() {
   // Fetch holidays first — needed to pass correct options to buildDailyScheduleForDate
   const holidayMap = await fetchHolidaysForRange(startDate, endDate);
 
-  // Build all 7 daily schedules in parallel with correct day-type flags
+  // Build all 7 daily schedules in parallel with correct day-type flags.
+  // Exclusive overrides (isHoliday / isErevChag) apply only to standalone Yom Tov
+  // or Erev Yom Tov — NOT to Hol HaMoed days, which keep their weekday base type.
   const schedules = await Promise.all(
     dates.map((d) => {
       const key = dateKey(d);
       const info = holidayMap.get(key);
-      return buildDailyScheduleForDate(d, mainLocation, {
-        isHoliday: info !== undefined && !info.isErev,
-        isErevChag: info?.isErev === true,
-      });
+      const dow = d.getDay();
+
+      const opts: ScheduleOptions = {};
+
+      if (info) {
+        const isStandaloneYomTov = info.isYomTov && !info.isHolHaMoed;
+        const isStandaloneErev   = info.isErev   && !info.isHolHaMoed;
+
+        if (isStandaloneYomTov)        opts.isHoliday   = true;
+        else if (isStandaloneErev)     opts.isErevChag  = true;
+
+        if (info.isRoshChodesh)        opts.isRoshChodesh         = true;
+        if (info.isFastDay)            opts.isFastDay             = true;
+        if (info.isHolHaMoed)          opts.isHolHaMoed           = true;
+        if (info.isErevChagSheni)      opts.isErevChagSheni       = true;
+        // Friday in Hol HaMoed
+        if (info.isHolHaMoed && dow === 5) opts.isErevShabbatHolHaMoed = true;
+      }
+
+      return buildDailyScheduleForDate(d, mainLocation, opts);
     }),
   );
 
@@ -594,12 +683,13 @@ export default async function SchedulePage() {
           if (group.kind === "days") {
             return (
               <div key={idx} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {group.schedules.map((day) => (
+                {group.entries.map(({ schedule: day, holidayInfo }) => (
                   <DayCard
                     key={dateKey(day.date)}
                     date={day.date}
                     events={day.events}
                     today={isToday(day.date)}
+                    holidayInfo={holidayInfo}
                   />
                 ))}
               </div>

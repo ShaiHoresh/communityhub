@@ -12,9 +12,7 @@ export type DirectoryUserRow = {
   directory_tags: string[] | null;
   show_phone_in_dir: boolean | null;
   show_email_in_dir: boolean | null;
-  // PostgREST may return the related record as an object OR array depending
-  // on version/relationship cardinality — handle both.
-  households: { name: string }[] | { name: string } | null;
+  households: { name: string }[] | null;
 };
 
 export type DbDirectoryEntry = {
@@ -49,9 +47,7 @@ export async function dbGetDirectoryEntries(filterTag?: DirectoryTag): Promise<D
   const mapped: DbDirectoryEntry[] = data.map((u: DirectoryUserRow) => ({
     userId: u.id,
     fullName: u.full_name,
-    householdName: Array.isArray(u.households)
-      ? (u.households[0]?.name ?? null)
-      : (u.households?.name ?? null),
+    householdName: u.households?.[0]?.name ?? null,
     phone: u.show_phone_in_dir !== false && u.phone ? u.phone : null,
     email: u.show_email_in_dir !== false && u.email ? u.email : null,
     tags: normalizeTags(u.directory_tags),

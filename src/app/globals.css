@@ -27,14 +27,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
+    --background: #020617;
+    --foreground: #e5e7eb;
 
     /* Slightly tuned logo colors for dark mode */
-    --primary: #a78bfa;
-    --secondary: #60a5fa;
-    /* accent stays dark-ish so btn-primary stays legible */
-    --accent: #7c3aed;
+    --primary: #8b5cf6;
+    --secondary: #3b82f6;
+    --accent: #e5e7eb;
   }
 }
 
@@ -53,33 +52,33 @@ body {
   @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
 }
 
-/* Primary action: accent */
+/* Primary action: accent (per branding) */
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:opacity-90 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50 dark:bg-violet-600 dark:hover:bg-violet-500;
+  @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:opacity-90 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50;
 }
 
 /* Secondary action: outlined with secondary color */
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-full border-2 border-secondary bg-transparent px-5 py-2.5 text-sm font-medium text-primary transition-all duration-200 hover:bg-secondary/10 hover:border-secondary/80 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50 dark:border-secondary/60 dark:text-foreground dark:hover:bg-secondary/20;
+  @apply inline-flex items-center justify-center rounded-full border-2 border-secondary bg-transparent px-5 py-2.5 text-sm font-medium text-primary transition-all duration-200 hover:bg-secondary/10 hover:border-secondary/80 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50;
 }
 
 /* Navbar auth buttons: polished, subtle */
 .btn-nav-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 dark:bg-violet-600 dark:hover:bg-violet-500;
+  @apply inline-flex items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 hover:shadow focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
 }
 
 .btn-nav-secondary {
-  @apply inline-flex items-center justify-center rounded-full border border-secondary/40 bg-white/80 px-4 py-2 text-sm font-semibold text-primary backdrop-blur-sm transition-all duration-200 hover:bg-primary/5 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 dark:bg-slate-700/80 dark:border-slate-500/60 dark:text-foreground dark:hover:bg-slate-600/80;
+  @apply inline-flex items-center justify-center rounded-full border border-secondary/40 bg-white/80 px-4 py-2 text-sm font-semibold text-primary backdrop-blur-sm transition-all duration-200 hover:bg-primary/5 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2;
 }
 
 /* Card/surface: modern, soft shadow, generous feel */
 .surface-card {
-  @apply rounded-2xl border border-secondary/20 bg-white shadow-sm dark:bg-slate-800 dark:border-slate-700;
+  @apply rounded-2xl border border-secondary/20 bg-white shadow-sm;
 }
 
 /* Interactive card: hover lift and glow */
 .card-interactive {
-  @apply transition-all duration-200 hover:shadow hover:border-primary/20 dark:hover:border-primary/40;
+  @apply transition-all duration-200 hover:shadow hover:border-primary/20;
 }
 
 /* Page section spacing */
@@ -89,11 +88,11 @@ body {
 
 /* Form inputs (sizes) */
 .input-base {
-  @apply w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 dark:border-slate-600 dark:placeholder:text-foreground/40;
+  @apply w-full rounded-xl border border-secondary/40 bg-white px-4 py-2.5 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
 }
 
 .input-sm {
-  @apply w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 dark:border-slate-600 dark:placeholder:text-foreground/40;
+  @apply w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
 }
 
 /* Danger / destructive button */
@@ -112,5 +111,5 @@ body {
 
 /* Checkbox */
 .checkbox-base {
-  @apply h-4 w-4 rounded border-secondary/50 text-primary focus:ring-primary dark:border-slate-500;
+  @apply h-4 w-4 rounded border-secondary/50 text-primary focus:ring-primary;
 }

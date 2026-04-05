@@ -8,10 +8,9 @@ import {
 import { dbGetOverridesForDate } from "@/lib/db-schedule-entries";
 import {
   fetchZmanim,
-  getApplicableDayTypes,
+  getDayType,
   isSeasonApplicable,
   calculatePrayerTime,
-  type DayType,
   type ZmanimData,
 } from "@/lib/zmanim";
 
@@ -23,8 +22,6 @@ export type PrayerEvent = {
   type: PrayerType;
   start: Date;
   location: Location;
-  /** The DayType tags this entry was defined with — used for visual grouping. */
-  dayTypes: DayType[];
 };
 
 export type DailySchedule = {
@@ -40,17 +37,10 @@ export type DailySchedule = {
  * 3. Filters entries by day-type, season, and specific-date applicability.
  * 4. Applies overrides (cancellations or time changes).
  * 5. Resolves each entry's time via calculatePrayerTime().
- *
- * @param options.isHoliday  - show only "holiday"-tagged entries (no weekday entries)
- * @param options.isErevChag - show only "erev_chag"-tagged entries (no weekday entries)
- *
- * When neither flag is set, getApplicableDayTypes() determines what shows
- * (weekday, erev_shabbat, shabbat, motzei_shabbat).
  */
 export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
-  options: { isHoliday?: boolean; isErevChag?: boolean } = {},
 ): Promise<DailySchedule> {
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
@@ -65,12 +55,7 @@ export async function buildDailyScheduleForDate(
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
   const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
-  // Holiday / erev-chag days are exclusive: weekday prayers do not bleed through.
-  const applicableTypes: DayType[] = options.isHoliday
-    ? ["holiday"]
-    : options.isErevChag
-      ? ["erev_chag"]
-      : getApplicableDayTypes(baseDate);
+  const dayType = getDayType(baseDate);
 
   const events: PrayerEvent[] = [];
 
@@ -78,7 +63,7 @@ export async function buildDailyScheduleForDate(
     // ── Applicability checks ──
     if (!isSeasonApplicable(entry.season, baseDate)) continue;
 
-    const matchesDay = entry.dayTypes.some((dt) => applicableTypes.includes(dt));
+    const matchesDay = entry.dayTypes.includes(dayType);
     const matchesSpecific =
       entry.dayTypes.includes("specific_date") &&
       entry.specificDate === dateStr;
@@ -121,7 +106,6 @@ export async function buildDailyScheduleForDate(
       type: entry.type,
       start,
       location: locationMap.get(entry.locationId) ?? mainLocation,
-      dayTypes: entry.dayTypes,
     });
   }
 

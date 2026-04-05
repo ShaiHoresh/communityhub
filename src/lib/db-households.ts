@@ -121,23 +121,6 @@ export async function dbGetHouseholdMembers(
   ).map(mapUserRow);
 }
 
-/**
- * Assigns an already-existing user to a household and registers them as a manager.
- * Used when an admin approves a PENDING user who signed up directly (not via access-request form).
- */
-export async function dbAssignUserToHousehold(
-  userId: UserId,
-  householdId: HouseholdId,
-): Promise<void> {
-  const sb = supabaseAdmin();
-  const { error } = await sb
-    .from("users")
-    .update({ household_id: householdId })
-    .eq("id", userId);
-  if (error) throw error;
-  await dbAddHouseholdManager(householdId, userId);
-}
-
 export async function dbIsHouseholdManager(
   householdId: HouseholdId,
   userId: UserId,
