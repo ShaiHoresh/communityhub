@@ -83,65 +83,65 @@
 ## Phase 7: Design & Layout Unification ✅
 
 ### 7a: Global Header ✅
-- [x] Create a `GlobalHeader` component: community logo (`logo.png`) + site title, consistent across all pages.
-- [x] Integrate `GlobalHeader` into the root layout (`layout.tsx`) so every page inherits it.
-- [x] RTL-aware: logo on the right, navigation/auth actions on the left.
-- [x] Responsive: compact on mobile, full on desktop.
+- [x] `GlobalHeader` component exists: logo + site name + Hebrew date + Shabbat times + auth buttons.
+- [x] Integrated into the root `layout.tsx` — every page now inherits the GlobalHeader automatically.
+- [x] RTL-aware: logo on the right, auth actions on the left. Responsive (compact on mobile).
 
 ### 7b: Action Consistency ✅
-- [x] Audit all pages for primary action placement — ensure Save/Submit/Add buttons appear in a consistent position (top-right for RTL).
-- [x] Ensure all Back links use the shared `BackLink` component uniformly.
-- [x] Ensure all destructive actions use `btn-danger` styling with confirmation dialogs.
+- [x] Removed `BrandHeader` from all content pages — replaced with `PageHeading` inside `<main>`.
+- [x] All pages using `BackLink` are consistent.
+- [x] Admin pages follow a consistent pattern: h1 title top-right, secondary actions top-left, forms below.
 
 ### 7c: Landing Page Banner Fix ✅
-- [x] Reduce the hero banner height to ~200–250px (currently too tall / dominating the viewport).
-- [x] Keep content: community name, tagline, subtle brand gradient. Remove any full-screen hero behavior.
+- [x] Replaced the tall `BrandHeader` hero with a compact gradient card (~120px, well-proportioned).
+- [x] Content preserved: community name + contextual tagline + brand gradient.
+- [x] No more sticky double-header on the homepage.
 
 ---
 
-## Phase 8: Content Modules ✅
+## Phase 8: Content Modules
 
 ### 8a: Mazal Tov Board
-- [x] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
-- [x] RLS: MEMBER+ read, ADMIN write.
-- [x] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
-- [x] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
-- [x] Schema + migration script.
+- [ ] DB: Create `mazal_tov` table (`id`, `event_type`, `name`, `message`, `date`, `created_at`).
+- [ ] RLS: MEMBER+ read, ADMIN write.
+- [ ] Admin UI: CRUD form in Admin Control Tower → Content Manager section.
+- [ ] Member UI: Featured section on the Member landing page (recent 30 days, card-based, festive styling).
+- [ ] Schema + migration script.
 
 ### 8b: D'var Torah (Weekly Torah Insight)
-- [x] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
-- [x] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
-- [x] Admin UI: CRUD form in Content Manager.
-- [x] Homepage: Collapsible card showing the most recent D'var Torah (Member view); teaser for guests.
-- [x] Page: `/dvar-torah` archive page listing past entries (Member access).
-- [x] Schema + migration script.
+- [ ] DB: Create `dvar_torah` table (`id`, `title`, `author`, `body`, `parasha`, `date`, `created_at`).
+- [ ] RLS: Public read (latest entry on Guest landing as preview), ADMIN write.
+- [ ] Admin UI: CRUD form in Content Manager.
+- [ ] Homepage: Collapsible card showing the most recent D'var Torah (Member view).
+- [ ] Page: `/dvar-torah` archive page listing past entries (Member access).
+- [ ] Schema + migration script.
 
 ### 8c: Community Announcements
-- [x] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
-- [x] RLS: Public read, ADMIN write.
-- [x] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
-- [x] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
-- [x] Auto-hide expired announcements from homepage; keep in archive.
-- [x] Schema + migration script.
+- [ ] DB: Create `announcements` table (`id`, `title`, `body`, `is_pinned`, `expires_at`, `created_at`).
+- [ ] RLS: Public read, ADMIN write.
+- [ ] Admin UI: CRUD form in Content Manager (with expiry date picker and pin toggle).
+- [ ] Homepage: Active announcements displayed as banner/card stack (visible to Guests and Members).
+- [ ] Auto-hide expired announcements from homepage; keep in archive.
+- [ ] Schema + migration script.
 
 ### 8d: "Meet the Family" Spotlight
-- [x] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
-- [x] RLS: MEMBER+ read, ADMIN write.
-- [x] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
-- [x] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
-- [x] Schema + migration script.
+- [ ] DB: Create `meet_the_family` table (`id`, `household_id` → FK, `bio`, `photo_url`, `is_active`, `created_at`).
+- [ ] RLS: MEMBER+ read, ADMIN write.
+- [ ] Admin UI: Select household from dropdown, write bio text, toggle active (only one active at a time).
+- [ ] Member UI: Featured card on the Member landing page with family name, bio, and optional photo.
+- [ ] Schema + migration script.
 
 ---
 
 ## Phase 9: New Pages
 
-### 9a: Contact Us ✅
-- [x] DB: Create `contact_messages` table (`id`, `user_id` nullable, `name`, `email`, `subject`, `message`, `created_at`).
-- [x] RLS: Public insert (anyone — guest, pending, member — can submit), ADMIN read all.
-- [x] Page: `/contact` with a contact form (name, email, subject, message). Auto-fill name/email if signed in.
-- [x] Server action to submit the form.
-- [x] Admin UI: View contact messages in Admin Control Tower (list with subject, date, read/unread status).
-- [x] Schema + migration script.
+### 9a: Contact Us
+- [ ] DB: Create `contact_messages` table (`id`, `user_id` nullable, `name`, `email`, `subject`, `message`, `created_at`).
+- [ ] RLS: MEMBER+ insert, ADMIN read all.
+- [ ] Page: `/contact` with a contact form (name, email, subject, message). Auto-fill name/email if signed in.
+- [ ] Server action to submit the form.
+- [ ] Admin UI: View contact messages in Admin Control Tower (list with subject, date, read/unread status).
+- [ ] Schema + migration script.
 
 ### 9b: Gallery (FUTURE — Architecture Only)
 - [ ] **Do not implement now.** Design the table structure for future use:

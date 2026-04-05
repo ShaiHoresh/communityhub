@@ -6,13 +6,14 @@ import { isModuleEnabled } from "@/lib/system-toggles";
 import { authOptions } from "@/lib/auth-config";
 import { dbGetActiveAnnouncements } from "@/lib/db-announcements";
 import { dbGetLatestDvarTorah } from "@/lib/db-dvar-torah";
-import { dbGetMazalTovRecent } from "@/lib/db-mazal-tov";
-import { dbGetActiveSpotlight } from "@/lib/db-spotlight";
 import { HomeGuest } from "@/app/HomeGuest";
 import { HomeMember } from "@/app/HomeMember";
 
 function formatTime(d: Date) {
-  return d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("he-IL", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 type HomeProps = { searchParams: Promise<{ request?: string }> };
@@ -32,25 +33,15 @@ export default async function Home({ searchParams }: HomeProps) {
   const today = new Date();
   const showRequestSubmitted = params.request === "submitted";
 
-  const [
-    schedule,
-    gmachPreview,
-    highHolidaysEnabled,
-    purimEnabled,
-    announcements,
-    dvarTorah,
-    mazalTovEntries,
-    spotlight,
-  ] = await Promise.all([
-    buildDailyScheduleForDate(today, mainLocation),
-    isMember ? getGmachItems() : Promise.resolve([]),
-    isModuleEnabled("rosh_hashanah"),
-    isModuleEnabled("purim"),
-    dbGetActiveAnnouncements(),
-    dbGetLatestDvarTorah(),
-    isMember ? dbGetMazalTovRecent(30) : Promise.resolve([]),
-    isMember ? dbGetActiveSpotlight() : Promise.resolve(null),
-  ]);
+  const [schedule, gmachPreview, highHolidaysEnabled, purimEnabled, announcements, dvarTorah] =
+    await Promise.all([
+      buildDailyScheduleForDate(today, mainLocation),
+      isMember ? getGmachItems() : Promise.resolve([]),
+      isModuleEnabled("rosh_hashanah"),
+      isModuleEnabled("purim"),
+      dbGetActiveAnnouncements().catch(() => []),
+      dbGetLatestDvarTorah().catch(() => null),
+    ]);
 
   const upcoming = schedule.events
     .filter((e) => e.start.getTime() >= Date.now())
@@ -61,26 +52,25 @@ export default async function Home({ searchParams }: HomeProps) {
   return (
     <main
       id="main-content"
-      className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl flex-col px-6 text-right sm:px-12"
+      className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-5xl flex-col gap-10 px-6 py-10 text-right sm:px-12"
     >
-      {/* Hero banner — compact ~220px */}
-      <section className="flex flex-col justify-center gap-3 rounded-b-3xl bg-gradient-to-l from-primary/10 via-secondary/5 to-background px-2 py-10 sm:py-12 dark:from-violet-900/20 dark:via-slate-800/20 dark:to-transparent">
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          קהילת באורך – ירושלים
+      {/* Compact hero banner — ~200px, proportional to the page */}
+      <div className="rounded-2xl border border-primary/15 bg-gradient-to-l from-primary/8 via-background to-secondary/5 px-7 py-7 sm:px-10">
+        <h1 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          קהילת בית הכנסת / מרכז קהילתי
         </h1>
-        <p className="max-w-xl text-sm leading-relaxed text-primary/85">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-primary/80">
           {isMember
-            ? "לוח תפילות ושיעורים בזמן אמת, חיבור בין דף קשר קהילתי, וריכוז תהליכים קהילתיים (חגים, תרומות ומיזמים) במקום אחד."
+            ? "לוח תפילות ושיעורים בזמן אמת, חיבור בין משפחות הקהילה, וריכוז תהליכים קהילתיים (חגים, תרומות ומיזמים) במקום אחד."
             : "ברוכים הבאים. צפו בתפילה הבאה והצטרפו לקהילה."}
         </p>
-      </section>
+      </div>
 
-      <div className="flex flex-col gap-12 py-12">
-        {showRequestSubmitted && (
-          <div className="rounded-2xl border border-primary/25 bg-primary/10 px-5 py-4 text-sm font-medium text-primary shadow-sm">
-            הבקשה נשלחה בהצלחה. הנהלת הקהילה תטפל בה בהקדם.
-          </div>
-        )}
+      {showRequestSubmitted && (
+        <div className="rounded-2xl border border-primary/25 bg-primary/10 px-5 py-4 text-sm font-medium text-primary shadow-sm">
+          הבקשה נשלחה בהצלחה. הנהלת הקהילה תטפל בה בהקדם.
+        </div>
+      )}
 
         {isMember ? (
           <HomeMember
@@ -91,10 +81,6 @@ export default async function Home({ searchParams }: HomeProps) {
             isAdmin={status === "ADMIN"}
             highHolidaysEnabled={highHolidaysEnabled}
             purimEnabled={purimEnabled}
-            announcements={announcements}
-            dvarTorah={dvarTorah}
-            mazalTovEntries={mazalTovEntries}
-            spotlight={spotlight}
           />
         ) : (
           <HomeGuest
@@ -104,7 +90,6 @@ export default async function Home({ searchParams }: HomeProps) {
             dvarTorah={dvarTorah}
           />
         )}
-      </div>
     </main>
   );
 }

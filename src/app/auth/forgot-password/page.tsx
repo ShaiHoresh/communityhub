@@ -1,14 +1,14 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 
 export const metadata = {
-  title: "שכחת סיסמה | קהילת באורך",
+  title: "שכחת סיסמה | CommunityHub",
   description: "איפוס סיסמה",
 };
 
 export default function ForgotPasswordPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
+    <main id="main-content" className="mx-auto max-w-xl px-6 py-12 text-right">
       <PageHeading
         title="שכחת סיסמה"
         subtitle="לאפס את הסיסמה יש לפנות להנהלת הקהילה או להשתמש בשירות איפוס (יופעל בהמשך)."

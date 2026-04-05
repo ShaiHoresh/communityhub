@@ -1,10 +1,10 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { PageHeading } from "@/components/PageHeading";
 import { BackLink } from "@/components/BackLink";
 import { requestAccessAction } from "./actions";
 
 export const metadata = {
-  title: "בקשת גישה | קהילת באורך",
+  title: "בקשת גישה | CommunityHub",
   description: "בקשת הצטרפות למשק בית או פתיחת משק בית חדש",
 };
 
@@ -16,11 +16,11 @@ export default async function RequestAccessPage({ searchParams }: Props) {
 
   return (
     <main id="main-content" className="mx-auto max-w-xl px-6 py-10 text-right">
-        <BackLink />
-        <PageHeading
-          title="בקשת גישה למערכת"
-          subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
-        />
+      <BackLink />
+      <PageHeading
+        title="בקשת גישה למערכת"
+        subtitle="מלאו את הפרטים להצטרפות למשק בית קיים או לפתיחת משק בית חדש. הבקשה תעבור לאישור הנהלת הקהילה."
+      />
 
         <div className="surface-card card-interactive rounded-2xl p-6 sm:p-8">
         {errorMsg && (
