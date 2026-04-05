@@ -5,7 +5,7 @@ import {
   getAccessRequestById,
   rejectAccessRequest,
 } from "@/lib/access-requests";
-import { dbSetUserStatus } from "@/lib/db-users";
+import { dbSetUserStatus, dbSetUserHousehold } from "@/lib/db-users";
 import {
   dbAddHouseholdManager,
   dbCreateHousehold,
@@ -101,10 +101,15 @@ export async function rejectAccessRequestAction(
 
 export async function approvePendingUserAction(
   userId: string,
+  householdId?: string,
 ): Promise<ActionResult> {
   return safeAction(async () => {
     await requireAdmin();
     await dbSetUserStatus(userId, "MEMBER");
+    if (householdId) {
+      await dbSetUserHousehold(userId, householdId);
+      await dbAddHouseholdManager(householdId, userId);
+    }
     revalidateAdminPaths();
     return { ok: true };
   });

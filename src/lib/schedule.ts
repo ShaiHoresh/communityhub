@@ -22,11 +22,31 @@ export type PrayerEvent = {
   type: PrayerType;
   start: Date;
   location: Location;
+  /** The raw dayTypes from the schedule entry that produced this event. */
+  dayTypes: string[];
 };
 
 export type DailySchedule = {
   date: Date;
   events: PrayerEvent[];
+};
+
+/**
+ * Optional flags passed by the 7-day schedule page to augment the base
+ * day-type set (weekday / shabbat) with additive Jewish-calendar types
+ * derived from the Hebcal holidays API.
+ *
+ * Any flag set to true causes the corresponding day-type string to be added
+ * to the active set, so schedule entries tagged with that type are included.
+ */
+export type ScheduleOptions = {
+  isHoliday?: boolean;
+  isErevChag?: boolean;
+  isRoshChodesh?: boolean;
+  isFastDay?: boolean;
+  isHolHaMoed?: boolean;
+  isErevChagSheni?: boolean;
+  isErevShabbatHolHaMoed?: boolean;
 };
 
 /**
@@ -41,6 +61,7 @@ export type DailySchedule = {
 export async function buildDailyScheduleForDate(
   date: Date,
   mainLocation: Location,
+  opts?: ScheduleOptions,
 ): Promise<DailySchedule> {
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
@@ -55,7 +76,17 @@ export async function buildDailyScheduleForDate(
 
   const locationMap = new Map(locations.map((l) => [l.id, l]));
   const overrideMap = new Map(overrides.map((o) => [o.scheduleEntryId, o]));
-  const dayType = getDayType(baseDate);
+  const baseDayType = getDayType(baseDate);
+
+  // Build the complete set of active day types for this date.
+  const activeDayTypes = new Set<string>([baseDayType]);
+  if (opts?.isHoliday)               activeDayTypes.add("holiday");
+  if (opts?.isErevChag)              activeDayTypes.add("erev_chag");
+  if (opts?.isRoshChodesh)           activeDayTypes.add("rosh_chodesh");
+  if (opts?.isFastDay)               activeDayTypes.add("fast_day");
+  if (opts?.isHolHaMoed)             activeDayTypes.add("hol_hamoed");
+  if (opts?.isErevChagSheni)         activeDayTypes.add("erev_chag_sheni");
+  if (opts?.isErevShabbatHolHaMoed)  activeDayTypes.add("erev_shabbat_hol_hamoed");
 
   const events: PrayerEvent[] = [];
 
@@ -63,7 +94,7 @@ export async function buildDailyScheduleForDate(
     // ── Applicability checks ──
     if (!isSeasonApplicable(entry.season, baseDate)) continue;
 
-    const matchesDay = entry.dayTypes.includes(dayType);
+    const matchesDay = entry.dayTypes.some((t) => activeDayTypes.has(t));
     const matchesSpecific =
       entry.dayTypes.includes("specific_date") &&
       entry.specificDate === dateStr;
@@ -106,6 +137,7 @@ export async function buildDailyScheduleForDate(
       type: entry.type,
       start,
       location: locationMap.get(entry.locationId) ?? mainLocation,
+      dayTypes: entry.dayTypes,
     });
   }
 

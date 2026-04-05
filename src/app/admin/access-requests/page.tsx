@@ -1,6 +1,7 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { getPendingAccessRequests } from "@/lib/access-requests";
 import { dbGetPendingUsers } from "@/lib/db-users";
+import { dbGetHouseholds } from "@/lib/db-households";
 import { ExportExcelButton } from "@/components/ExportExcelButton";
 import { ApproveRejectButtons } from "./approve-reject-buttons";
 import { PendingUserRow } from "./PendingUserRow";
@@ -14,8 +15,11 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminAccessRequestsPage() {
-  const pending = await getPendingAccessRequests();
-  const pendingUsers = await dbGetPendingUsers();
+  const [pending, pendingUsers, households] = await Promise.all([
+    getPendingAccessRequests(),
+    dbGetPendingUsers(),
+    dbGetHouseholds(),
+  ]);
 
   return (
     <div className="space-y-10">
@@ -67,6 +71,7 @@ export default async function AdminAccessRequestsPage() {
                   userId={u.id}
                   fullName={u.fullName}
                   email={u.email}
+                  households={households}
                 />
               ))}
             </ul>

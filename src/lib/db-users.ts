@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { unwrap, unwrapList, unwrapMaybe, unwrapCount } from "@/lib/supabase-helpers";
-import type { UserStatus } from "@/lib/households";
+import type { UserStatus, User } from "@/lib/households";
 
 export type DbUserRow = {
   id: string;
@@ -133,6 +133,87 @@ export async function dbUpsertUser(input: {
       .single(),
   );
   return { id: data.id };
+}
+
+const FULL_USER_SELECT =
+  "id, full_name, phone, email, password_hash, status, household_id, role, directory_tags, show_phone_in_dir, show_email_in_dir";
+
+interface FullUserRow {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  email: string | null;
+  password_hash: string | null;
+  status: UserStatus;
+  household_id: string | null;
+  role: string | null;
+  directory_tags: string[] | null;
+  show_phone_in_dir: boolean | null;
+  show_email_in_dir: boolean | null;
+}
+
+function mapFullUserRow(r: FullUserRow): User {
+  return {
+    id: r.id,
+    fullName: r.full_name,
+    phone: r.phone ?? undefined,
+    email: r.email ?? undefined,
+    passwordHash: r.password_hash ?? undefined,
+    status: r.status,
+    householdId: r.household_id ?? null,
+    role: r.role ?? undefined,
+    directoryTags: (r.directory_tags as User["directoryTags"]) ?? undefined,
+    showPhoneInDirectory: r.show_phone_in_dir ?? undefined,
+    showEmailInDirectory: r.show_email_in_dir ?? undefined,
+  };
+}
+
+export async function dbGetUserById(userId: string): Promise<User | null> {
+  const sb = supabaseAdmin();
+  const data = unwrapMaybe<FullUserRow>(
+    await sb.from("users").select(FULL_USER_SELECT).eq("id", userId).maybeSingle(),
+  );
+  return data ? mapFullUserRow(data) : null;
+}
+
+export async function dbUpdateUserProfile(
+  userId: string,
+  input: {
+    fullName: string;
+    phone?: string;
+    showPhoneInDir: boolean;
+    showEmailInDir: boolean;
+  },
+): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("users")
+    .update({
+      full_name: input.fullName,
+      phone: input.phone ?? null,
+      show_phone_in_dir: input.showPhoneInDir,
+      show_email_in_dir: input.showEmailInDir,
+    })
+    .eq("id", userId);
+  if (error) throw error;
+}
+
+export async function dbUpdateUserPassword(userId: string, newHash: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("users")
+    .update({ password_hash: newHash })
+    .eq("id", userId);
+  if (error) throw error;
+}
+
+export async function dbSetUserHousehold(userId: string, householdId: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("users")
+    .update({ household_id: householdId })
+    .eq("id", userId);
+  if (error) throw error;
 }
 
 export async function dbGetActiveMembersCount(): Promise<number> {

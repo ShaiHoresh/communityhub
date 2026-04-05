@@ -147,7 +147,7 @@ function buildRenderGroups(
         });
       } else {
         // Friday-only window edge case — show as single-day card
-        pendingDays.push(sched);
+        pendingDays.push({ schedule: sched, holidayInfo });
         flush();
       }
       continue;

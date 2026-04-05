@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-config";
 import { dbGetUserById } from "@/lib/db-users";
@@ -42,14 +42,14 @@ export default async function ProfilePage() {
           <div className="mb-5 flex items-center justify-between gap-4">
             <h2 className="font-heading text-lg font-bold text-foreground">פרטים אישיים</h2>
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              {statusLabel[user.status] ?? user.status}
+              {user.status ? (statusLabel[user.status] ?? user.status) : ""}
             </span>
           </div>
           <ProfileForm
             defaultFullName={user.fullName}
             defaultPhone={user.phone ?? ""}
-            defaultShowPhone={user.showPhoneInDirectory}
-            defaultShowEmail={user.showEmailInDirectory}
+            defaultShowPhone={user.showPhoneInDirectory ?? false}
+            defaultShowEmail={user.showEmailInDirectory ?? false}
             email={user.email}
           />
         </div>
