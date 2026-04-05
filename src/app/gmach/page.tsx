@@ -10,8 +10,8 @@ import { GmachAddForm } from "./GmachAddForm";
 import { GmachPinButton } from "./GmachPinButton";
 
 export const metadata = {
-  title: "גמ״ח | CommunityHub",
-  description: "לוח גמ״ח לפי קטגוריות עם סימון עדיפות ועדה",
+  title: "מודעות | CommunityHub",
+  description: "לוח מודעות לפי קטגוריות עם סימון עדיפות ועדה",
 };
 
 type PageProps = { searchParams: Promise<{ category?: string }> };

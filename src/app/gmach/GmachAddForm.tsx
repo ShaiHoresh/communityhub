@@ -17,7 +17,7 @@ export function GmachAddForm({ categories }: Props) {
 
   return (
     <form action={formAction} className="mt-6 space-y-4 border-t border-secondary/20 pt-6">
-      <h3 className="text-sm font-semibold text-foreground">הוספת פריט לגמ״ח</h3>
+      <h3 className="text-sm font-semibold text-foreground">הוספת פריט למודעות</h3>
       <div>
         <label htmlFor="categoryId" className="mb-1 block text-xs font-medium text-primary/80">
           קטגוריה

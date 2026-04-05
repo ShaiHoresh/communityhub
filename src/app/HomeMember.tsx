@@ -118,7 +118,7 @@ export function HomeMember({
           className="card-interactive surface-card block p-6 transition-all"
         >
           <h3 className="font-heading text-lg font-bold text-foreground">
-            לוח גמ״ח
+            לוח מודעות
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-primary/80">
             קטגוריות צבעוניות ועדיפות ועדה
@@ -130,7 +130,7 @@ export function HomeMember({
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-heading text-lg font-bold text-foreground">
-              לוח גמ״ח – עדכונים
+              לוח מודעות– עדכונים
             </h2>
             <Link
               href="/gmach"
