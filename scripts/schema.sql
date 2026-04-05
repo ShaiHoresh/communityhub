@@ -233,3 +233,18 @@ CREATE TABLE system_toggles (
   enabled BOOLEAN NOT NULL DEFAULT false,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Password reset tokens (self-service forgot-password flow)
+CREATE TABLE password_reset_tokens (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email       TEXT NOT NULL,
+  token_hash  TEXT NOT NULL UNIQUE,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  used_at     TIMESTAMPTZ,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_prt_token_hash ON password_reset_tokens(token_hash);
+CREATE INDEX idx_prt_email      ON password_reset_tokens(email);
+
+ALTER TABLE password_reset_tokens ENABLE ROW LEVEL SECURITY;
