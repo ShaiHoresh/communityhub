@@ -66,14 +66,24 @@ export function HomeMember({
 
       <section className="surface-card overflow-hidden p-0">
         <div className="border-b border-secondary/10 bg-primary/5 px-6 py-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-primary/90">
-            24 שעות קדימה
-          </p>
-          {upcoming && (
-            <p className="mt-1 text-sm font-medium text-foreground/90">
-              האירוע הבא: {upcoming.title} · {formatTime(upcoming.start)}
-            </p>
-          )}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-primary/90">
+                24 שעות קדימה
+              </p>
+              {upcoming && (
+                <p className="mt-1 text-sm font-medium text-foreground/90">
+                  האירוע הבא: {upcoming.title} · {formatTime(upcoming.start)}
+                </p>
+              )}
+            </div>
+            <Link
+              href="/schedule"
+              className="text-sm font-semibold text-primary underline transition hover:text-primary/80 shrink-0"
+            >
+              לוח זמנים שבועי →
+            </Link>
+          </div>
         </div>
         <div className="p-5 sm:p-6">
           <p className="mb-5 text-xs leading-relaxed text-primary/70">
@@ -108,7 +118,18 @@ export function HomeMember({
 
       {dvarTorah && <DvarTorahCard dvarTorah={dvarTorah} />}
 
-      <section className="grid gap-5 sm:grid-cols-2">
+      <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <Link
+          href="/schedule"
+          className="card-interactive surface-card block p-6 transition-all"
+        >
+          <h3 className="font-heading text-lg font-bold text-foreground">
+            לוח זמנים
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-primary/80">
+            תפילות ושיעורים ל-7 הימים הקרובים
+          </p>
+        </Link>
         <Link
           href="/directory"
           className="card-interactive surface-card block p-6 transition-all"
