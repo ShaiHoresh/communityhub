@@ -41,11 +41,12 @@ export const ZMAN_LABELS: Record<ZmanKey, string> = {
 
 // ── Day-type / season enums ────────────────────────────────────────────
 
-export const DAY_TYPES = ["weekday", "shabbat", "holiday", "specific_date"] as const;
+export const DAY_TYPES = ["weekday", "erev_shabbat", "shabbat", "holiday", "specific_date"] as const;
 export type DayType = (typeof DAY_TYPES)[number];
 
 export const DAY_TYPE_LABELS: Record<DayType, string> = {
   weekday: "חול",
+  erev_shabbat: "ערב שבת",
   shabbat: "שבת",
   holiday: "חג",
   specific_date: "תאריך מסוים",

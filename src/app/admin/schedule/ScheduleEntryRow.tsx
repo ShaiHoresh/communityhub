@@ -46,8 +46,9 @@ function buildTimeSummary(entry: ScheduleEntry): string {
   if (entry.timeType === "ZMANIM_BASED") {
     return zmanLabel;
   }
-  const sign = entry.offsetMinutes >= 0 ? "+" : "";
-  return `${zmanLabel} ${sign}${entry.offsetMinutes} דק׳`;
+  const abs = Math.abs(entry.offsetMinutes);
+  const direction = entry.offsetMinutes >= 0 ? "אחרי" : "לפני";
+  return `${abs} דק׳ ${direction} ${zmanLabel}`;
 }
 
 export function ScheduleEntryRow({ entry, locations }: Props) {
