@@ -81,6 +81,7 @@ export default async function Home({ searchParams }: HomeProps) {
             isAdmin={status === "ADMIN"}
             highHolidaysEnabled={highHolidaysEnabled}
             purimEnabled={purimEnabled}
+            dvarTorah={dvarTorah}
           />
         ) : (
           <HomeGuest

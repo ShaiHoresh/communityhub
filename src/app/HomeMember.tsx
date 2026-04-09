@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { DailySchedule, PrayerEvent } from "@/lib/schedule";
 import type { GmachItem } from "@/lib/gmach";
 import { getGmachCategoryById } from "@/lib/gmach";
+import type { DbDvarTorah } from "@/lib/db-dvar-torah";
+import { DvarTorahCard } from "@/components/DvarTorahCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
@@ -17,6 +19,8 @@ type Props = {
   /** Seasonal modules toggles for contextual UI. */
   highHolidaysEnabled: boolean;
   purimEnabled: boolean;
+  /** Weekly d'var torah — shown in full for members. */
+  dvarTorah: DbDvarTorah | null;
 };
 
 export function HomeMember({
@@ -27,6 +31,7 @@ export function HomeMember({
   isAdmin,
   highHolidaysEnabled,
   purimEnabled,
+  dvarTorah,
 }: Props) {
   return (
     <>
@@ -100,6 +105,8 @@ export function HomeMember({
           </div>
         </div>
       </section>
+
+      {dvarTorah && <DvarTorahCard dvarTorah={dvarTorah} />}
 
       <section className="grid gap-5 sm:grid-cols-2">
         <Link
