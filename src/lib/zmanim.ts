@@ -117,7 +117,10 @@ export async function fetchZmanim(date: Date): Promise<ZmanimData | null> {
 // ── Helpers ────────────────────────────────────────────────────────────
 
 export function getDayType(date: Date): DayType {
-  return date.getDay() === 6 ? "shabbat" : "weekday";
+  const dow = date.getDay();
+  if (dow === 6) return "shabbat";
+  if (dow === 5) return "erev_shabbat";
+  return "weekday";
 }
 
 export function isWinterSeason(date: Date): boolean {

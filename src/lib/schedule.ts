@@ -80,8 +80,6 @@ export async function buildDailyScheduleForDate(
 
   // Build the complete set of active day types for this date.
   const activeDayTypes = new Set<string>([baseDayType]);
-  // Friday: also activate erev_shabbat so Friday-specific prayers are included.
-  if (baseDate.getDay() === 5)       activeDayTypes.add("erev_shabbat");
   if (opts?.isHoliday)               activeDayTypes.add("holiday");
   if (opts?.isErevChag)              activeDayTypes.add("erev_chag");
   if (opts?.isRoshChodesh)           activeDayTypes.add("rosh_chodesh");

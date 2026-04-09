@@ -472,9 +472,7 @@ function ShabbatBlock({
   fridayHoliday?: HolidayInfo;
   saturdayHoliday?: HolidayInfo;
 }) {
-  const erevEvents = fridayEvents.filter(
-    (e) => e.dayTypes.includes("erev_shabbat") || e.dayTypes.includes("weekday"),
-  );
+  const erevEvents = fridayEvents.filter((e) => e.dayTypes.includes("erev_shabbat"));
   const shabbatDayEvents = saturdayEvents.filter((e) => e.dayTypes.includes("shabbat"));
   const motzeiEvents = saturdayEvents.filter((e) => e.dayTypes.includes("motzei_shabbat"));
 

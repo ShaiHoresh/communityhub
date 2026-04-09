@@ -9,6 +9,10 @@ The priority/types are:
 - **Special States:** `ROSH_CHODESH`, `FAST_DAY`, `HOL_HAMOED`.
 - **Transition States:** `EREV_SHABBAT`, `EREV_CHAG`, `EREV_SHABBAT_HOL_HAMOED`, `EREV_CHAG_SHENI`.
 
+**Important:** Transition states are **exclusive** — they replace the base core type for that day, not stack on top of it.
+- Friday's base type is `EREV_SHABBAT` (not `WEEKDAY`). Prayers tagged `WEEKDAY` will **not** appear on Fridays. Use `EREV_SHABBAT` for all Friday-specific prayers (e.g., Kabbalat Shabbat, Mincha ערב שבת).
+- The `EREV_CHAG` flag (set by the Hebcal API) similarly replaces `WEEKDAY` for the erev of a Yom Tov.
+
 #### 2. The "Safety Margin" Calculation Logic
 Implement a new "Conditional Fixed Time" mode for prayer entries. 
 For a given prayer, the Gabbai defines:
