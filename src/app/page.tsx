@@ -57,7 +57,7 @@ export default async function Home({ searchParams }: HomeProps) {
       {/* Compact hero banner — ~200px, proportional to the page */}
       <div className="rounded-2xl border border-primary/15 bg-gradient-to-l from-primary/8 via-background to-secondary/5 px-7 py-7 sm:px-10">
         <h1 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          קהילת בית הכנסת / מרכז קהילתי
+          קהילת באורך - ירושלים
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-primary/80">
           {isMember
