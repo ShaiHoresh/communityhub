@@ -16,6 +16,7 @@ export async function GlobalHeader() {
     candleLighting: null,
     havdalah: null,
     parashaTitle: null,
+    isYomTov: false,
   }));
 
   const now = new Date();
@@ -42,9 +43,11 @@ export async function GlobalHeader() {
           {/* Shabbat/holiday times — left side in RTL, hidden on xs */}
           {hasShabbatInfo && (
             <span className="hidden truncate text-foreground/65 sm:block">
-              {shabbatTimes.candleLighting && `כניסת שבת: ${shabbatTimes.candleLighting}`}
+              {shabbatTimes.candleLighting &&
+                `${shabbatTimes.isYomTov ? "כניסת החג" : "כניסת השבת"}: ${shabbatTimes.candleLighting}`}
               {shabbatTimes.candleLighting && shabbatTimes.havdalah && " \u00b7 "}
-              {shabbatTimes.havdalah && `יציאת שבת: ${shabbatTimes.havdalah}`}
+              {shabbatTimes.havdalah &&
+                `${shabbatTimes.isYomTov ? "יציאת החג" : "יציאת השבת"}: ${shabbatTimes.havdalah}`}
               {shabbatTimes.parashaTitle && ` · ${shabbatTimes.parashaTitle}`}
             </span>
           )}
