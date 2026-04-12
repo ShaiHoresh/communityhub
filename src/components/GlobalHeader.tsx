@@ -13,16 +13,14 @@ import { formatHebrewDate, formatGregorianDate } from "@/lib/hebrew-date";
  */
 export async function GlobalHeader() {
   const shabbatTimes = await fetchShabbatTimes().catch(() => ({
-    candleLighting: null,
-    havdalah: null,
+    timeline: [] as import("@/lib/shabbat-times").TimelineItem[],
     parashaTitle: null,
-    isYomTov: false,
   }));
 
   const now = new Date();
   const hebrewDate = formatHebrewDate(now);
   const gregorianDate = formatGregorianDate(now);
-  const hasShabbatInfo = !!(shabbatTimes.candleLighting || shabbatTimes.havdalah);
+  const hasShabbatInfo = shabbatTimes.timeline.length > 0;
 
   return (
     <header
@@ -43,12 +41,18 @@ export async function GlobalHeader() {
           {/* Shabbat/holiday times — left side in RTL, hidden on xs */}
           {hasShabbatInfo && (
             <span className="hidden truncate text-foreground/65 sm:block">
-              {shabbatTimes.candleLighting &&
-                `${shabbatTimes.isYomTov ? "כניסת החג" : "כניסת השבת"}: ${shabbatTimes.candleLighting}`}
-              {shabbatTimes.candleLighting && shabbatTimes.havdalah && " \u00b7 "}
-              {shabbatTimes.havdalah &&
-                `${shabbatTimes.isYomTov ? "יציאת החג" : "יציאת השבת"}: ${shabbatTimes.havdalah}`}
-              {shabbatTimes.parashaTitle && ` · ${shabbatTimes.parashaTitle}`}
+              {shabbatTimes.timeline.map((item, i) => (
+                <span key={i}>
+                  {i > 0 && <span className="mx-1.5 opacity-50">&middot;</span>}
+                  {item.label}: {item.time}
+                </span>
+              ))}
+              {shabbatTimes.parashaTitle && (
+                <span>
+                  <span className="mx-1.5 opacity-50">&middot;</span>
+                  {shabbatTimes.parashaTitle}
+                </span>
+              )}
             </span>
           )}
         </div>
