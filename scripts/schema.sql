@@ -248,3 +248,42 @@ CREATE INDEX idx_prt_token_hash ON password_reset_tokens(token_hash);
 CREATE INDEX idx_prt_email      ON password_reset_tokens(email);
 
 ALTER TABLE password_reset_tokens ENABLE ROW LEVEL SECURITY;
+
+-- Explicit grants required after Supabase's October 2026 default-privilege change.
+-- New tables in public schema are no longer automatically exposed to the Data API.
+-- service_role is what the app uses (bypasses RLS); anon/authenticated are included
+-- as a baseline for any future client-side or RLS-based access.
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  households,
+  users,
+  household_managers,
+  locations,
+  prayers_lessons,
+  projects,
+  transactions,
+  gmach_categories,
+  gmach_posts,
+  access_requests,
+  life_events,
+  schedule_entries,
+  schedule_overrides,
+  purim_selections,
+  purim_selection_recipients,
+  hh_prayers,
+  high_holiday_registrations,
+  hh_registration_seats,
+  system_toggles,
+  password_reset_tokens
+TO service_role;
+
+GRANT SELECT ON
+  households,
+  users,
+  gmach_categories,
+  gmach_posts,
+  announcements,
+  dvar_torah,
+  schedule_entries,
+  schedule_overrides,
+  locations
+TO anon, authenticated;

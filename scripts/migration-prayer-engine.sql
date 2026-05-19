@@ -62,3 +62,7 @@ CREATE POLICY schedule_overrides_select ON schedule_overrides
   FOR SELECT USING (true);
 CREATE POLICY schedule_overrides_admin ON schedule_overrides
   FOR ALL USING (current_user_status() = 'ADMIN');
+
+-- Explicit grants required after Supabase's October 2026 default-privilege change.
+GRANT SELECT, INSERT, UPDATE, DELETE ON schedule_overrides TO service_role;
+GRANT SELECT ON schedule_overrides TO anon, authenticated;

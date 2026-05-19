@@ -85,3 +85,21 @@ CREATE POLICY spotlight_select ON meet_the_family
   FOR SELECT USING (current_user_status() IN ('MEMBER', 'ADMIN'));
 CREATE POLICY spotlight_admin ON meet_the_family
   FOR ALL USING (current_user_status() = 'ADMIN');
+
+-- Explicit grants required after Supabase's October 2026 default-privilege change.
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  mazal_tov,
+  dvar_torah,
+  announcements,
+  meet_the_family
+TO service_role;
+
+GRANT SELECT ON
+  dvar_torah,
+  announcements
+TO anon, authenticated;
+
+GRANT SELECT ON
+  mazal_tov,
+  meet_the_family
+TO authenticated;

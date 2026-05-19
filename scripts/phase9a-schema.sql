@@ -22,3 +22,7 @@ CREATE POLICY contact_insert ON contact_messages
   FOR INSERT WITH CHECK (true);
 CREATE POLICY contact_admin ON contact_messages
   FOR ALL USING (current_user_status() = 'ADMIN');
+
+-- Explicit grants required after Supabase's October 2026 default-privilege change.
+GRANT SELECT, INSERT, UPDATE, DELETE ON contact_messages TO service_role;
+GRANT INSERT ON contact_messages TO anon, authenticated;
