@@ -13,7 +13,7 @@ export function DvarTorahCard({ dvarTorah }: Props) {
 
   return (
     <section className="surface-card overflow-hidden p-0">
-      <div className="border-b border-secondary/10 bg-secondary/5 px-6 py-4 flex items-center justify-between gap-4">
+      <div className="border-b border-secondary/10 bg-secondary/5 dark:bg-secondary/10 dark:border-secondary/15 px-6 py-4 flex items-center justify-between gap-4">
         <p className="text-xs font-bold uppercase tracking-wider text-primary/70">
           דבר תורה שבועי
         </p>

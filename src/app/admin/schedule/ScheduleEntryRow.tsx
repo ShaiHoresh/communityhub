@@ -215,13 +215,13 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
           {entry.dayTypes.map((dt) => (
             <span
               key={dt}
-              className="rounded-full bg-secondary/10 px-2 py-0.5 text-xs font-medium text-secondary"
+              className="rounded-full bg-secondary/10 dark:bg-secondary/20 px-2 py-0.5 text-xs font-medium text-secondary"
             >
               {DAY_TYPE_LABELS[dt]}
             </span>
           ))}
           {seasonLabel && (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+            <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-xs font-medium text-amber-800 dark:text-amber-300">
               {seasonLabel}
             </span>
           )}
@@ -239,7 +239,7 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
           type="button"
           onClick={handleDelete}
           disabled={deleting}
-          className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:ring-offset-2 disabled:opacity-50"
+          className="rounded-full border border-red-200 dark:border-red-800/40 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-300 transition hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:ring-offset-2 disabled:opacity-50"
         >
           {deleting ? "…" : "מחיקה"}
         </button>

@@ -15,7 +15,16 @@ export default function GlobalError({
 
   return (
     <html lang="he" dir="rtl">
-      <body style={{ fontFamily: "system-ui, sans-serif", background: "#f3f4f6", color: "#111827" }}>
+      {/* color-scheme: light forces the browser to render this error boundary
+          in light mode regardless of OS preference, since globals.css is not
+          loaded in this isolated error boundary context. */}
+      <head>
+        <style>{`
+          :root { color-scheme: light; }
+          body { margin: 0; font-family: system-ui, sans-serif; background: #f3f4f6; color: #111827; }
+        `}</style>
+      </head>
+      <body>
         <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center", padding: "1.5rem" }}>
           <div style={{ maxWidth: "28rem", textAlign: "center", background: "#fff", borderRadius: "1rem", padding: "2.5rem", boxShadow: "0 1px 3px rgba(0,0,0,.1)" }}>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>

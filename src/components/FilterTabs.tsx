@@ -21,7 +21,7 @@ export function FilterTabs({ tabs }: Props) {
           className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
             tab.active
               ? "bg-accent text-white shadow-sm hover:shadow"
-              : tab.color ?? "border border-secondary/40 bg-white text-primary hover:border-primary/40 hover:bg-primary/5"
+              : tab.color ?? "border border-secondary/40 bg-white text-primary hover:border-primary/40 hover:bg-primary/5 dark:bg-slate-800 dark:border-slate-600/50 dark:text-slate-100 dark:hover:bg-slate-700/60"
           }`}
         >
           {tab.label}

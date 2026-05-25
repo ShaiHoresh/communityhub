@@ -36,7 +36,7 @@ export function HomeMember({
   return (
     <>
       {(highHolidaysEnabled || purimEnabled) && (
-        <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 px-5 py-4">
+        <section className="surface-card card-interactive flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-gradient-to-l from-primary/5 via-fuchsia-50 to-amber-50 dark:via-fuchsia-950/30 dark:to-amber-950/20 px-5 py-4">
           <div className="space-y-1">
             <p className="text-sm font-heading font-semibold text-foreground">
               עונת חגים פעילה במערכת
