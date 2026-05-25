@@ -137,7 +137,7 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
               name="timeType"
               value={timeType}
               onChange={(e) => setTimeType(e.target.value as TimeType)}
-              className="input-sm max-w-xs"
+              className="input-sm sm:max-w-xs"
             >
               {TIME_TYPES.map((tt) => (
                 <option key={tt} value={tt}>{TIME_TYPE_LABELS[tt]}</option>
@@ -145,15 +145,14 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
             </select>
 
             {timeType === "FIXED" && (
-              <div className="flex gap-2">
-                <input name="fixedHour" type="number" min={0} max={23} defaultValue={entry.fixedHour ?? 8} className="w-20 input-sm" />
-                <span className="self-center text-primary/70">:</span>
-                <input name="fixedMinute" type="number" min={0} max={59} defaultValue={entry.fixedMinute ?? 0} className="w-20 input-sm" />
+              <div className="grid grid-cols-2 gap-2 sm:max-w-xs">
+                <input name="fixedHour" type="number" min={0} max={23} defaultValue={entry.fixedHour ?? 8} className="input-sm" />
+                <input name="fixedMinute" type="number" min={0} max={59} defaultValue={entry.fixedMinute ?? 0} className="input-sm" />
               </div>
             )}
 
             {(timeType === "ZMANIM_BASED" || timeType === "DYNAMIC_OFFSET") && (
-              <div className="flex gap-2">
+              <div className="grid gap-2 sm:grid-cols-2 sm:max-w-md">
                 <select name="zmanKey" defaultValue={entry.zmanKey ?? ""} className="input-sm">
                   <option value="">-- זמן --</option>
                   {ZMAN_KEYS.map((z) => (
@@ -166,7 +165,7 @@ export function ScheduleEntryRow({ entry, locations }: Props) {
                     type="number"
                     defaultValue={entry.offsetMinutes}
                     placeholder="דק׳"
-                    className="w-24 input-sm"
+                    className="input-sm"
                   />
                 )}
               </div>

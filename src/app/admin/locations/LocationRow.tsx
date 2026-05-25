@@ -39,7 +39,7 @@ export function LocationRow({ location }: { location: Location }) {
               name="name"
               defaultValue={location.name}
               required
-              className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+              className="input-sm"
             />
           </div>
           <div>
@@ -50,7 +50,7 @@ export function LocationRow({ location }: { location: Location }) {
               min={0}
               defaultValue={location.maxCapacity}
               required
-              className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+              className="input-sm"
             />
           </div>
           <div>
@@ -58,7 +58,7 @@ export function LocationRow({ location }: { location: Location }) {
             <select
               name="spaceCategory"
               defaultValue={location.spaceCategory}
-              className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+              className="input-sm"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>

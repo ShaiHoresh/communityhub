@@ -120,7 +120,7 @@ export function ScheduleEntryForm({ locations }: Props) {
           <label htmlFor="specificDate" className="mb-1 block text-sm font-semibold text-foreground">
             תאריך מסוים
           </label>
-          <input id="specificDate" name="specificDate" type="date" className="input-base max-w-xs" />
+          <input id="specificDate" name="specificDate" type="date" className="input-base sm:max-w-xs" />
         </div>
       )}
 
@@ -132,7 +132,7 @@ export function ScheduleEntryForm({ locations }: Props) {
         <select
           id="timeType"
           name="timeType"
-          className="input-base max-w-xs"
+          className="input-base sm:max-w-xs"
           value={timeType}
           onChange={(e) => setTimeType(e.target.value as TimeType)}
         >
@@ -144,7 +144,7 @@ export function ScheduleEntryForm({ locations }: Props) {
 
       {/* Conditional: FIXED → hour + minute */}
       {timeType === "FIXED" && (
-        <div className="grid gap-4 sm:grid-cols-2 max-w-xs">
+        <div className="grid grid-cols-2 gap-4 sm:max-w-xs">
           <div>
             <label htmlFor="fixedHour" className="mb-1 block text-sm font-semibold text-foreground">שעה</label>
             <input id="fixedHour" name="fixedHour" type="number" min={0} max={23} defaultValue={8} className="input-base" />
@@ -158,7 +158,7 @@ export function ScheduleEntryForm({ locations }: Props) {
 
       {/* Conditional: ZMANIM_BASED → zman dropdown */}
       {timeType === "ZMANIM_BASED" && (
-        <div className="max-w-xs">
+        <div className="sm:max-w-xs">
           <label htmlFor="zmanKey" className="mb-1 block text-sm font-semibold text-foreground">זמן הלכתי</label>
           <select id="zmanKey" name="zmanKey" required className="input-base">
             <option value="">-- בחר זמן --</option>
@@ -171,7 +171,7 @@ export function ScheduleEntryForm({ locations }: Props) {
 
       {/* Conditional: DYNAMIC_OFFSET → zman + offset */}
       {timeType === "DYNAMIC_OFFSET" && (
-        <div className="grid gap-4 sm:grid-cols-2 max-w-md">
+        <div className="grid gap-4 sm:grid-cols-2 sm:max-w-md">
           <div>
             <label htmlFor="zmanKey" className="mb-1 block text-sm font-semibold text-foreground">זמן הלכתי</label>
             <select id="zmanKey" name="zmanKey" required className="input-base">
@@ -198,7 +198,7 @@ export function ScheduleEntryForm({ locations }: Props) {
       )}
 
       {/* Rounding */}
-      <div className="max-w-xs">
+      <div className="sm:max-w-xs">
         <label htmlFor="roundTo" className="mb-1 block text-sm font-semibold text-foreground">
           עיגול לדקות (0 = ללא)
         </label>

@@ -30,7 +30,7 @@ export function LocationForm() {
           name="id"
           required
           placeholder="main-hall"
-          className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+          className="input-sm"
         />
       </div>
       <div className="sm:col-span-1">
@@ -42,7 +42,7 @@ export function LocationForm() {
           name="name"
           required
           placeholder="אולם מרכזי"
-          className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+          className="input-sm"
         />
       </div>
       <div className="sm:col-span-1">
@@ -56,7 +56,7 @@ export function LocationForm() {
           min={0}
           required
           defaultValue={0}
-          className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+          className="input-sm"
         />
       </div>
       <div className="sm:col-span-1">
@@ -68,7 +68,7 @@ export function LocationForm() {
           name="spaceCategory"
           required
           defaultValue="Indoor"
-          className="w-full rounded-lg border border-secondary/40 bg-white px-3 py-2 text-right text-foreground"
+          className="input-sm"
         >
           {CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>

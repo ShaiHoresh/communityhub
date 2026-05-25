@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminMobileNav } from "./AdminMobileNav";
 
 const navItems = [
   { href: "/admin", label: "סקירה" },
@@ -18,8 +19,12 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-background font-sans">
-      <div className="mx-auto flex max-w-6xl gap-8 px-6 py-6 text-right">
-        <aside className="w-52 shrink-0">
+      {/* Mobile-only hamburger nav — hidden on md+ */}
+      <AdminMobileNav />
+
+      <div className="mx-auto flex max-w-6xl flex-col md:flex-row md:gap-8 px-4 sm:px-6 py-6 text-right">
+        {/* Sidebar — hidden on mobile, shown on md+ */}
+        <aside className="hidden md:block w-52 shrink-0">
           <nav
             className="surface-card card-interactive sticky top-6 rounded-2xl p-4"
             aria-label="ניווט מנהל"
@@ -27,7 +32,7 @@ export default function AdminLayout({
             <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-primary/50">
               ניהול מערכת
             </p>
-          <ul className="space-y-0.5">
+            <ul className="space-y-0.5">
               <li>
                 <Link
                   href="/"
@@ -49,6 +54,7 @@ export default function AdminLayout({
             </ul>
           </nav>
         </aside>
+
         <main id="main-content" className="min-w-0 flex-1">
           {children}
         </main>
