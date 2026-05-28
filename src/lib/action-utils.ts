@@ -25,13 +25,26 @@ export function revalidateAdminPaths() {
     "/admin/access-requests",
     "/admin/settings",
     "/admin/high-holidays",
+    "/admin/announcements",
+    "/admin/dvar-torah",
+    "/admin/mazal-tov",
+    "/admin/spotlight",
+    "/admin/contact",
+    "/admin/purim-report",
   ]) {
     revalidatePath(p);
   }
 }
 
 export function revalidateAppPaths() {
-  for (const p of ["/", "/gmach", "/purim", "/high-holidays", "/life-events"]) {
+  for (const p of [
+    "/",
+    "/gmach",
+    "/purim",
+    "/high-holidays",
+    "/life-events",
+    "/schedule",
+  ]) {
     revalidatePath(p);
   }
 }
