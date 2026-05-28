@@ -1,5 +1,6 @@
 import type { Location } from "@/lib/locations";
 import { getLocations } from "@/lib/locations";
+import { toLocalDateStr } from "@/lib/date-utils";
 import {
   getScheduleEntries,
   type ScheduleEntry,
@@ -65,7 +66,9 @@ export async function buildDailyScheduleForDate(
 ): Promise<DailySchedule> {
   const baseDate = new Date(date);
   baseDate.setHours(0, 0, 0, 0);
-  const dateStr = baseDate.toISOString().slice(0, 10);
+  // Use the civil calendar date in Asia/Jerusalem, not UTC, to correctly
+  // handle the 00:00–02:59 local window where UTC would give the prior day.
+  const dateStr = toLocalDateStr(baseDate);
 
   const [locations, entries, overrides, zmanim] = await Promise.all([
     getLocations(),

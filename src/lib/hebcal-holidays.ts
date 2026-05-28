@@ -63,12 +63,15 @@ type DayAcc = {
  *   – Yom Tov wins over non-Yom-Tov for the `title` / `isYomTov` fields.
  *   – Additive flags (isRoshChodesh, isFastDay, isHolHaMoed) are OR'd together.
  */
+import { toLocalDateStr } from "@/lib/date-utils";
+
 export async function fetchHolidaysForRange(
   startDate: Date,
   endDate: Date,
 ): Promise<Map<string, HolidayInfo>> {
-  const start = startDate.toISOString().slice(0, 10);
-  const end = endDate.toISOString().slice(0, 10);
+  // Use Israel civil-date strings, not UTC, to avoid off-by-one near midnight.
+  const start = toLocalDateStr(startDate);
+  const end = toLocalDateStr(endDate);
 
   try {
     // nx=on  → include Rosh Chodesh

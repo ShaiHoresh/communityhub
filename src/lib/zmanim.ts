@@ -11,6 +11,8 @@
  *   ZMANIM_TZID       (default Asia/Jerusalem)
  */
 
+import { toLocalDateStr } from "@/lib/date-utils";
+
 // ── Zman keys the system supports ──────────────────────────────────────
 
 export const ZMAN_KEYS = [
@@ -83,7 +85,10 @@ function parseTimeFromISO(isoStr: string): { hour: number; minute: number } | nu
 }
 
 export async function fetchZmanim(date: Date): Promise<ZmanimData | null> {
-  const dateStr = date.toISOString().slice(0, 10);
+  // Use the civil calendar date in Israel's timezone, not UTC.
+  // toISOString() would give the UTC date, which between 00:00–02:59 local
+  // time in Jerusalem (UTC+2/+3) would be the previous calendar day.
+  const dateStr = toLocalDateStr(date);
   const cached = zmanimCache.get(dateStr);
   if (cached) return cached;
 

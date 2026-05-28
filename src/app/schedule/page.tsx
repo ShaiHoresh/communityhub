@@ -1,5 +1,6 @@
 import { buildDailyScheduleForDate, type DailySchedule } from "@/lib/schedule";
 import { getLocations } from "@/lib/locations";
+import { toLocalDateStr } from "@/lib/date-utils";
 import { BackLink } from "@/components/BackLink";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
@@ -56,26 +57,26 @@ function formatTime(d: Date): string {
 }
 
 function next7Days(): Date[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Anchor to the civil "today" in Asia/Jerusalem, not the UTC day.
+  // On a UTC server, new Date() followed by setHours(0,0,0,0) gives UTC
+  // midnight, which between 00:00–02:59 local time is yesterday in Israel.
+  const todayStr = toLocalDateStr(new Date()); // "YYYY-MM-DD" in Israel TZ
+  const today = new Date(todayStr + "T00:00:00Z"); // stable UTC anchor
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
-    d.setDate(today.getDate() + i);
+    d.setUTCDate(today.getUTCDate() + i);
     return d;
   });
 }
 
 function isToday(date: Date): boolean {
-  const t = new Date();
-  return (
-    date.getDate() === t.getDate() &&
-    date.getMonth() === t.getMonth() &&
-    date.getFullYear() === t.getFullYear()
-  );
+  // Compare civil date strings in Israel's timezone — avoids server-TZ drift.
+  return toLocalDateStr(date) === toLocalDateStr(new Date());
 }
 
 function dateKey(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  // Use the Israel civil date, not the UTC date, as the map key.
+  return toLocalDateStr(d);
 }
 
 // ── Render-group types ────────────────────────────────────────────────────────
