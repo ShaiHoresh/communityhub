@@ -8,10 +8,12 @@ import { type ActionResult, parseFormString, safeAction } from "@/lib/action-uti
  * Generate a password-reset token for the given email.
  *
  * Returns:
- *  - { ok: true, resetUrl }  — always, even if the email doesn't exist
- *    (prevents email-enumeration). The `resetUrl` is only populated when
- *    RESEND_API_KEY is NOT configured, so the admin can copy-paste it.
- *    When email is configured, it is sent silently and resetUrl is undefined.
+ *  - { ok: true }              — in production (URL sent by email only)
+ *  - { ok: true, resetUrl }   — in development only, when no email provider
+ *                               is configured, so the developer can copy-paste it.
+ *
+ * The response is always { ok: true } even when the email is unknown to
+ * prevent email-enumeration attacks.
  */
 export async function requestPasswordResetAction(
   _prevState: ActionResult & { resetUrl?: string },
@@ -21,10 +23,7 @@ export async function requestPasswordResetAction(
     const email = parseFormString(formData, "email")?.toLowerCase().trim();
     if (!email) return { ok: false, error: "נא להזין כתובת אימייל." };
 
-    // Always look up the user so we can fail fast on invalid emails
-    // while still not leaking whether the email exists.
     const user = await dbFindUserByEmail(email);
-
     if (!user) {
       // Return ok=true to avoid revealing whether the email is registered.
       return { ok: true };
@@ -35,7 +34,7 @@ export async function requestPasswordResetAction(
       process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
     const resetUrl = `${baseUrl}/auth/reset-password/${rawToken}`;
 
-    // ── Email sending (optional) ──────────────────────────────────────────
+    // ── Email sending ──────────────────────────────────────────────────────
     // Set RESEND_API_KEY in .env to enable automatic email delivery.
     const resendKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESET_EMAIL_FROM ?? "no-reply@beorcha.co.il";
@@ -66,15 +65,26 @@ export async function requestPasswordResetAction(
               </div>`,
           }),
         });
-        // Email sent — don't expose the URL
         return { ok: true };
       } catch {
-        // Email failed but token was created — fall through and expose the URL
+        // Email delivery failed in production — never expose the URL to the client.
+        return { ok: true };
       }
     }
 
-    // No email service configured (or send failed) → expose the URL directly
-    // so the admin / user can copy-paste it.
-    return { ok: true, resetUrl };
+    // No email provider configured.
+    // In development: expose the URL so the developer can test the flow.
+    // In production: log server-side only — never send to the client.
+    if (process.env.NODE_ENV === "development") {
+      return { ok: true, resetUrl };
+    }
+
+    // Production fallback — token is created but cannot be delivered.
+    // This indicates a misconfiguration; log it server-side.
+    console.error(
+      "[password-reset] RESEND_API_KEY is not set. Token created but not delivered for:",
+      email,
+    );
+    return { ok: true };
   });
 }
