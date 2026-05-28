@@ -1,6 +1,7 @@
 "use server";
 
 import { createLifeEvent } from "@/lib/life-events";
+import { requireMember } from "@/lib/auth-guard";
 import {
   type ActionResult,
   parseFormString,
@@ -12,6 +13,8 @@ export async function submitLifeEventAction(
   formData: FormData,
 ): Promise<ActionResult> {
   return safeAction(async () => {
+    await requireMember();
+
     const type = parseFormString(formData, "type");
     const name = parseFormString(formData, "name");
     const dateStr = parseFormString(formData, "date");
